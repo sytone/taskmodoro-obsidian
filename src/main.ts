@@ -124,12 +124,12 @@ export default class TQPlugin extends Plugin {
         new Notice('Cannot create a task with no "task" property');
         return;
       }
-
       await this.fileInterface.storeNewTask(
         params.task,
         params.due,
         params.repeat,
         params.tags ? params.tags.split(',') : [],
+        params.note,
         false,
         false,
       );

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SharedState, filtersFromState } from '../state';
   import type TQPlugin from '../main';
-  import { CalcTaskScore, Task } from '../file-interface';
+  import  { CalcTaskScore, Task } from '../file-interface';
   import TaskListTask from './TaskListTask.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
@@ -9,6 +9,9 @@
 
   export let plugin: TQPlugin;
   export let view: Component;
+  /**
+  * Config state that is parsed from query codeblock
+  */
   export let state: Writable<SharedState>;
 
   const getGrouper = (state: SharedState): ((t: Task) => string) => {

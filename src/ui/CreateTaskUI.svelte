@@ -11,6 +11,7 @@
     due: string,
     repeat: string,
     tags: string[],
+    note: string,
     urgent: boolean,
     important: boolean,
   ) => void;
@@ -26,6 +27,7 @@
 
   const tagCache = Object.keys((app.metadataCache as any).getTags());
   let description = '';
+  let note = '';
   let repeats = false;
   let repeatConfig = '';
   let due = '';
@@ -44,6 +46,7 @@
       due,
       repeats ? repeatConfig : '',
       cleanedTags,
+      note,
       urgent,
       important,
     );
@@ -54,7 +57,7 @@
     due = date.format('YYYY-MM-DD');
   };
 
-  const getPlaceholder = (): string => {
+  const getDescriptionPlaceholder = (): string => {
     const idx = Math.floor(Math.random() * taskPlaceholders.length);
     return taskPlaceholders[idx];
   };
@@ -68,7 +71,7 @@
     id="task-description"
     type="text"
     bind:value={description}
-    placeholder={getPlaceholder()}
+    placeholder={getDescriptionPlaceholder()}
   />
 </div>
 <div>
@@ -93,6 +96,16 @@
   <label for="tags">Tags</label>
   <TextSuggest {app} bind:value={tags} suggestions={tagCache} />
 </div>
+
+<div>
+  <label for="task-note"> Note </label>
+  <input
+    id="task-note"
+    type="text"
+    bind:value={note}
+  />
+</div>
+
 <div>
   <label>
     <input type="checkbox" bind:checked={important} />

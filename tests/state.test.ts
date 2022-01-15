@@ -12,6 +12,7 @@ const makeTask = (lineIdx: number, md: string[]): Task => {
     md: md.join('\n'),
     frontmatter,
     line: md[lineIdx].replace(/- \[[x ]\]/, ''),
+    note:'',
     checked: md[lineIdx].startsWith('- [x]'),
     due: due ? moment(due).endOf('day') : undefined,
     urgent: false, // TODO: Include in tests

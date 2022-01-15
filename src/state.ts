@@ -14,6 +14,9 @@ const SharedStateDefaults: SharedState = {
   selectWeek: undefined,
 };
 
+/**
+ * State of a task represents properties according to which task can be queried.
+ */
 export interface SharedState {
   overdue: boolean;
   due: boolean;
@@ -21,7 +24,6 @@ export interface SharedState {
   completed: boolean | undefined;
   sort: 'due' | 'score' | undefined;
   group: 'due' | 'completed' | undefined;
-
   selectTags: string[];
   omitTags: string[];
   selectDay: string | undefined;
@@ -35,6 +37,9 @@ export const stateWithDefaults = (
   ...props,
 });
 
+/**
+ * Query state that is fetched from codeblock. Tasks matching this state will be listed.
+ */
 export const stateFromConfig = (lines: string[]): SharedState => {
   const state = stateWithDefaults({});
   lines.forEach((line) => {
@@ -126,6 +131,9 @@ export const stateFromConfig = (lines: string[]): SharedState => {
 };
 
 export type Filter = (task: Task) => boolean;
+/**
+ * All
+ */
 export const filtersFromState = (state: SharedState): Filter[] => {
   const filters = [];
 

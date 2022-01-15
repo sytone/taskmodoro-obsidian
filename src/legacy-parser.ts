@@ -23,10 +23,11 @@ export const convertLegacyTask = (
   const due = fileDate.isValid() ? fileDate.format('YYYY-MM-DD') : undefined;
 
   fileInterface.storeNewTask(
-    parts.description,
+    parts.taskName,
     due,
     parts.repeat,
     [],
+    '',
     false,
     false,
   );
@@ -34,7 +35,7 @@ export const convertLegacyTask = (
 
 const parseLegacyTaskLine = (
   line: string,
-): { repeat: string; description: string } | undefined => {
+): { repeat: string; taskName: string } | undefined => {
   if (!taskRe.test(line)) {
     return undefined;
   }
@@ -42,7 +43,7 @@ const parseLegacyTaskLine = (
   if (!repeatScheduleRe.test(line)) {
     return {
       repeat: undefined,
-      description: line.replace(/\s*- \[[ xX>\-]\]/, '').trim(),
+      taskName: line.replace(/\s*- \[[ xX>\-]\]/, '').trim(),
     };
   }
 
@@ -50,7 +51,7 @@ const parseLegacyTaskLine = (
   const repeatConfig =
     repeatMatches && repeatMatches.length === 2 ? repeatMatches[1] : undefined;
 
-  const description = line
+  const taskName = line
     .replace(repeatConfig, '')
     .slice(0, -3)
     .replace(/\s*- \[[ xX>\-]\]/, '')
@@ -58,6 +59,6 @@ const parseLegacyTaskLine = (
 
   return {
     repeat: repeatConfig,
-    description,
+    taskName: taskName,
   };
 };

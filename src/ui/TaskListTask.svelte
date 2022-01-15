@@ -19,6 +19,8 @@
 
   let repeat = task.frontmatter.get('repeat');
   let due = task.due;
+  let note = task.note;
+  console.log('Note: ', note);
   const completed = task.frontmatter.get('completed');
   const lastCompleted = completed ? completed[completed.length - 1] : undefined;
   const overdue =
@@ -144,6 +146,10 @@
           <input type="text" class="value" value={lastCompleted} disabled />
         </div>
       {/if}
+      <div>
+        <span class="label">Note:</span>
+        <input type="text" class="value" value={note ? note : ''} />
+      </div>
     </div>
   {/if}
 </div>
