@@ -21,7 +21,7 @@ export default class TQPlugin extends Plugin {
   public taskCache: TaskCache;
 
   public async onload(): Promise<void> {
-    console.log('tq: Loading plugin v' + this.manifest.version);
+    console.log('tq: Loading plugin' + this.manifest.version);
 
     await this.loadSettings();
     this.addSettingTab(new SettingsTab(this));
@@ -125,13 +125,12 @@ export default class TQPlugin extends Plugin {
         return;
       }
       await this.fileInterface.storeNewTask(
-        params.task,
+        params.taskName,
+        params.description,
         params.due,
+        params.start,
         params.repeat,
         params.tags ? params.tags.split(',') : [],
-        params.note,
-        false,
-        false,
       );
 
       new Notice('Task created');

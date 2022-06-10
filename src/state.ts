@@ -5,6 +5,8 @@ const SharedStateDefaults: SharedState = {
   overdue: false,
   due: true,
   noDue: true,
+  scheduled: true,
+  noScheduled: true,
   completed: undefined,
   sort: 'score',
   group: undefined,
@@ -21,9 +23,11 @@ export interface SharedState {
   overdue: boolean;
   due: boolean;
   noDue: boolean;
+  scheduled: boolean;
+  noScheduled: boolean;
   completed: boolean | undefined;
-  sort: 'due' | 'score' | undefined;
-  group: 'due' | 'completed' | undefined;
+  sort: 'due' | 'scheduled' | 'score' | undefined;
+  group: 'due' | 'scheduled' |'completed' | undefined;
   selectTags: string[];
   omitTags: string[];
   selectDay: string | undefined;
@@ -61,6 +65,12 @@ export const stateFromConfig = (lines: string[]): SharedState => {
       case 'no-due':
         state.noDue = parts[1] === 'true';
         break;
+      case 'scheduled':
+        state.scheduled = parts[1] === 'true';
+        break;
+      case 'no-scheduled':
+        state.noScheduled = parts[1] === 'true';
+        break;
       case 'completed':
         state.completed = parts[1] === 'true';
         break;
@@ -68,6 +78,9 @@ export const stateFromConfig = (lines: string[]): SharedState => {
         switch (parts[1]) {
           case 'due':
             state.sort = 'due';
+            break;
+          case 'scheduled':
+            state.sort = 'scheduled';
             break;
           case 'score':
             state.sort = 'score';
@@ -82,6 +95,9 @@ export const stateFromConfig = (lines: string[]): SharedState => {
         switch (parts[1]) {
           case 'due':
             state.group = 'due';
+            break;
+          case 'scheduled':
+            state.group = 'scheduled';
             break;
           case 'completed':
             state.group = 'completed';

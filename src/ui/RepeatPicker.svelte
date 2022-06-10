@@ -163,15 +163,13 @@
   {/if}
 
   {#if set !== null}
-    <button on:click={save}>Save</button>
+    <button style='margin-top: 1rem' class="mod-cta" on:click={save}>Save</button>
   {/if}
 </div>
 
 <style>
-  .form input {
-    border-radius: 0.5em;
-    padding: 19px 14px;
-  }
+
+
 
   #interval-selector {
     width: 60px;

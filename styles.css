@@ -2,6 +2,7 @@
 Settings Page
 */
 
+
 .tq-input-error {
   border-color: var(--text-error) !important;
 }
@@ -14,4 +15,45 @@ Settings Page
 
 .tq-donate-button {
   margin: 10px;
+}
+
+.tq-modal {
+  font-family: 'lato';
+  min-width: 900px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #3D4242 ;
+  
+  --mid-blue-gray: #909595;
+  --mid2-blue-gray: #686B6F;
+  --dark-blue-gray: #4B4F4F;
+  --dark2-blue-gray: #343636;
+  text-decoration: none;
+}
+
+.tq-modal-content {
+  margin-top: 0px;
+  display: flex;
+  flex-direction: row;
+}
+.tq-modal>.modal-close-button{
+  top: 24px;
+  right: 24px;
+  font-size: 44px;
+  color: var(--mid2-blue-gray)
+}
+.primary-btn{
+  padding: 8px 24px;
+}
+.primary{
+  background-color: var(--text-accent);
+}
+
+.hidden {
+  display: none;
+}
+
+.disabled-btn {
+  opacity: 0.5;
+  cursor: default;
 }

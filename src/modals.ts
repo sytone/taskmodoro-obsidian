@@ -1,21 +1,23 @@
-import type TQPlugin from './main';
-import CreateTaskUI from './ui/CreateTaskUI.svelte';
-import DuePicker from './ui/DuePicker.svelte';
-import RepeatPicker from './ui/RepeatPicker.svelte';
-import type { Moment } from 'moment';
-import { App, Modal } from 'obsidian';
+import TQPlugin from './main'
+import CreateTaskUI from './ui/CreateTaskUI.svelte'
+import DuePicker from './ui/DuePicker.svelte'
+import RepeatPicker from './ui/RepeatPicker.svelte'
+import { Moment } from 'moment'
+import { App, Modal } from 'obsidian'
 
 export class CreateTaskModal extends Modal {
-  private readonly plugin: TQPlugin;
+  private readonly plugin: TQPlugin
 
-  constructor(app: App, plugin: TQPlugin) {
-    super(app);
-    this.plugin = plugin;
+  constructor (app: App, plugin: TQPlugin) {
+    super(app)
+    this.plugin = plugin
   }
 
   public onOpen = (): void => {
-    const { titleEl, contentEl } = this;
-    titleEl.setText('Create New Task');
+    const { titleEl, contentEl,modalEl } = this
+    modalEl.addClass('tq-modal')
+    contentEl.addClass('tq-modal-content');
+    // titleEl.setText('Create New Task')
     new CreateTaskUI({
       target: contentEl,
       props: {
@@ -23,29 +25,29 @@ export class CreateTaskModal extends Modal {
         store: this.plugin.fileInterface.storeNewTask,
         app: this.app,
       },
-    });
-  };
+    })
+  }
 
   public onClose = (): void => {
-    const { contentEl } = this;
-    contentEl.empty();
-  };
+    const { contentEl } = this
+    contentEl.empty()
+  }
 }
 
 export class DuePickerModal extends Modal {
-  private readonly startDate: Moment;
-  private readonly set: (date: Moment) => void;
+  private readonly startDate: Moment
+  private readonly set: (date: Moment) => void
 
-  constructor(app: App, startDate: Moment, set: (date: Moment) => void) {
-    super(app);
+  constructor (app: App, startDate: Moment, set: (date: Moment) => void) {
+    super(app)
 
-    this.startDate = startDate;
-    this.set = set;
+    this.startDate = startDate
+    this.set = set
   }
 
   public onOpen = (): void => {
-    const { titleEl, contentEl } = this;
-    titleEl.setText('Set Due Date');
+    const { titleEl, contentEl } = this
+    titleEl.setText('Set Due Date')
     new DuePicker({
       target: contentEl,
       props: {
@@ -53,33 +55,33 @@ export class DuePickerModal extends Modal {
         set: this.set,
         startDate: this.startDate,
       },
-    });
-  };
+    })
+  }
 
   public onClose = (): void => {
-    const { contentEl } = this;
-    contentEl.empty();
-  };
+    const { contentEl } = this
+    contentEl.empty()
+  }
 }
 
 export class RepeatPickerModal extends Modal {
-  private readonly repeatConfig: string;
-  private readonly set: (repeatConfig: string) => void;
+  private readonly repeatConfig: string
+  private readonly set: (repeatConfig: string) => void
 
-  constructor(
+  constructor (
     app: App,
     repeatConfig: string,
     set: (repeatConfig: string) => void,
   ) {
-    super(app);
+    super(app)
 
-    this.repeatConfig = repeatConfig;
-    this.set = set;
+    this.repeatConfig = repeatConfig
+    this.set = set
   }
 
   public onOpen = (): void => {
-    const { titleEl, contentEl } = this;
-    titleEl.setText('Set Repeat Config');
+    const { titleEl, contentEl } = this
+    titleEl.setText('Set Repeat Config')
     new RepeatPicker({
       target: contentEl,
       props: {
@@ -88,11 +90,11 @@ export class RepeatPickerModal extends Modal {
         repeatConfig: this.repeatConfig,
         repeats: this.repeatConfig !== 'none',
       },
-    });
-  };
+    })
+  }
 
   public onClose = (): void => {
-    const { contentEl } = this;
-    contentEl.empty();
-  };
+    const { contentEl } = this
+    contentEl.empty()
+  }
 }

@@ -12,7 +12,7 @@ export interface Task {
   line: string
   note: string
   checked: boolean
-  due: Moment | undefined
+  due: Moment | undefined 
   urgent: boolean
   important: boolean
 }
@@ -103,11 +103,12 @@ export class TaskCache {
     })
 
   /**
-   * Update svelte tasks store by replacing svelte store key: (file.path) with value: (file loaded as task).
+   * Update svelte store of tasks by replacing stores` key: (newTask.file.path) with value: (newTask) parsed from modified task file.
    */
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
-    ;(await this.loadTask(file)).match(
+    (await this.loadTask(file)).match(
       newTask => {
+        console.log(newTask)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -165,6 +166,9 @@ export class TaskCache {
 export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
+
+  private readonly descStartToken='<!---DESC_START--->'
+  private readonly descEndToken='<!---DESC_END--->'
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
@@ -268,25 +272,23 @@ export class FileInterface {
   }
 
   public readonly storeNewTask = async (
+    taskName: string,
     description: string,
     due: string,
+    scheduled: string,
     repeat: string,
     tags: string[],
-    note: string,
-    urgent: boolean,
-    important: boolean,
   ): Promise<void> => {
     const tasksDir = this.plugin.settings.TasksDir
     const newHash = this.createTaskBlockHash()
     const fileName = `${tasksDir}/${newHash}.md`
     const data = this.formatNewTask(
+      taskName,
       description,
       due,
+      scheduled,
       repeat,
       tags,
-      note,
-      urgent,
-      important,
     )
 
     console.debug('tq: Creating a new task in ' + fileName)
@@ -299,37 +301,31 @@ export class FileInterface {
   }
 
   /**
-   * @return Note content which includes YAML frontmatter and task description
+   * @return YAML frontmatter
    */
   private readonly formatNewTask = (
+    taskName: string,
     description: string,
     due: string,
+    scheduled: string,
     repeat: string,
     tags: string[],
-    note: string,
-    urgent: boolean,
-    important: boolean,
   ): string => {
     const frontMatter = []
-    if (due && due !== '') {
+    if (due ) {
       frontMatter.push(`due: '${due}'`)
     }
-    if (repeat && repeat !== '') {
+    if (scheduled ) {
+      frontMatter.push(`scheduled: '${scheduled}'`)
+    }
+    if (repeat) {
       frontMatter.push('repeat: ' + repeat)
     }
     if (tags && tags.length > 0 && tags[0].length > 0) {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
-    if (note && note !== '') {
-      frontMatter.push('note:  ' + note)
-    }
-    if (urgent) {
-      frontMatter.push('urgent: true')
-    }
-    if (important) {
-      frontMatter.push('important: true')
-    }
 
+    
     const contents = []
     if (frontMatter.length > 0) {
       contents.push('---')
@@ -337,7 +333,9 @@ export class FileInterface {
       contents.push('---')
       contents.push('')
     }
-    contents.push('- [ ] ' + description)
+    contents.push('## Task')
+    contents.push('- [ ] ' + taskName)
+    contents.push(`\n ${this.descStartToken} \n ${description} \n ${this.descEndToken}`)
 
     return contents.join('\n')
   }

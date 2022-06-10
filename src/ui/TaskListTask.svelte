@@ -20,7 +20,6 @@
   let repeat = task.frontmatter.get('repeat');
   let due = task.due;
   let note = task.note;
-  console.log('Note: ', note);
   const completed = task.frontmatter.get('completed');
   const lastCompleted = completed ? completed[completed.length - 1] : undefined;
   const overdue =
@@ -35,6 +34,7 @@
     MarkdownRenderer.renderMarkdown(task.line, tempEl, task.file.path, view);
     lineEl.innerHTML = tempEl.children[0].innerHTML;
   });
+
   afterUpdate(() => {
     const tempEl = createDiv();
     MarkdownRenderer.renderMarkdown(task.line, tempEl, task.file.path, view);
@@ -74,8 +74,14 @@
     }).open();
   };
 </script>
-
-<div class={rootClasses}>
+<div class="task-row">
+  <input
+    type="checkbox"
+    bind:checked={task.checked}
+    on:change={toggleChecked}
+  />
+</div>
+<!-- <div class={rootClasses}>
   <div class="task-row">
     <TaskPriorityStripe {task} />
 
@@ -146,13 +152,15 @@
           <input type="text" class="value" value={lastCompleted} disabled />
         </div>
       {/if}
+
+      
       <div>
         <span class="label">Note:</span>
         <input type="text" class="value" value={note ? note : ''} />
       </div>
     </div>
   {/if}
-</div>
+</div> -->
 
 <style>
   .tq-task {
