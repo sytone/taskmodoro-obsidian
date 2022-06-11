@@ -1,6 +1,9 @@
 <script lang="ts">
+  import Checkbox from "./Checkbox.svelte";
   export let taskName: string;
   export let description: string;
+  export let completed: boolean;
+  export let isNewTask: boolean;
 
   let draftTaskName= taskName;
   let draftDescription= description;
@@ -37,7 +40,7 @@
 <div class="main-task-panel">
   <div style="height: 56px" />
   <div class="task-container">
-    <div class="task-mark" />
+    <Checkbox bind:checked={completed} disabled={isNewTask}></Checkbox>
     <div
       class="task-input-container {isInputActive
         ? 'task-input-container-active'

@@ -77,7 +77,7 @@
   // TODO: Allow setting arbitrary fields in this form, configured in settings
 </script>
 
-<TaskDetailsMainPanel bind:description bind:taskName />
+<TaskDetailsMainPanel isNewTask={true} completed={false} bind:description bind:taskName />
 <div class="task-details-sidebar">
   <span class="external-link-wrapper">
     <span class="external-link-icon">{@html externalLink}</span>
