@@ -1,5 +1,5 @@
 import type { Task } from '../src/file-interface';
-import { Frontmatter } from '../src/frontmatter';
+import { Frontmatter } from '../src/parser';
 import { filtersFromState, stateFromConfig } from '../src/state';
 import { every, filter } from 'lodash';
 import moment from 'moment';
@@ -11,8 +11,8 @@ const makeTask = (lineIdx: number, md: string[]): Task => {
     file: undefined,
     md: md.join('\n'),
     frontmatter,
-    line: md[lineIdx].replace(/- \[[x ]\]/, ''),
-    note:'',
+    taskName: md[lineIdx].replace(/- \[[x ]\]/, ''),
+    description:'',
     checked: md[lineIdx].startsWith('- [x]'),
     due: due ? moment(due).endOf('day') : undefined,
     urgent: false, // TODO: Include in tests

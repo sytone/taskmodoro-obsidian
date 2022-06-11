@@ -128,7 +128,7 @@ export default class TQPlugin extends Plugin {
         params.taskName,
         params.description,
         params.due,
-        params.start,
+        params.scheduled,
         params.repeat,
         params.tags ? params.tags.split(',') : [],
       );

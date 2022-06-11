@@ -147,6 +147,7 @@ export const stateFromConfig = (lines: string[]): SharedState => {
 };
 
 export type Filter = (task: Task) => boolean;
+
 /**
  * All
  */

@@ -1,4 +1,4 @@
-import { Frontmatter, setCompletedDate, setDueDateToNext } from './frontmatter'
+import { Frontmatter, getDescription,setCompletedDate, setDueDateToNext } from './parser'
 import type TQPlugin from './main'
 import type { Moment } from 'moment'
 import { err, ok, Result } from 'neverthrow'
@@ -9,12 +9,12 @@ export interface Task {
   file: TFile
   md: string
   frontmatter: Frontmatter
-  line: string
-  note: string
+  taskName: string
+  description: string
   checked: boolean
   due: Moment | undefined 
-  urgent: boolean
-  important: boolean
+  scheduled: Moment | undefined 
+
 }
 
 export const CalcTaskScore = (task: Task): number => {
@@ -42,12 +42,12 @@ export const CalcTaskScore = (task: Task): number => {
     }
   }
 
-  if (task.urgent) {
-    score *= 2
-  }
-  if (task.important) {
-    score *= 1.5
-  }
+  // if (task.urgent) {
+  //   score *= 2
+  // }
+  // if (task.important) {
+  //   score *= 1.5
+  // }
 
   return score
 }
@@ -145,20 +145,19 @@ export class TaskCache {
 
     const contents = await this.app.vault.read(file)
     const lines = contents.split('\n')
-    const lineIdx = metadata.listItems[0].position.start.line
+    const taskNameLineIdx = metadata.listItems[0].position.start.line
     const frontmatter = new Frontmatter(lines)
-    const note = frontmatter.get('note')
     const due = frontmatter.get('due')
+    const scheduled = frontmatter.get('scheduled')
     return ok({
       file,
       md: contents,
       frontmatter,
-      line: lines[lineIdx].replace(/- \[[xX ]\]/, ''),
-      note: note,
+      taskName: lines[taskNameLineIdx].replace(/- \[[xX ]\]/, ''),
+      description: getDescription(lines),
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
       due: due ? window.moment(due).endOf('day') : undefined,
-      important: frontmatter.get('important'),
-      urgent: frontmatter.get('urgent'),
+      scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
     })
   }
 }
@@ -167,8 +166,8 @@ export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
 
-  private readonly descStartToken='<!---DESC_START--->'
-  private readonly descEndToken='<!---DESC_END--->'
+  public static readonly descStartToken='<!---DESC_START--->'
+  public static readonly descEndToken='<!---DESC_END--->'
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
@@ -335,7 +334,7 @@ export class FileInterface {
     }
     contents.push('## Task')
     contents.push('- [ ] ' + taskName)
-    contents.push(`\n ${this.descStartToken} \n ${description} \n ${this.descEndToken}`)
+    contents.push(`\n ${FileInterface.descStartToken} \n ${description} \n ${FileInterface.descEndToken}`)
 
     return contents.join('\n')
   }

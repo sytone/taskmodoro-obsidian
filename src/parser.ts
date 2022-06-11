@@ -1,5 +1,19 @@
 import { dump, load } from 'js-yaml'
 import RRule from 'rrule'
+import { FileInterface } from './file-interface'
+
+export const getDescription = (lines: string[]): string => {
+  let descStart = lines.findIndex(line =>
+    line.includes(FileInterface.descStartToken),
+  )
+  let descEnd = lines.findIndex(line =>
+    line.includes(FileInterface.descEndToken),
+  )
+  if (descStart == -1 || descEnd == -1) return ''
+  let descLines = lines.slice(descStart + 1, descEnd - 1);
+  let description = descLines.join('\n');
+  return description;
+}
 
 export class Frontmatter {
   // TODO: Use index signatures?

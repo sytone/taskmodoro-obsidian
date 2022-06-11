@@ -2,7 +2,7 @@
   import { SharedState, filtersFromState } from '../state';
   import type TQPlugin from '../main';
   import  { CalcTaskScore, Task } from '../file-interface';
-  import TaskListTask from './TaskListTask.svelte';
+  import TaskListTile from './TaskListTile.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
@@ -13,7 +13,6 @@
   * Config state that is parsed from query codeblock
   */
   export let state: Writable<SharedState>;
-
   const getGrouper = (state: SharedState): ((t: Task) => string) => {
     switch (state.group) {
       case 'due':
@@ -55,6 +54,8 @@
     tasks: Record<string, Task>,
   ): Dictionary<Task[]> => {
     const allFilters = filtersFromState(state);
+    // console.log('filters: ',allFilters)
+    console.log('tasks: ',tasks)
     const filteredTasks = filter(tasks, (t) => every(allFilters, (f) => f(t)));
     const grouper = getGrouper(state);
     const tasksGrouped = groupBy(filteredTasks, grouper);
@@ -89,8 +90,8 @@
     {#if key !== 'undefined'}
       <h3>{key}</h3>
     {/if}
-    {#each tasksGrouped[key] as task (task.line)}
-      <TaskListTask {task} {view} {plugin} />
+    {#each tasksGrouped[key] as task (task.taskName)}
+      <TaskListTile {task} {view} {plugin} />
     {/each}
   {/each}
 </div>

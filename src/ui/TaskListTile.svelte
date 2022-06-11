@@ -9,17 +9,17 @@
   import { MarkdownRenderer } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
   import TaskPriorityStripe from './TaskPriorityStripe.svelte';
+  import Checkbox from './Checkbox.svelte';
 
   export let plugin: TQPlugin;
   export let task: Task;
   export let view: Component;
 
-  let lineEl: HTMLElement;
+  let taskNameEl: HTMLElement;
   let expanded = false;
 
   let repeat = task.frontmatter.get('repeat');
   let due = task.due;
-  let note = task.note;
   const completed = task.frontmatter.get('completed');
   const lastCompleted = completed ? completed[completed.length - 1] : undefined;
   const overdue =
@@ -31,14 +31,24 @@
 
   onMount(() => {
     const tempEl = createDiv();
-    MarkdownRenderer.renderMarkdown(task.line, tempEl, task.file.path, view);
-    lineEl.innerHTML = tempEl.children[0].innerHTML;
+    MarkdownRenderer.renderMarkdown(
+      task.taskName,
+      tempEl,
+      task.file.path,
+      view,
+    );
+    taskNameEl.innerHTML = tempEl.children[0].innerHTML;
   });
 
   afterUpdate(() => {
     const tempEl = createDiv();
-    MarkdownRenderer.renderMarkdown(task.line, tempEl, task.file.path, view);
-    lineEl.innerHTML = tempEl.children[0].innerHTML;
+    MarkdownRenderer.renderMarkdown(
+      task.taskName,
+      tempEl,
+      task.file.path,
+      view,
+    );
+    taskNameEl.innerHTML = tempEl.children[0].innerHTML;
   });
 
   const toggleExpanded = (event: MouseEvent) => {
@@ -74,15 +84,16 @@
     }).open();
   };
 </script>
-<div class="task-row">
-  <input
-    type="checkbox"
-    bind:checked={task.checked}
-    on:change={toggleChecked}
-  />
+
+<div class={rootClasses}>
+  <div class="list-tile">
+    <Checkbox bind:checked={task.checked} on:toggle={toggleChecked} />
+    <span class="task-title" bind:this={taskNameEl} />
+  </div>
 </div>
+
 <!-- <div class={rootClasses}>
-  <div class="task-row">
+  <div class="list-tile">
     <TaskPriorityStripe {task} />
 
     <input
@@ -161,7 +172,6 @@
     </div>
   {/if}
 </div> -->
-
 <style>
   .tq-task {
     background-color: var(--background-secondary);
@@ -169,41 +179,8 @@
     padding: 5px;
   }
 
-  .task-row {
+  .list-tile {
     display: flex;
-  }
-
-  .task-line {
     flex: 1;
-  }
-
-  .expanded-root {
-    margin: 10px 0;
-  }
-
-  .overdue-alert {
-    padding: 0 10px;
-  }
-
-  .expand-chevron {
-    display: inline-block;
-    padding: 0 10px;
-  }
-
-  .rotated-180 {
-    transform: rotate(180deg);
-  }
-
-  .task-content div {
-    margin: 5px;
-  }
-
-  .label {
-    width: 150px;
-    display: inline-block;
-  }
-
-  .value {
-    width: 300px;
   }
 </style>

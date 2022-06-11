@@ -2,15 +2,21 @@
   import { checkMark } from './../graphics';
   export let checked: Boolean;
   export let disabled = false;
+  import { createEventDispatcher } from 'svelte';
 
-  function check() {
+  const dispatch = createEventDispatcher();
+
+  function toggle() {
     if (!disabled) {
+      dispatch('toggle');
       checked = !checked;
     }
   }
+
+
 </script>
 
-<div class="tq-checkbox {disabled ? 'checkbox-disabled' : ''}" on:click={check}>
+<div class="tq-checkbox {disabled ? 'checkbox-disabled' : ''}" on:click={toggle}>
   {#if checked}
     <div>
       {@html checkMark}
