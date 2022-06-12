@@ -4,7 +4,7 @@ import { convertLegacyTask } from './legacy-parser';
 import { CreateTaskModal } from './modals';
 import { ISettings, settingsWithDefaults } from './settings';
 import { stateFromConfig } from './state';
-import TasksUI from './ui/TasksUI.svelte';
+import TasksList from './ui/TasksList.svelte';
 import {
   MarkdownPostProcessorContext,
   MarkdownView,
@@ -146,7 +146,7 @@ export default class TQPlugin extends Plugin {
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext,
   ): void => {
-    new TasksUI({
+    new TasksList({
       target: el,
       props: {
         plugin: this,

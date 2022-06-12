@@ -15,7 +15,7 @@ export class CreateTaskModal extends Modal {
 
   public onOpen = (): void => {
     const { titleEl, contentEl,modalEl } = this
-    modalEl.addClass('tq-modal')
+    modalEl.addClasses(['tq-modal','tq'])
     contentEl.addClass('tq-modal-content');
     // titleEl.setText('Create New Task')
     new CreateTaskUI({

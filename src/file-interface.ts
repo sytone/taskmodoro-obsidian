@@ -12,8 +12,8 @@ export interface Task {
   taskName: string
   description: string
   checked: boolean
-  due: Moment | undefined 
-  scheduled: Moment | undefined 
+  due: Moment |  undefined
+  scheduled: Moment | undefined
 
 }
 
@@ -156,8 +156,8 @@ export class TaskCache {
       taskName: lines[taskNameLineIdx].replace(/- \[[xX ]\]/, ''),
       description: getDescription(lines),
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
-      due: due ? window.moment(due).endOf('day') : undefined,
-      scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
+      due: due ? window.moment(due).endOf('day') : 'Someday',
+      scheduled: scheduled ? window.moment(scheduled).endOf('day') : 'Someday',
     })
   }
 }

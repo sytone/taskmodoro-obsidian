@@ -85,7 +85,7 @@
   $: sortedKeys = getSortedKeys($state, tasksGrouped);
 </script>
 
-<div>
+<div class='tq'>
   {#each sortedKeys as key (key)}
     {#if key !== 'undefined'}
       <h3>{key}</h3>

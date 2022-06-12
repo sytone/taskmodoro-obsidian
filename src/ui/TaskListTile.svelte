@@ -1,6 +1,12 @@
 <script lang="ts">
   import type { Task } from '../file-interface';
-  import { chevronDown, externalLink, overdueAlert } from '../graphics';
+  import {
+    calendar,
+    hourglass,
+    chevronDown,
+    externalLink,
+    overdueAlert,
+  } from '../graphics';
   import { DuePickerModal, RepeatPickerModal } from '../modals';
   import type TQPlugin from '../main';
   import type { Moment } from 'moment';
@@ -20,12 +26,12 @@
 
   let repeat = task.frontmatter.get('repeat');
   let due = task.due;
+  let scheduled = task.scheduled;
+  const description = task.description;
   const completed = task.frontmatter.get('completed');
   const lastCompleted = completed ? completed[completed.length - 1] : undefined;
   const overdue =
     (!task.checked && task.due?.isBefore(window.moment())) || false;
-
-  $: rootClasses = 'tq-task ' + (expanded ? 'expanded-root' : '');
 
   // TODO: Links in rendered markdown do not work yet
 
@@ -85,102 +91,81 @@
   };
 </script>
 
-<div class={rootClasses}>
-  <div class="list-tile">
-    <Checkbox bind:checked={task.checked} on:toggle={toggleChecked} />
-    <span class="task-title" bind:this={taskNameEl} />
+<div class="task-list-tile">
+  <div class="header">
+    <span class="leading">
+      <Checkbox
+        context="listTile"
+        bind:checked={task.checked}
+        on:toggle={toggleChecked}
+      />
+    </span>
+    <div class="header-content">
+      <div class="task-title" bind:this={taskNameEl} />
+      <div class="props">
+        <span class="group">
+          {@html calendar}
+          <span id="due">{due.format('YYYY-MM-DD')}</span>
+        </span>
+        <span class="group">
+          {@html hourglass}
+          <span id="scheduled">{scheduled.format('YYYY-MM-DD')}</span>
+        </span>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- <div class={rootClasses}>
-  <div class="list-tile">
-    <TaskPriorityStripe {task} />
-
-    <input
-      type="checkbox"
-      bind:checked={task.checked}
-      on:change={toggleChecked}
-    />
-    <span class="task-line" bind:this={lineEl} />
-
-    {#if overdue}
-      <span class="overdue-alert" title="Due {task.due.format('YYYY-MM-DD')}">
-        {@html overdueAlert}
-      </span>
-    {/if}
-
-    <span on:click={viewSource} title="View note">
-      {@html externalLink}
-    </span>
-
-    {#if !expanded}
-      <span
-        class="expand-chevron"
-        on:click={toggleExpanded}
-        title="See details"
-      >
-        {@html chevronDown}
-      </span>
-    {:else}
-      <span
-        class="expand-chevron rotated-180"
-        on:click={toggleExpanded}
-        title="Hide details"
-      >
-        {@html chevronDown}
-      </span>
-    {/if}
-  </div>
-
-  {#if expanded}
-    <div
-      class="task-content"
-      transition:slide={{
-        duration: 300,
-      }}
-    >
-      <div>
-        <span class="label">Due:</span>
-        <input
-          type="text"
-          class="value"
-          value={due ? due.format('YYYY-MM-DD') : 'No due date'}
-          on:click={showDuePicker}
-        />
-      </div>
-      <div>
-        <span class="label">Repeat Schedule:</span>
-        <input
-          type="text"
-          class="value"
-          value={repeat || 'Does not repeat'}
-          on:click={showRepeatPicker}
-        />
-      </div>
-      {#if lastCompleted !== undefined}
-        <div>
-          <span class="label">Last Completed:</span>
-          <input type="text" class="value" value={lastCompleted} disabled />
-        </div>
-      {/if}
-
-      
-      <div>
-        <span class="label">Note:</span>
-        <input type="text" class="value" value={note ? note : ''} />
-      </div>
-    </div>
-  {/if}
-</div> -->
 <style>
-  .tq-task {
-    background-color: var(--background-secondary);
-    border-bottom: thin solid var(--background-modifier-border);
-    padding: 5px;
+  .group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 8px;
   }
 
-  .list-tile {
+  .props {
+    font-size: 1rem;
     display: flex;
+    flex-direction: row;
+  }
+
+  #due {
+    padding-left: 4px;
+    color: #8562cb;
+  }
+  #scheduled {
+    padding-left: 4px;
+    color: #54a8b4;
+  }
+
+  .header > .leading {
+    margin-top: 8px;
+    /* width: 20px;
+    min-width: 20px; */
+  }
+
+  .task-list-tile {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-secondary);
+    border-radius: 10px;
+    border-bottom: thin solid var(--background-modifier-border);
+    padding: 8px 8px;
+    margin: 8px 0;
+  }
+
+  .task-list-tile > .header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     flex: 1;
+  }
+
+  .task-title {
+    display: inline-block;
+    margin: 0 8px;
+    font-size: 1.25rem;
+    font-weight: 600;
   }
 </style>

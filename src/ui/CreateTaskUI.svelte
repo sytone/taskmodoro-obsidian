@@ -9,6 +9,7 @@
   import { afterUpdate, onMount } from 'svelte';
   import TaskDetailsMainPanel from './TaskDetailsMainPanel.svelte';
   import { DuePickerModal, RepeatPickerModal } from '../modals';
+  import TaskDetailsSidebar from './TaskDetailsSidebar.svelte';
 
   export let close: () => void;
   export let store: (
@@ -26,14 +27,11 @@
   let description = '';
   let repeats = false;
   let repeatConfig = 'None';
-  let due = 'Someday';
-  let scheduled = 'Someday';
+  let due = '';
+  let scheduled = '';
   let tags = '';
 
-  let isCreateBtnEnabled = true;
-  $: isCreateBtnEnabled = taskName != '';
-
-  const create = () => {
+  const onCreate = () => {
     const cleanedTags = tags
       .split(/[, ]/)
       .filter((x) => x !== '')
@@ -51,110 +49,22 @@
     close();
   };
 
-  const formatDate = (date: Moment): string => {
-    return date.format('YYYY-MM-DD');
-  };
-
-  const showDueDatePicker = () => {
-    let pickerStartDate = due == 'Someday' ? window.moment() : window.moment(due);
-    new DuePickerModal(app, pickerStartDate, (newDueDate: Moment) => {
-      due = formatDate(newDueDate);
-    }).open();
-  };
-  const showScheduledDatePicker = () => {
-    let pickerStartDate = scheduled == 'Someday' ? window.moment() : window.moment(scheduled);
-    new DuePickerModal(app, pickerStartDate, (newStartDate: Moment) => {
-      scheduled = formatDate(newStartDate);
-    }).open();
-  };
-
-  const showRepeatPicker = () => {
-    let startRepeatPickerConfig = repeatConfig=='None' ? '' : repeatConfig;
-    new RepeatPickerModal(app, startRepeatPickerConfig, (newRepeatConfig: string) => {
-      repeatConfig = newRepeatConfig;
-    }).open();
-  };
   // TODO: Allow setting arbitrary fields in this form, configured in settings
 </script>
 
-<TaskDetailsMainPanel isNewTask={true} completed={false} bind:description bind:taskName />
-<div class="task-details-sidebar">
-  <span class="external-link-wrapper">
-    <span class="external-link-icon">{@html externalLink}</span>
-  </span>
-  <div class="sidebar-container">
-    <div class="group">
-      <div class="label">Due date</div>
-      <div class="sidebar-input" on:click={showDueDatePicker}>{due}</div>
-    </div>
-    <div class="group">
-      <div class="label">Scheduled date</div>
-      <div class="sidebar-input" on:click={showScheduledDatePicker}>{scheduled}</div>
-    </div>
-    <div class="group">
-      <div class="label">Repeat</div>
-      <div class="sidebar-input" on:click={showRepeatPicker}>{repeatConfig}</div>
-    </div>
-  </div>
-  <div class='create-btn-wrapper'>
-    <button disabled={!isCreateBtnEnabled}
-    class="mod-cta create-btn 
-    {isCreateBtnEnabled ? '' : 'disabled-btn'}"
-    on:click={create}>Create</button>
-  </div>
-</div>
-
+<TaskDetailsMainPanel
+  isNewTask={true}
+  completed={false}
+  bind:description
+  bind:taskName
+/>
+<TaskDetailsSidebar
+  bind:due
+  bind:taskName
+  bind:scheduled
+  bind:repeatConfig
+  {app}
+  {onCreate}
+/>
 <style>
-  .create-btn{
-    width: 100%;
-  }
-
-  .create-btn-wrapper{
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-  }
-
-  .external-link-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: end;
-  }
-
-  .external-link-icon {
-    /* position: absolute; */
-    /* align-self: flex-end; */
-    padding-right: 44px;
-  }
-
-  .task-details-sidebar {
-    background-color: #151719 !important;
-
-    width: 30%;
-    padding: 24px 24px;
-    /* position: relative; */
-  }
-  .sidebar-container {
-    padding: 24px 0px;
-  }
-  .group {
-    padding-bottom: 24px;
-  }
-  .sidebar-input {
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    padding: 0 0;
-  }
-  .sidebar-input:hover,
-  .sidebar-input:focus {
-    cursor: pointer;
-    background-color: #1b1e20;
-  }
-
-  .label {
-    font-size: 1rem;
-    padding-bottom: 8px;
-    color: var(--mid-blue-gray);
-  }
 </style>

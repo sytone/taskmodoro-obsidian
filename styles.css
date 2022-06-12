@@ -2,7 +2,6 @@
 Settings Page
 */
 
-
 .tq-input-error {
   border-color: var(--text-error) !important;
 }
@@ -23,12 +22,14 @@ Settings Page
   padding: 0;
   margin: 0;
   border: 1px solid #3D4242 ;
-  
+  text-decoration: none;
+}
+
+.tq{
   --mid-blue-gray: #909595;
   --mid2-blue-gray: #686B6F;
   --dark-blue-gray: #4B4F4F;
   --dark2-blue-gray: #343636;
-  text-decoration: none;
 }
 
 .tq-modal-content {

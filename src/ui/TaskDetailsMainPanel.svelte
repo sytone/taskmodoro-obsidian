@@ -40,7 +40,7 @@
 <div class="main-task-panel">
   <div style="height: 56px" />
   <div class="task-container">
-    <Checkbox bind:checked={completed} disabled={isNewTask}></Checkbox>
+    <Checkbox bind:checked={completed} disabled={false}></Checkbox>
     <div
       class="task-input-container {isInputActive
         ? 'task-input-container-active'
@@ -60,7 +60,7 @@
         {isInputActive ? 'task-input-description-focus' : ''}"
         rows="1"
         use:textareaResize
-        placeholder="Description"
+        placeholder="Description" 
         type="text"
         bind:value={draftDescription}
         on:click={textareaOnClick}
