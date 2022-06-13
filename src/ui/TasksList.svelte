@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SharedState, filtersFromState } from '../state';
   import type TQPlugin from '../main';
-  import  { CalcTaskScore, Task } from '../file-interface';
+  import { CalcTaskScore, Task } from '../file-interface';
   import TaskListTile from './TaskListTile.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
@@ -10,8 +10,8 @@
   export let plugin: TQPlugin;
   export let view: Component;
   /**
-  * Config state that is parsed from query codeblock
-  */
+   * Config state that is parsed from query codeblock
+   */
   export let state: Writable<SharedState>;
   const getGrouper = (state: SharedState): ((t: Task) => string) => {
     switch (state.group) {
@@ -55,7 +55,7 @@
   ): Dictionary<Task[]> => {
     const allFilters = filtersFromState(state);
     // console.log('filters: ',allFilters)
-    console.log('tasks: ',tasks)
+    console.log(`completed: ${state.completed} task:`, tasks);
     const filteredTasks = filter(tasks, (t) => every(allFilters, (f) => f(t)));
     const grouper = getGrouper(state);
     const tasksGrouped = groupBy(filteredTasks, grouper);
@@ -79,17 +79,13 @@
 
   // TODO: This is performed several times as the page loads. Find how to only run once.
   // I think it might be run over and over as each task is loaded into the vault.
-  let taskCache = plugin.taskCache;
-  let tasks = taskCache.tasks;
+  let tasks = plugin.taskCache.tasks;
   $: tasksGrouped = getTasks($state, $tasks);
   $: sortedKeys = getSortedKeys($state, tasksGrouped);
 </script>
 
-<div class='tq'>
+<div class="tq">
   {#each sortedKeys as key (key)}
-    {#if key !== 'undefined'}
-      <h3>{key}</h3>
-    {/if}
     {#each tasksGrouped[key] as task (task.taskName)}
       <TaskListTile {task} {view} {plugin} />
     {/each}

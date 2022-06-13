@@ -1,13 +1,10 @@
 <script lang="ts">
   import type { Task } from '../file-interface';
+  import { calendar, hourglass, externalLink } from '../graphics';
   import {
-    calendar,
-    hourglass,
-    chevronDown,
-    externalLink,
-    overdueAlert,
-  } from '../graphics';
-  import { DuePickerModal, RepeatPickerModal } from '../modals';
+    DuePickerModal as DatePickerModal,
+    RepeatPickerModal,
+  } from '../modals';
   import type TQPlugin from '../main';
   import type { Moment } from 'moment';
   import { slide } from 'svelte/transition';
@@ -16,7 +13,7 @@
   import { afterUpdate, onMount } from 'svelte';
   import TaskPriorityStripe from './TaskPriorityStripe.svelte';
   import Checkbox from './Checkbox.svelte';
-
+  import TaskPomodoroStartBtn from './TaskPomodoroStartBtn.svelte';
   export let plugin: TQPlugin;
   export let task: Task;
   export let view: Component;
@@ -24,14 +21,24 @@
   let taskNameEl: HTMLElement;
   let expanded = false;
 
-  let repeat = task.frontmatter.get('repeat');
-  let due = task.due;
-  let scheduled = task.scheduled;
-  const description = task.description;
-  const completed = task.frontmatter.get('completed');
-  const lastCompleted = completed ? completed[completed.length - 1] : undefined;
-  const overdue =
+  let repeat: any;
+  let due: Moment;
+  let scheduled: Moment;
+  let description: String;
+  let completed: any;
+  let lastCompleted: any
+  let overdue: boolean
+  $: {
+    due = task.due;
+    repeat = task.frontmatter.get('repeat');
+    scheduled = task.scheduled;
+    description = task.description;
+    completed = task.frontmatter.get('completed');
+    lastCompleted = completed ? completed[completed.length - 1] : undefined;
+    overdue =
     (!task.checked && task.due?.isBefore(window.moment())) || false;
+
+  }
 
   // TODO: Links in rendered markdown do not work yet
 
@@ -74,9 +81,33 @@
   };
 
   const showDuePicker = () => {
-    new DuePickerModal(plugin.app, window.moment(due), (newDate: Moment) => {
-      plugin.fileInterface.updateTaskDue(task.file, plugin.app.vault, newDate);
-    }).open();
+    new DatePickerModal(
+      plugin.app,
+      window.moment(due),
+      (newDueDate: Moment) => {
+        plugin.fileInterface.updateTaskDate(
+          task.file,
+          plugin.app.vault,
+          newDueDate,
+          'due',
+        );
+      },
+    ).open();
+  };
+
+  const showSchedulePicker = () => {
+    new DatePickerModal(
+      plugin.app,
+      window.moment(due),
+      (newScheduledDate: Moment) => {
+        plugin.fileInterface.updateTaskDate(
+          task.file,
+          plugin.app.vault,
+          newScheduledDate,
+          'scheduled',
+        );
+      },
+    ).open();
   };
 
   const showRepeatPicker = () => {
@@ -99,24 +130,34 @@
         bind:checked={task.checked}
         on:toggle={toggleChecked}
       />
+      <TaskPomodoroStartBtn context="listTile"/>
     </span>
     <div class="header-content">
       <div class="task-title" bind:this={taskNameEl} />
       <div class="props">
-        <span class="group">
+        {#if due}
+        <span class="group" on:click={showDuePicker}>
           {@html calendar}
           <span id="due">{due.format('YYYY-MM-DD')}</span>
         </span>
-        <span class="group">
+        {/if}
+        {#if scheduled}
+        <span class="group" on:click={showSchedulePicker}>
           {@html hourglass}
           <span id="scheduled">{scheduled.format('YYYY-MM-DD')}</span>
         </span>
+        {/if}
       </div>
     </div>
   </div>
 </div>
 
 <style>
+  .leading{
+    display:flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
   .group {
     display: flex;
     flex-direction: row;
@@ -124,6 +165,9 @@
     margin: 0 8px;
   }
 
+  .group:hover {
+    cursor: pointer;
+  }
   .props {
     font-size: 1rem;
     display: flex;
@@ -134,6 +178,7 @@
     padding-left: 4px;
     color: #8562cb;
   }
+
   #scheduled {
     padding-left: 4px;
     color: #54a8b4;
@@ -166,6 +211,5 @@
     display: inline-block;
     margin: 0 8px;
     font-size: 1.25rem;
-    font-weight: 600;
   }
 </style>

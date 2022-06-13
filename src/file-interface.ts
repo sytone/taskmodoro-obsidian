@@ -108,7 +108,7 @@ export class TaskCache {
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
     (await this.loadTask(file)).match(
       newTask => {
-        console.log(newTask)
+        // console.log('Task has been modified and updated in the store:', newTask)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -156,8 +156,8 @@ export class TaskCache {
       taskName: lines[taskNameLineIdx].replace(/- \[[xX ]\]/, ''),
       description: getDescription(lines),
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
-      due: due ? window.moment(due).endOf('day') : 'Someday',
-      scheduled: scheduled ? window.moment(scheduled).endOf('day') : 'Someday',
+      due: due ? window.moment(due).endOf('day') : undefined,
+      scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
     })
   }
 }
@@ -188,10 +188,11 @@ export class FileInterface {
     )
   }
 
-  public readonly updateTaskDue = async (
+  public readonly updateTaskDate = async (
     file: TFile,
     vault: Vault,
-    due: Moment,
+    date: Moment,
+    propName: string
   ): Promise<void> =>
     withFileContents(file, vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
@@ -202,7 +203,7 @@ export class FileInterface {
         return false
       }
 
-      frontmatter.set('due', due.startOf('day').toDate())
+      frontmatter.set(propName, date.startOf('day').toDate())
       frontmatter.overwrite()
       return true
     })

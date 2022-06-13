@@ -1,9 +1,10 @@
 <script lang="ts">
   import { checkMark } from './../graphics';
+  import { createEventDispatcher } from 'svelte';
+
   export let checked: Boolean;
   export let disabled = false;
   export let context: 'createTask' | 'listTile' = 'createTask';
-  import { createEventDispatcher } from 'svelte';
 
   let createTaskStyle = { cbSize: '24px', cmW: '12px', cmSW: '7%' };
   let style = createTaskStyle;
@@ -23,7 +24,7 @@
 
 <div
   style="--cbSize: {style.cbSize}; --cmW: {style.cmW}; --cmSW: {style.cmSW}"
-  class="tq-checkbox {disabled ? 'checkbox-disabled' : ''}"
+  class="tq-circle {disabled ? 'checkbox-disabled' : ''}"
   on:click={toggle}
 >
   {#if checked}
@@ -43,19 +44,9 @@
     fill: var(--mid-blue-gray);
   }
 
-  .tq-checkbox {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-content: center;
+  .tq-circle {
     width: var(--cbSize);
     height: var(--cbSize);
-    border-radius: 100%;
-    border: 2px solid var(--mid-blue-gray);
-  }
-
-  .tq-checkbox:hover {
-    cursor: pointer;
   }
 
   .checkbox-disabled {
