@@ -37,17 +37,18 @@ export class CreateTaskModal extends Modal {
 export class DuePickerModal extends Modal {
   private readonly startDate: Moment
   private readonly set: (date: Moment) => void
-
-  constructor (app: App, startDate: Moment, set: (date: Moment) => void) {
+  private readonly title: string
+  constructor (app: App, startDate: Moment,title: string, set: (date: Moment) => void) {
     super(app)
 
     this.startDate = startDate
     this.set = set
+    this.title=title;
   }
 
   public onOpen = (): void => {
     const { titleEl, contentEl } = this
-    titleEl.setText('Set Due Date')
+    titleEl.setText(this.title)
     new DuePicker({
       target: contentEl,
       props: {

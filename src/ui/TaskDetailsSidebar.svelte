@@ -24,14 +24,14 @@
   const showDueDatePicker = () => {
     let pickerStartDate =
       due == '' ? window.moment() : window.moment(due);
-    new DuePickerModal(app, pickerStartDate, (newDueDate: Moment) => {
+    new DuePickerModal(app, pickerStartDate,'Due date', (newDueDate: Moment) => {
       due = formatDate(newDueDate);
     }).open();
   };
   const showScheduledDatePicker = () => {
     let pickerStartDate =
       scheduled == '' ? window.moment() : window.moment(scheduled);
-    new DuePickerModal(app, pickerStartDate, (newStartDate: Moment) => {
+    new DuePickerModal(app, pickerStartDate,'Schedule date', (newStartDate: Moment) => {
       scheduled = formatDate(newStartDate);
     }).open();
   };

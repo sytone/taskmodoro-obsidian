@@ -55,7 +55,7 @@
   ): Dictionary<Task[]> => {
     const allFilters = filtersFromState(state);
     // console.log('filters: ',allFilters)
-    console.log(`completed: ${state.completed} task:`, tasks);
+    // console.log(`completed: ${state.completed} task:`, tasks);
     const filteredTasks = filter(tasks, (t) => every(allFilters, (f) => f(t)));
     const grouper = getGrouper(state);
     const tasksGrouped = groupBy(filteredTasks, grouper);

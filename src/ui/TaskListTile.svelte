@@ -26,8 +26,9 @@
   let scheduled: Moment;
   let description: String;
   let completed: any;
-  let lastCompleted: any
-  let overdue: boolean
+  let lastCompleted: any;
+  let overdue: boolean;
+  let isHeaderFocus = false;
   $: {
     due = task.due;
     repeat = task.frontmatter.get('repeat');
@@ -35,9 +36,7 @@
     description = task.description;
     completed = task.frontmatter.get('completed');
     lastCompleted = completed ? completed[completed.length - 1] : undefined;
-    overdue =
-    (!task.checked && task.due?.isBefore(window.moment())) || false;
-
+    overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
   }
 
   // TODO: Links in rendered markdown do not work yet
@@ -64,10 +63,6 @@
     taskNameEl.innerHTML = tempEl.children[0].innerHTML;
   });
 
-  const toggleExpanded = (event: MouseEvent) => {
-    expanded = !expanded;
-  };
-
   const toggleChecked = () => {
     plugin.taskCache.toggleChecked(task);
   };
@@ -84,6 +79,7 @@
     new DatePickerModal(
       plugin.app,
       window.moment(due),
+      'Due date',
       (newDueDate: Moment) => {
         plugin.fileInterface.updateTaskDate(
           task.file,
@@ -99,6 +95,7 @@
     new DatePickerModal(
       plugin.app,
       window.moment(due),
+      'Schedule date',
       (newScheduledDate: Moment) => {
         plugin.fileInterface.updateTaskDate(
           task.file,
@@ -120,41 +117,88 @@
       );
     }).open();
   };
+
+  const headerMouseOver = () => {
+    isHeaderFocus = true;
+    console.log('header focus');
+  };
+  const headerMouseLeave = () => {
+    isHeaderFocus = false;
+    console.log('header blur');
+  };
 </script>
 
 <div class="task-list-tile">
-  <div class="header">
+  <div
+    class="header"
+    on:mouseover={headerMouseOver}
+    on:focus={headerMouseOver}
+    on:mouseleave={headerMouseLeave}
+  >
     <span class="leading">
       <Checkbox
         context="listTile"
         bind:checked={task.checked}
         on:toggle={toggleChecked}
       />
-      <TaskPomodoroStartBtn context="listTile"/>
+      <TaskPomodoroStartBtn context="listTile" />
     </span>
     <div class="header-content">
       <div class="task-title" bind:this={taskNameEl} />
       <div class="props">
         {#if due}
-        <span class="group" on:click={showDuePicker}>
-          {@html calendar}
-          <span id="due">{due.format('YYYY-MM-DD')}</span>
-        </span>
+          <span class="group" on:click={showDuePicker}>
+            {@html calendar}
+            <span id="due">{due.format('YYYY-MM-DD')}</span>
+          </span>
         {/if}
         {#if scheduled}
-        <span class="group" on:click={showSchedulePicker}>
-          {@html hourglass}
-          <span id="scheduled">{scheduled.format('YYYY-MM-DD')}</span>
-        </span>
+          <span class="group" on:click={showSchedulePicker}>
+            {@html hourglass}
+            <span id="scheduled">{scheduled.format('YYYY-MM-DD')}</span>
+          </span>
         {/if}
       </div>
     </div>
+    {#if isHeaderFocus}
+      <span class="trailing">
+        <span class='external-link-wrapper' on:click={viewSource}>
+          {@html externalLink}
+        </span>
+      </span>
+    {/if}
   </div>
 </div>
 
 <style>
-  .leading{
-    display:flex;
+  .header {
+    position: relative;
+  }
+
+  .trailing {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding: 4px 12px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--background-secondary) 10%,
+      var(--background-secondary)
+    );
+    height: 2rem;
+  }
+
+  .external-link-wrapper:hover{
+    cursor: pointer;
+  }
+
+  :global(.trailing > .external-link-icon) {
+   
+  }
+
+  .leading {
+    display: flex;
     flex-direction: row;
     align-items: flex-start;
   }
@@ -168,6 +212,7 @@
   .group:hover {
     cursor: pointer;
   }
+
   .props {
     font-size: 1rem;
     display: flex;
@@ -186,8 +231,6 @@
 
   .header > .leading {
     margin-top: 8px;
-    /* width: 20px;
-    min-width: 20px; */
   }
 
   .task-list-tile {
