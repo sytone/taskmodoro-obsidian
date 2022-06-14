@@ -120,11 +120,9 @@
 
   const headerMouseOver = () => {
     isHeaderFocus = true;
-    console.log('header focus');
   };
   const headerMouseLeave = () => {
     isHeaderFocus = false;
-    console.log('header blur');
   };
 </script>
 

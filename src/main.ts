@@ -5,6 +5,7 @@ import { CreateTaskModal } from './modals';
 import { ISettings, settingsWithDefaults } from './settings';
 import { stateFromConfig } from './state';
 import TasksList from './ui/TasksList.svelte';
+import { VIEW_TYPE_POMODORO } from "./constants";
 import {
   MarkdownPostProcessorContext,
   MarkdownView,
@@ -14,6 +15,7 @@ import {
   Setting,
 } from 'obsidian';
 import { writable } from 'svelte/store';
+import { PomodoroView } from './pomodoro-view';
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings;
@@ -28,6 +30,16 @@ export default class TQPlugin extends Plugin {
 
     this.fileInterface = new FileInterface(this, this.app);
     this.taskCache = new TaskCache(this, this.app);
+
+    this.registerView(VIEW_TYPE_POMODORO, (leaf) => new PomodoroView(leaf,this))
+
+		this.addCommand({
+			id: "tq-pomodoro",
+			name: "tq-pomodoro",
+			callback: () => {
+				this.activateView()
+			}
+		})
 
     this.addRibbonIcon('checkbox-glyph', 'tq', () => {
       new CreateTaskModal(this.app, this).open();
@@ -136,6 +148,20 @@ export default class TQPlugin extends Plugin {
       new Notice('Task created');
     });
   }
+	onunload() {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_POMODORO)
+	}
+  async activateView() {
+		if (this.app.workspace.getLeavesOfType(VIEW_TYPE_POMODORO).length === 0) {
+			await this.app.workspace.getRightLeaf(false).setViewState({
+				type: VIEW_TYPE_POMODORO,
+				active: true,
+			})
+		}
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(VIEW_TYPE_POMODORO)[0]
+		)
+	}
 
   private async loadSettings(): Promise<void> {
     this.settings = settingsWithDefaults(await this.loadData());
@@ -208,7 +234,11 @@ class SettingsTab extends PluginSettingTab {
         parser.parseFromString(buyMeACoffee, 'text/xml').documentElement,
       ),
     );
+    
   }
+  onunload() {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_POMODORO)
+	}
 }
 
 const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {

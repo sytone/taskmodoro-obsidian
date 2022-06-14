@@ -1,0 +1,1 @@
+export const VIEW_TYPE_POMODORO = 'tq-pomodoro-view'
