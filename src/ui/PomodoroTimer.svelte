@@ -1,37 +1,106 @@
 <script lang="ts">
-  import type { Moment } from 'moment';
+  import moment from 'moment';
+  import MomentDurationSetup from 'moment-duration-format';
+  import { init } from 'svelte/internal';
 
+  MomentDurationSetup(moment);
   import {
-    dashedTimerLeaf,
+    timerLeaf,
     circledPause,
     circledPlay,
     circledStop,
   } from './../graphics';
-  let leafCnt = 16;
-  const rotateVar = (i: number) => `--rotate: ${(i * 360) / leafCnt}deg;`;
+  import { TimerState } from './../timer-state';
+  let leavesCnt = 16;
+  let leaves = Array(leavesCnt);
+  const rotateVar = (i: number) => `--rotate: ${(i * 360) / leavesCnt}deg;`;
+  const initialDuration = moment.duration(16, 'seconds');
+  let duration = initialDuration.clone();
+  let state = TimerState.INITIALIZED;
+  let startedAt: Date;
+  let timer: NodeJS.Timer;
+  const start = (): void => {
+    state = TimerState.STARTED;
+    startedAt = new Date();
+    timer = setInterval(() => {
+      if (duration.asSeconds() == 0) {
+        stop();
+      }
+      duration = duration.subtract(1, 'second');
+      leaves = leaves;
+    }, 1000);
+  };
+
+  const isLeafFilled = (leafIndex: number): boolean => {
+    let leafDuration = initialDuration.asSeconds() / leavesCnt;
+    let durFromInitial = initialDuration
+      .clone()
+      .subtract(duration.asSeconds(), 'seconds')
+      .asSeconds();
+    let currLeafUpperBound = (leafIndex + 1) * leafDuration;
+    if (currLeafUpperBound <= durFromInitial) {
+      return true;
+    }
+    return false;
+  };
+
+  const pause = (): void => {
+    state = TimerState.PAUSED;
+    clearInterval(timer);
+  };
+
+  const stop = (): void => {
+    state = TimerState.INITIALIZED;
+
+    clearInterval(timer);
+    duration = initialDuration;
+  };
 </script>
 
 <div class="timer">
   <div class="timer-container">
-    {#each { length: leafCnt } as _, i}
+    {#each leaves as _, i (i)}
       <span style="{rotateVar(i)} " class="timer-leaf">
-        {@html dashedTimerLeaf}
+        {#if isLeafFilled(i)}
+          <span class="filled-timer-leaf">
+            {@html timerLeaf}
+          </span>
+        {:else}
+          <span class="dashed-timer-leaf">
+            {@html timerLeaf}
+          </span>
+        {/if}
       </span>
     {/each}
-    <div class="timer-runtime">30:00</div>
+    <div class="timer-runtime">{duration.format()}</div>
   </div>
 </div>
-<div class="timer-actions">{@html circledPlay}</div>
+<div class="timer-actions">
+  {#if state == TimerState.INITIALIZED}
+    <div class="timer-action" on:click={start}>{@html circledPlay}</div>
+  {/if}
+  {#if state == TimerState.STARTED}
+    <div class="timer-action" on:click={pause}>{@html circledPause}</div>
+  {/if}
+  {#if state == TimerState.PAUSED}
+    <div class="timer-action" on:click={start}>{@html circledPlay}</div>
+    <div class="timer-action" on:click={stop}>{@html circledStop}</div>
+  {/if}
+</div>
 
 <style>
   :global(.circledPlay) {
     width: 48px;
+  }
+  .timer-action {
+    margin: 0 8px;
   }
 
   .timer-actions {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    margin-top: -3rem;
   }
 
   .timer-runtime {
@@ -40,15 +109,25 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #efe8e8;
-    font-size: 2.25rem;
+    font-size: 3rem;
   }
-  :global(.dashed-timer-leaf) {
+  :global(.dashed-timer-leaf > svg) {
     width: 16px;
     stroke-width: 8;
     stroke: #efe8e8;
   }
   :global(.dashed-timer-leaf > path) {
     stroke-dasharray: 16;
+  }
+
+  :global(.filled-timer-leaf > svg) {
+    width: 16px;
+    stroke-width: none;
+    stroke: none;
+    fill: #efe8e8;
+  }
+  :global(.filled-timer-leaf > path) {
+    stroke-dasharray: none;
   }
 
   .timer-leaf {
@@ -59,7 +138,7 @@
     transform: rotate(var(--rotate));
   }
 
-  .timer-container {
+  .timer .timer-container {
     position: relative;
     margin: 2rem 1rem;
     width: 280px;

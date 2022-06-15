@@ -23,6 +23,7 @@
     "@types/jest": "26.0.18",
     "@types/js-yaml": "4.0.1",
     "@types/lodash": "4.14.170",
+    "@types/moment-duration-format": "^2.2.3",
     "@types/node": "^14.14.2",
     "@typescript-eslint/eslint-plugin": "4.6.0",
     "@typescript-eslint/parser": "4.6.0",
@@ -49,6 +50,7 @@
     "@popperjs/core": "2.9.2",
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
+    "moment-duration-format": "^2.3.2",
     "neverthrow": "4.2.1",
     "obsidian-calendar-ui": "0.3.12",
     "rrule": "^2.6.8"
