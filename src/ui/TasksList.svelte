@@ -6,6 +6,7 @@
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
+  import {TaskListTileParent} from '../enums/component-parent'
 
   export let plugin: TQPlugin;
   export let view: Component;
@@ -87,7 +88,7 @@
 <div class="tq">
   {#each sortedKeys as key (key)}
     {#each tasksGrouped[key] as task (task.taskName)}
-      <TaskListTile {task} {view} {plugin} />
+      <TaskListTile {task} {view} {plugin} parent={TaskListTileParent.TasksList} />
     {/each}
   {/each}
 </div>

@@ -1,16 +1,16 @@
 <script lang="ts">
   import moment from 'moment';
   import MomentDurationSetup from 'moment-duration-format';
-  import { init } from 'svelte/internal';
-
   MomentDurationSetup(moment);
+  import { init } from 'svelte/internal';
   import {
     timerLeaf,
     circledPause,
     circledPlay,
     circledStop,
   } from './../graphics';
-  import { TimerState } from './../timer-state';
+  import { TimerState } from '../enums/timer-state';
+
   let leavesCnt = 16;
   let leaves = Array(leavesCnt);
   const rotateVar = (i: number) => `--rotate: ${(i * 360) / leavesCnt}deg;`;
@@ -19,6 +19,7 @@
   let state = TimerState.INITIALIZED;
   let startedAt: Date;
   let timer: NodeJS.Timer;
+
   const start = (): void => {
     state = TimerState.STARTED;
     startedAt = new Date();
@@ -55,6 +56,7 @@
     clearInterval(timer);
     duration = initialDuration;
   };
+
 </script>
 
 <div class="timer">
@@ -140,7 +142,7 @@
 
   .timer .timer-container {
     position: relative;
-    margin: 2rem 1rem;
+    margin: 1rem 1rem 2rem 1rem;
     width: 280px;
     min-width: 280px;
     aspect-ratio: 1/1.5;

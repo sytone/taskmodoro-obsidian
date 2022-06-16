@@ -6,21 +6,24 @@
     RepeatPickerModal,
   } from '../modals';
   import type TQPlugin from '../main';
-  import type { Moment } from 'moment';
   import { slide } from 'svelte/transition';
   import type { Component } from 'obsidian';
   import { MarkdownRenderer } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
   import TaskPriorityStripe from './TaskPriorityStripe.svelte';
   import Checkbox from './Checkbox.svelte';
-  import TaskPomodoroStartBtn from './TaskPomodoroStartBtn.svelte';
+  import PomodoroTaskStartBtn from './PomodoroTaskStartBtn.svelte';
+  import moment from 'moment';
+  import {TaskListTileParent} from '../enums/component-parent'
+  type Moment = moment.Moment;
+
   export let plugin: TQPlugin;
   export let task: Task;
   export let view: Component;
+  export let parent: TaskListTileParent;
 
   let taskNameEl: HTMLElement;
   let expanded = false;
-
   let repeat: any;
   let due: Moment;
   let scheduled: Moment;
@@ -29,6 +32,7 @@
   let lastCompleted: any;
   let overdue: boolean;
   let isHeaderFocus = false;
+
   $: {
     due = task.due;
     repeat = task.frontmatter.get('repeat');
@@ -39,6 +43,13 @@
     overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
   }
 
+  let taskTileBg =
+    parent === TaskListTileParent.TasksList ? 'var(--background-secondary)' : '#202327';
+
+  let taskTileborderColor =
+    parent === TaskListTileParent.TasksList ? 'var(--background-secondary)' : 'transparent';
+
+  let CSSvarStyles = `--taskTileBg: ${taskTileBg}; --taskTileBorderColor: ${taskTileborderColor}`;
   // TODO: Links in rendered markdown do not work yet
 
   onMount(() => {
@@ -118,15 +129,21 @@
     }).open();
   };
 
+  const showPomodoroTaskView = async () => {
+    console.log('showPomodoroTaskView');
+    await plugin.activatePomodoroTaskView(task, moment.duration(16, 'seconds'));
+  };
+
   const headerMouseOver = () => {
     isHeaderFocus = true;
   };
+
   const headerMouseLeave = () => {
     isHeaderFocus = false;
   };
 </script>
 
-<div class="task-list-tile">
+<div style={CSSvarStyles} class="task-list-tile">
   <div
     class="header"
     on:mouseover={headerMouseOver}
@@ -139,7 +156,12 @@
         bind:checked={task.checked}
         on:toggle={toggleChecked}
       />
-      <TaskPomodoroStartBtn context="listTile" />
+      {#if parent == TaskListTileParent.TasksList}
+        <PomodoroTaskStartBtn
+          on:click={showPomodoroTaskView}
+          context="listTile"
+        />
+      {/if}
     </span>
     <div class="header-content">
       <div class="task-title" bind:this={taskNameEl} />
@@ -160,7 +182,7 @@
     </div>
     {#if isHeaderFocus}
       <span class="trailing">
-        <span class='external-link-wrapper' on:click={viewSource}>
+        <span class="external-link-wrapper" on:click={viewSource}>
           {@html externalLink}
         </span>
       </span>
@@ -181,18 +203,17 @@
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-secondary) 10%,
-      var(--background-secondary)
+      var(--taskTileBg) 10%,
+      var(--taskTileBg)
     );
     height: 2rem;
   }
 
-  .external-link-wrapper:hover{
+  .external-link-wrapper:hover {
     cursor: pointer;
   }
 
   :global(.trailing > .external-link-icon) {
-   
   }
 
   .leading {
@@ -234,9 +255,9 @@
   .task-list-tile {
     display: flex;
     flex-direction: column;
-    background-color: var(--background-secondary);
+    background-color: var(--taskTileBg);
     border-radius: 10px;
-    border-bottom: thin solid var(--background-modifier-border);
+    border-bottom: thin solid var(--taskTileBorderColor);
     padding: 8px 8px;
     margin: 8px 0;
   }

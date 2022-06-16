@@ -10,7 +10,7 @@
   }
 </script>
 
-<div style="--size:{style.size};" class="tq-circle play-wrapper">
+<div on:click style="--size:{style.size};" class="tq-circle play-wrapper">
     {@html play}
 </div>
 

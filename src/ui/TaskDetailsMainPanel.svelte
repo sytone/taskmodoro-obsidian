@@ -146,9 +146,10 @@
   }
 
   .main-task-panel {
-    background-color: var(--background-nav) !important;
+    background-color: var(--background-nav) ;
 
     width: 70%;
     padding: 24px 24px;
   }
+
 </style>
