@@ -1,22 +1,22 @@
 <script lang="ts">
-  import Checkbox from "./Checkbox.svelte";
-  export let taskName: string;
-  export let description: string;
-  export let completed: boolean;
-  export let isNewTask: boolean;
+  import type TaskDetails from '../../task-details';
+  import type { TaskDetailsMode } from '../../enums/component-context';
+  import Checkbox from './../Checkbox.svelte';
 
-  let draftTaskName= taskName;
-  let draftDescription= description;
+  export let td: TaskDetails;
+  export let mode: TaskDetailsMode;
 
+  let draftTaskName = td.taskName;
+  let draftDescription = td.description;
   let isInputActive = true;
   let isInputBtnEnabled = true;
   $: isInputBtnEnabled = draftTaskName != '';
 
   function saveDraft() {
-    taskName= draftTaskName
-    description=draftDescription
+    td.taskName = draftTaskName;
+    td.description = draftDescription;
+    td=td
     isInputActive = false;
-
   }
 
   function textareaOnClick() {
@@ -40,7 +40,9 @@
 <div class="main-task-panel">
   <div style="height: 56px" />
   <div class="task-container">
-    <Checkbox bind:checked={completed} disabled={false}></Checkbox>
+    <div class='tq-checkbox-wrapper'>
+      <Checkbox bind:checked={td.completed} disabled={false} />
+    </div>
     <div
       class="task-input-container {isInputActive
         ? 'task-input-container-active'
@@ -60,7 +62,7 @@
         {isInputActive ? 'task-input-description-focus' : ''}"
         rows="1"
         use:textareaResize
-        placeholder="Description" 
+        placeholder="Description"
         type="text"
         bind:value={draftDescription}
         on:click={textareaOnClick}
@@ -79,6 +81,10 @@
 </div>
 
 <style>
+  .tq-checkbox-wrapper{
+    margin-top: 8px;
+  }
+
   .primary-btn-wrapper {
     display: flex;
     flex-direction: row;
@@ -146,10 +152,9 @@
   }
 
   .main-task-panel {
-    background-color: var(--background-nav) ;
+    background-color: var(--background-nav);
 
     width: 70%;
     padding: 24px 24px;
   }
-
 </style>

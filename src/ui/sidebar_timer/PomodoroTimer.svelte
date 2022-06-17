@@ -8,8 +8,8 @@
     circledPause,
     circledPlay,
     circledStop,
-  } from './../graphics';
-  import { TimerState } from '../enums/timer-state';
+  } from '../../graphics';
+  import { TimerState } from '../../enums/timer-state';
 
   let leavesCnt = 16;
   let leaves = Array(leavesCnt);

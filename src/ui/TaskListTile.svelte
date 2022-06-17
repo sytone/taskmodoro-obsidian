@@ -2,8 +2,9 @@
   import type { Task } from '../file-interface';
   import { calendar, hourglass, externalLink } from '../graphics';
   import {
-    DuePickerModal as DatePickerModal,
+    DatePickerModal,
     RepeatPickerModal,
+    TaskDetailsModal,
   } from '../modals';
   import type TQPlugin from '../main';
   import { slide } from 'svelte/transition';
@@ -14,7 +15,7 @@
   import Checkbox from './Checkbox.svelte';
   import PomodoroTaskStartBtn from './PomodoroTaskStartBtn.svelte';
   import moment from 'moment';
-  import {TaskListTileParent} from '../enums/component-parent'
+  import { TaskDetailsMode, TaskListTileParent } from '../enums/component-context';
   type Moment = moment.Moment;
 
   export let plugin: TQPlugin;
@@ -44,10 +45,14 @@
   }
 
   let taskTileBg =
-    parent === TaskListTileParent.TasksList ? 'var(--background-secondary)' : '#202327';
+    parent === TaskListTileParent.TasksList
+      ? 'var(--background-secondary)'
+      : '#202327';
 
   let taskTileborderColor =
-    parent === TaskListTileParent.TasksList ? 'var(--background-secondary)' : 'transparent';
+    parent === TaskListTileParent.TasksList
+      ? 'var(--background-secondary)'
+      : '#343941';
 
   let CSSvarStyles = `--taskTileBg: ${taskTileBg}; --taskTileBorderColor: ${taskTileborderColor}`;
   // TODO: Links in rendered markdown do not work yet
@@ -130,7 +135,6 @@
   };
 
   const showPomodoroTaskView = async () => {
-    console.log('showPomodoroTaskView');
     await plugin.activatePomodoroTaskView(task, moment.duration(16, 'seconds'));
   };
 
@@ -140,6 +144,10 @@
 
   const headerMouseLeave = () => {
     isHeaderFocus = false;
+  };
+
+  const openTaskDetails = () => {
+    new TaskDetailsModal(plugin,TaskDetailsMode.Update,task).open();
   };
 </script>
 
@@ -151,11 +159,7 @@
     on:mouseleave={headerMouseLeave}
   >
     <span class="leading">
-      <Checkbox
-        context="listTile"
-        bind:checked={task.checked}
-        on:toggle={toggleChecked}
-      />
+      <Checkbox context="listTile" bind:checked={task.checked} />
       {#if parent == TaskListTileParent.TasksList}
         <PomodoroTaskStartBtn
           on:click={showPomodoroTaskView}
@@ -164,7 +168,11 @@
       {/if}
     </span>
     <div class="header-content">
-      <div class="task-title" bind:this={taskNameEl} />
+      <div
+        on:click={openTaskDetails}
+        class="task-title"
+        bind:this={taskNameEl}
+      />
       <div class="props">
         {#if due}
           <span class="group" on:click={showDuePicker}>
@@ -195,6 +203,10 @@
     position: relative;
   }
 
+  .task-title:hover{
+    cursor: pointer;
+  }
+  
   .trailing {
     position: absolute;
     right: 0px;
@@ -257,7 +269,7 @@
     flex-direction: column;
     background-color: var(--taskTileBg);
     border-radius: 10px;
-    border-bottom: thin solid var(--taskTileBorderColor);
+    border: thin solid var(--taskTileBorderColor);
     padding: 8px 8px;
     margin: 8px 0;
   }

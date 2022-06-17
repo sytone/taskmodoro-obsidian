@@ -1,7 +1,7 @@
 import { FileInterface, Task, TaskCache } from './file-interface'
 import { buyMeACoffee, paypal } from './graphics'
 import { convertLegacyTask } from './legacy-parser'
-import { CreateTaskModal } from './modals'
+import { TaskDetailsModal } from './modals'
 import { ISettings, settingsWithDefaults } from './settings'
 import { stateFromConfig } from './state'
 import TasksList from './ui/TasksList.svelte'
@@ -16,7 +16,8 @@ import {
 } from 'obsidian'
 import { writable } from 'svelte/store'
 import { PomodoroTaskView } from './pomodoro-task-view'
-import { Duration } from 'moment'
+import type { Duration } from 'moment'
+import { TaskDetailsMode } from './enums/component-context'
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings
@@ -38,7 +39,7 @@ export default class TQPlugin extends Plugin {
     )
 
     this.addRibbonIcon('checkbox-glyph', 'tq', () => {
-      new CreateTaskModal(this.app, this).open()
+      new TaskDetailsModal(this,TaskDetailsMode.Create).open()
     })
 
     // TODO: If triggered from a daily note, use that as the due date default
@@ -46,7 +47,7 @@ export default class TQPlugin extends Plugin {
       id: 'create-task-modal',
       name: 'Create Task',
       callback: () => {
-        new CreateTaskModal(this.app, this).open()
+        new TaskDetailsModal(this,TaskDetailsMode.Create).open()
       },
     })
 

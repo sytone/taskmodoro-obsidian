@@ -6,7 +6,7 @@
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
-  import {TaskListTileParent} from '../enums/component-parent'
+  import {TaskListTileParent} from '../enums/component-context'
 
   export let plugin: TQPlugin;
   export let view: Component;

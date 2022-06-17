@@ -1,48 +1,55 @@
 <script lang="ts">
   import type { Moment } from 'moment';
+  import type TaskDetails from '../../task-details';
+  import { TaskDetailsMode } from '../../enums/component-context';
+  import { DatePickerModal, RepeatPickerModal } from '../../modals';
+  import { formatDate } from '../../util';
+  import { externalLink } from '../../graphics';
 
-  import type { App } from 'obsidian';
-
-  import { DuePickerModal, RepeatPickerModal } from '../modals';
-  import { externalLink } from '../graphics';
-
-  const formatDate = (date: Moment): string => {
-    return date.format('YYYY-MM-DD');
-  };
-
-  export let due: string;
-  export let taskName: string;
-  export let scheduled: string;
-  export let repeatConfig: string;
-  export let app: App;
-  export let onCreate: ()=>void = null;
+  export let td: TaskDetails;
+  export let mode: TaskDetailsMode;
 
   let isCreateBtnEnabled = true;
-  $: isCreateBtnEnabled = taskName != '';
+  $: isCreateBtnEnabled = td.taskName != '';
 
-  
   const showDueDatePicker = () => {
     let pickerStartDate =
-      due == '' ? window.moment() : window.moment(due);
-    new DuePickerModal(app, pickerStartDate,'Due date', (newDueDate: Moment) => {
-      due = formatDate(newDueDate);
-    }).open();
+      td.due == '' ? window.moment() : window.moment(td.due);
+    new DatePickerModal(
+      td.plugin.app,
+      pickerStartDate,
+      'Due date',
+      (newDueDate: Moment) => {
+        td.due = formatDate(newDueDate);
+        td = td;
+      },
+    ).open();
   };
+
   const showScheduledDatePicker = () => {
     let pickerStartDate =
-      scheduled == '' ? window.moment() : window.moment(scheduled);
-    new DuePickerModal(app, pickerStartDate,'Schedule date', (newStartDate: Moment) => {
-      scheduled = formatDate(newStartDate);
-    }).open();
+      td.scheduled == '' || !td.scheduled
+        ? window.moment()
+        : window.moment(td.scheduled);
+    new DatePickerModal(
+      td.plugin.app,
+      pickerStartDate,
+      'Schedule date',
+      (newStartDate: Moment) => {
+        td.scheduled = formatDate(newStartDate);
+        td = td;
+      },
+    ).open();
   };
 
   const showRepeatPicker = () => {
-    let startRepeatPickerConfig = repeatConfig;
+    let startRepeatPickerConfig = td.repeatConfig;
     new RepeatPickerModal(
-      app,
+      td.plugin.app,
       startRepeatPickerConfig,
       (newRepeatConfig: string) => {
-        repeatConfig = newRepeatConfig;
+        td.repeatConfig = newRepeatConfig;
+        td = td;
       },
     ).open();
   };
@@ -55,29 +62,33 @@
   <div class="sidebar-container">
     <div class="group">
       <div class="label">Due date</div>
-      <div class="sidebar-input" on:click={showDueDatePicker}>{due==''?'Someday':due}</div>
+      <div class="sidebar-input" on:click={showDueDatePicker}>
+        {td.due == '' || !td.due ? 'Someday' : td.due}
+      </div>
     </div>
     <div class="group">
       <div class="label">Scheduled date</div>
       <div class="sidebar-input" on:click={showScheduledDatePicker}>
-        {scheduled==''?'Someday':scheduled}
+        {td.scheduled == '' || !td.scheduled ? 'Someday' : td.scheduled}
       </div>
     </div>
     <div class="group">
       <div class="label">Repeat</div>
       <div class="sidebar-input" on:click={showRepeatPicker}>
-        {repeatConfig==''?'None':repeatConfig}
+        {td.repeatConfig == '' || !td.repeatConfig ? 'None' : td.repeatConfig}
       </div>
     </div>
   </div>
-  <div class="create-btn-wrapper">
-    <button
-      disabled={!isCreateBtnEnabled}
-      class="mod-cta create-btn 
+  {#if mode === TaskDetailsMode.Create}
+    <div class="create-btn-wrapper">
+      <button
+        disabled={!isCreateBtnEnabled}
+        class="mod-cta create-btn 
       {isCreateBtnEnabled ? '' : 'disabled-btn'}"
-      on:click={onCreate}>Create</button
-    >
-  </div>
+        on:click={td.onCreate}>Create</button
+      >
+    </div>
+  {/if}
 </div>
 
 <style>

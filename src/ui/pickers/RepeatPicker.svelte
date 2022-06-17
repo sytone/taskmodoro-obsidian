@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ButtonGroup from './ButtonGroup.svelte';
+  import ButtonGroup from '../ButtonGroup.svelte';
   import WeekDaysOfMonthSelector from './WeekDaysOfMonthSelector.svelte';
   import { RepeatAdapter } from 'src/repeat';
   import RRule, { Frequency } from 'rrule';

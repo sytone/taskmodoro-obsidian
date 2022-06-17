@@ -108,7 +108,7 @@ export class TaskCache {
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
     (await this.loadTask(file)).match(
       newTask => {
-        // console.log('Task has been modified and updated in the store:', newTask)
+        
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask

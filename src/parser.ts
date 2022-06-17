@@ -10,7 +10,7 @@ export const getDescription = (lines: string[]): string => {
     line.includes(FileInterface.descEndToken),
   )
   if (descStart == -1 || descEnd == -1) return ''
-  let descLines = lines.slice(descStart + 1, descEnd - 1);
+  let descLines = lines.slice(descStart + 1, descEnd);
   let description = descLines.join('\n');
   return description;
 }

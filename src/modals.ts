@@ -1,29 +1,35 @@
-import TQPlugin from './main'
-import CreateTaskUI from './ui/CreateTaskUI.svelte'
-import DuePicker from './ui/DuePicker.svelte'
-import RepeatPicker from './ui/RepeatPicker.svelte'
-import { Moment } from 'moment'
+import type TQPlugin from './main'
+import TaskDetailsUI from './ui/task_details/TaskDetailsUI.svelte'
+import DatePicker from './ui/pickers/DuePicker.svelte'
+import RepeatPicker from './ui/pickers/RepeatPicker.svelte'
+import type { Moment } from 'moment'
 import { App, Modal } from 'obsidian'
+import type { TaskDetailsMode } from './enums/component-context'
+import type { Task } from './file-interface';
 
-export class CreateTaskModal extends Modal {
+export class TaskDetailsModal extends Modal {
   private readonly plugin: TQPlugin
+  private readonly mode: TaskDetailsMode
+  private readonly task: Task | undefined
 
-  constructor (app: App, plugin: TQPlugin) {
-    super(app)
+  constructor (plugin: TQPlugin, mode: TaskDetailsMode,task: Task | undefined=undefined) {
+    super(plugin.app)
     this.plugin = plugin
+    this.mode = mode
+    this.task=task
   }
 
   public onOpen = (): void => {
-    const { titleEl, contentEl,modalEl } = this
-    modalEl.addClasses(['tq-modal','tq'])
-    contentEl.addClass('tq-modal-content');
-    // titleEl.setText('Create New Task')
-    new CreateTaskUI({
+    const {contentEl, modalEl } = this
+    modalEl.addClasses(['tq-modal', 'tq'])
+    contentEl.addClass('tq-modal-content')
+    new TaskDetailsUI({
       target: contentEl,
       props: {
-        close: () => this.close(),
-        store: this.plugin.fileInterface.storeNewTask,
-        app: this.app,
+        close: this.onClose,
+        plugin: this.plugin,
+        mode: this.mode,
+        task: this.task
       },
     })
   }
@@ -34,22 +40,27 @@ export class CreateTaskModal extends Modal {
   }
 }
 
-export class DuePickerModal extends Modal {
+export class DatePickerModal extends Modal {
   private readonly startDate: Moment
   private readonly set: (date: Moment) => void
   private readonly title: string
-  constructor (app: App, startDate: Moment,title: string, set: (date: Moment) => void) {
+  constructor (
+    app: App,
+    startDate: Moment,
+    title: string,
+    set: (date: Moment) => void,
+  ) {
     super(app)
 
     this.startDate = startDate
     this.set = set
-    this.title=title;
+    this.title = title
   }
 
   public onOpen = (): void => {
     const { titleEl, contentEl } = this
     titleEl.setText(this.title)
-    new DuePicker({
+    new DatePicker({
       target: contentEl,
       props: {
         close: () => this.close(),
