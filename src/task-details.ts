@@ -1,6 +1,9 @@
 import type TQPlugin from './main'
 import type { Task } from './file-interface'
 import { formatDate } from './util'
+import moment from 'moment'
+import MomentDurationSetup from 'moment-duration-format';
+MomentDurationSetup(moment);
 export default class TaskDetails {
   public plugin: TQPlugin
   public tagsCache: string[]
@@ -12,6 +15,7 @@ export default class TaskDetails {
   public due = ''
   public scheduled = ''
   public tags = ''
+  public pomodoroLength = moment.duration(30,'minutes')
   public close: () => void
 
   constructor (plugin: TQPlugin, task: Task | undefined = undefined) {
@@ -24,6 +28,9 @@ export default class TaskDetails {
       this.taskName= task.taskName
       this.description = task.description
       this.completed = task.frontmatter.get('completed')
+
+      let pomoLen = task.frontmatter.get('pomodoro_length');
+      this.pomodoroLength = pomoLen ? pomoLen : this.pomodoroLength
     }
   }
 

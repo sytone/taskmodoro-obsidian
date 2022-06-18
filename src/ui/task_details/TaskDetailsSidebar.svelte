@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { Moment } from 'moment';
+  import moment, { duration, Moment } from 'moment';
+
   import type TaskDetails from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
   import { DatePickerModal, RepeatPickerModal } from '../../modals';
   import { formatDate } from '../../util';
   import { externalLink } from '../../graphics';
+  import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -12,9 +14,11 @@
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
+  let _time: any, selectedHour: any, selectedMeridiem: any;
+  let isDurationPickerVisible = false;
+
   const showDueDatePicker = () => {
-    let pickerStartDate =
-      td.due == '' ? window.moment() : window.moment(td.due);
+    let pickerStartDate = td.due == '' ? moment() : moment(td.due);
     new DatePickerModal(
       td.plugin.app,
       pickerStartDate,
@@ -28,9 +32,7 @@
 
   const showScheduledDatePicker = () => {
     let pickerStartDate =
-      td.scheduled == '' || !td.scheduled
-        ? window.moment()
-        : window.moment(td.scheduled);
+      td.scheduled == '' || !td.scheduled ? moment() : moment(td.scheduled);
     new DatePickerModal(
       td.plugin.app,
       pickerStartDate,
@@ -53,6 +55,8 @@
       },
     ).open();
   };
+
+  const showdurationPicker = () => {};
 </script>
 
 <div class="task-details-sidebar">
@@ -60,6 +64,21 @@
     <span class="external-link-icon">{@html externalLink}</span>
   </span>
   <div class="sidebar-container">
+    <div class="group">
+      <div class="label">Pomodoro length</div>
+      <div
+        class="sidebar-input"
+        on:focus={() => {
+          isDurationPickerVisible = !isDurationPickerVisible;
+        }}
+        on:click={() => (isDurationPickerVisible = true)}>
+        {td.pomodoroLength.format()}
+      </div>
+    </div>
+    <DurationPicker
+      bind:duration={td.pomodoroLength}
+      bind:visible={isDurationPickerVisible}
+    />
     <div class="group">
       <div class="label">Due date</div>
       <div class="sidebar-input" on:click={showDueDatePicker}>
@@ -133,6 +152,7 @@
     width: 100%;
     padding: 0 0;
   }
+  
   .sidebar-input:hover,
   .sidebar-input:focus {
     cursor: pointer;
