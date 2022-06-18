@@ -17,7 +17,6 @@
 
   afterUpdate(() => {
     let selectedPositionOffset = (-selected+1) * 50;
-    // console.log('sPos: ', selectedPosition);
     if (!dragging && currOffset !== selectedPositionOffset) {
       currOffset = selectedPositionOffset;
       setCurrPositionOffset();
@@ -55,7 +54,6 @@
     let maxPosition = -data.length * 50;
     
     let _position = currOffset + offsetChange;
-    console.log('pos:', currOffset, ' offset: ', offsetChange);
     currOffset = Math.max(maxPosition, Math.min(50, _position));
     previousY = event.touches ? event.touches[0].clientY : event.clientY;
     setCurrPositionOffset();
@@ -65,7 +63,6 @@
     let maxOffset = -(data.length - 1) * 50;
     let currRoundedOffset = Math.round((currOffset + offsetChange * 5) / 50) * 50;
     let finalOffset = Math.max(maxOffset, Math.min(0, currRoundedOffset));
-    console.log('rPos:', currRoundedOffset, ' fPos: ', finalOffset);
     dragging = false;
     currOffset = finalOffset;
     window.removeEventListener('mousemove', onMouseMove);
@@ -79,11 +76,11 @@
 </script>
 
 <div
-  class="touch-time-wrapper"
+  class="duration-time-wrapper"
   on:mousedown={onMouseDown}
   on:touchstart={onMouseDown}
 >
-  <ul bind:this={itemWrapper} class="touch-time-container">
+  <ul bind:this={itemWrapper} class="duration-time-container">
     {#each data as item}
       <li>{item}</li>
     {/each}
@@ -95,42 +92,42 @@
     margin-bottom: 0px;
   }
 
-  .touch-time-wrapper {
+  .duration-time-wrapper {
     position: relative;
     height: 50px;
     margin: 0 10px;
-    border-top: 1px solid var(--svtt-bar-color, grey);
-    border-bottom: 1px solid var(--svtt-bar-color, grey);
+    border-top: 1px solid #2c2c2c;
+    border-bottom: 1px solid #2c2c2c;
     border-radius: 0;
   }
 
-  .touch-time-container {
+  .duration-time-container {
     margin: 0;
     padding: 0;
   }
 
-  .touch-time-wrapper:before,
-  .touch-time-wrapper:after {
+  .duration-time-wrapper:before,
+  .duration-time-wrapper:after {
     content: '';
     position: absolute;
     left: 0;
     width: 80px;
     height: 50px;
-    background-color: #fff;
-    opacity: 0.8;
+    background-color: #2c2c2c;
+    opacity: 0.5;
     pointer-events: none;
     z-index: 1;
   }
 
-  .touch-time-wrapper:before {
+  .duration-time-wrapper:before {
     top: -51px;
   }
 
-  .touch-time-wrapper:after {
+  .duration-time-wrapper:after {
     bottom: -51px;
   }
 
-  .touch-time-container li {
+  .duration-time-container li {
     display: flex;
     justify-content: center;
     align-items: center;

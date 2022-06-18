@@ -30,6 +30,7 @@ Settings Page
   --mid2-blue-gray: #686B6F;
   --dark-blue-gray: #4B4F4F;
   --dark2-blue-gray: #343636;
+ 
 }
 .tq-circle {
   box-sizing: border-box;
@@ -59,8 +60,13 @@ Settings Page
 .primary-btn{
   padding: 8px 24px;
 }
+
 .primary{
   background-color: var(--text-accent);
+}
+
+.secondary-action{
+  background-color: #625D5D !important;
 }
 
 .hidden {

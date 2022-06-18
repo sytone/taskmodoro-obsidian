@@ -1,9 +1,13 @@
 <script lang="ts">
-  import moment, { duration, Moment } from 'moment';
+  import moment, { Duration, duration, Moment } from 'moment';
 
   import type TaskDetails from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
-  import { DatePickerModal, RepeatPickerModal } from '../../modals';
+  import {
+    DatePickerModal,
+    DurationPickerModal,
+    RepeatPickerModal,
+  } from '../../modals';
   import { formatDate } from '../../util';
   import { externalLink } from '../../graphics';
   import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
@@ -14,7 +18,6 @@
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
-  let _time: any, selectedHour: any, selectedMeridiem: any;
   let isDurationPickerVisible = false;
 
   const showDueDatePicker = () => {
@@ -56,7 +59,17 @@
     ).open();
   };
 
-  const showdurationPicker = () => {};
+  const showPomoLengthPicker = () => {
+    new DurationPickerModal(
+      td.plugin.app,
+      'Pomodoro length',
+      td.pomodoroLength,
+      (newPomoLength: Duration) => {
+        td.pomodoroLength = newPomoLength;
+        td = td;
+      },
+    ).open();
+  };
 </script>
 
 <div class="task-details-sidebar">
@@ -66,19 +79,11 @@
   <div class="sidebar-container">
     <div class="group">
       <div class="label">Pomodoro length</div>
-      <div
-        class="sidebar-input"
-        on:focus={() => {
-          isDurationPickerVisible = !isDurationPickerVisible;
-        }}
-        on:click={() => (isDurationPickerVisible = true)}>
+      <div class="sidebar-input" on:click={showPomoLengthPicker}>
         {td.pomodoroLength.format()}
       </div>
     </div>
-    <DurationPicker
-      bind:duration={td.pomodoroLength}
-      bind:visible={isDurationPickerVisible}
-    />
+
     <div class="group">
       <div class="label">Due date</div>
       <div class="sidebar-input" on:click={showDueDatePicker}>
@@ -152,7 +157,7 @@
     width: 100%;
     padding: 0 0;
   }
-  
+
   .sidebar-input:hover,
   .sidebar-input:focus {
     cursor: pointer;
