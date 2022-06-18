@@ -15,7 +15,7 @@
   function saveDraft() {
     td.taskName = draftTaskName;
     td.description = draftDescription;
-    td=td
+    td = td;
     isInputActive = false;
   }
 
@@ -40,7 +40,7 @@
 <div class="main-task-panel">
   <div style="height: 56px" />
   <div class="task-container">
-    <div class='tq-checkbox-wrapper'>
+    <div class="tq-checkbox-wrapper">
       <Checkbox bind:checked={td.completed} disabled={false} />
     </div>
     <div
@@ -81,7 +81,7 @@
 </div>
 
 <style>
-  .tq-checkbox-wrapper{
+  .tq-checkbox-wrapper {
     margin-top: 8px;
   }
 
