@@ -2,6 +2,9 @@ import { dump, load } from 'js-yaml'
 import RRule from 'rrule'
 import { FileInterface } from './file-interface'
 
+import moment from 'moment'
+type Moment = moment.Moment
+
 export const getDescription = (lines: string[]): string => {
   let descStart = lines.findIndex(line =>
     line.includes(FileInterface.descStartToken),
@@ -10,9 +13,9 @@ export const getDescription = (lines: string[]): string => {
     line.includes(FileInterface.descEndToken),
   )
   if (descStart == -1 || descEnd == -1) return ''
-  let descLines = lines.slice(descStart + 1, descEnd);
-  let description = descLines.join('\n');
-  return description;
+  let descLines = lines.slice(descStart + 1, descEnd)
+  let description = descLines.join('\n')
+  return description
 }
 
 export class Frontmatter {
@@ -51,13 +54,9 @@ export class Frontmatter {
     (this.contents[key] = value)
 
   public readonly overwrite = (): void => {
-    const replacer = (k: string, v: any): any =>
-      k === 'due'
-        ? window
-            .moment(v)
-            .endOf('day')
-            .format('YYYY-MM-DD')
-        : v
+    const replacer = (k: string, v: Moment | string): any =>
+      moment.isMoment(v) ? (v as Moment).endOf('day').format('YYYY-MM-DD') : v
+
     const fmLines = dump(this.contents, { replacer }).trim()
 
     if (this.start === -1 || this.end === -1) {

@@ -188,44 +188,26 @@ export class FileInterface {
     )
   }
 
-  public readonly updateTaskDate = async (
-    file: TFile,
-    vault: Vault,
-    date: Moment,
-    propName: string
-  ): Promise<void> =>
-    withFileContents(file, vault, (lines: string[]): boolean => {
-      let frontmatter: Frontmatter
-      try {
-        frontmatter = new Frontmatter(lines)
-      } catch (error) {
-        console.debug(error)
-        return false
-      }
+    public readonly updateFMProp = async (
+      file: TFile,
+      vault: Vault,
+      value: Moment | String ,
+      propName: string
+    ): Promise<void> =>
+      withFileContents(file, vault, (lines: string[]): boolean => {
+        let frontmatter: Frontmatter
+        try {
+          frontmatter = new Frontmatter(lines)
+        } catch (error) {
+          console.debug(error)
+          return false
+        }
+  
+        frontmatter.set(propName, value)
+        frontmatter.overwrite()
+        return true
+      })
 
-      frontmatter.set(propName, date.startOf('day').toDate())
-      frontmatter.overwrite()
-      return true
-    })
-
-  public readonly updateTaskRepeat = async (
-    file: TFile,
-    vault: Vault,
-    repeatConfig: string,
-  ): Promise<void> =>
-    withFileContents(file, vault, (lines: string[]): boolean => {
-      let frontmatter: Frontmatter
-      try {
-        frontmatter = new Frontmatter(lines)
-      } catch (error) {
-        console.debug(error)
-        return false
-      }
-
-      frontmatter.set('repeat', repeatConfig)
-      frontmatter.overwrite()
-      return true
-    })
 
   /**
    * processRepeating checks the provided lines to see if they describe a

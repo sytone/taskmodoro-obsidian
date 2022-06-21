@@ -3,9 +3,11 @@ import type { Task } from './file-interface'
 import { formatDate } from './util'
 import moment from 'moment'
 import MomentDurationSetup from 'moment-duration-format';
+import type { TFile } from 'obsidian';
 MomentDurationSetup(moment);
 export default class TaskDetails {
   public plugin: TQPlugin
+  public file: TFile
   public tagsCache: string[]
   public taskName = ''
   public description = ''
@@ -28,7 +30,7 @@ export default class TaskDetails {
       this.taskName= task.taskName
       this.description = task.description
       this.completed = task.frontmatter.get('completed')
-
+      this.file = task.file
       let pomoLen = task.frontmatter.get('pomodoro_length');
       this.pomodoroLength = pomoLen ? pomoLen : this.pomodoroLength
     }

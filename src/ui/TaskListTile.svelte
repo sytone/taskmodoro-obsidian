@@ -7,11 +7,9 @@
     TaskDetailsModal,
   } from '../modals';
   import type TQPlugin from '../main';
-  import { slide } from 'svelte/transition';
   import type { Component } from 'obsidian';
   import { MarkdownRenderer } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
-  import TaskPriorityStripe from './TaskPriorityStripe.svelte';
   import Checkbox from './Checkbox.svelte';
   import PomodoroTaskStartBtn from './PomodoroTaskStartBtn.svelte';
   import moment from 'moment';
@@ -97,7 +95,7 @@
       window.moment(due),
       'Due date',
       (newDueDate: Moment) => {
-        plugin.fileInterface.updateTaskDate(
+        plugin.fileInterface.updateFMProp(
           task.file,
           plugin.app.vault,
           newDueDate,
@@ -113,7 +111,7 @@
       window.moment(due),
       'Schedule date',
       (newScheduledDate: Moment) => {
-        plugin.fileInterface.updateTaskDate(
+        plugin.fileInterface.updateFMProp(
           task.file,
           plugin.app.vault,
           newScheduledDate,

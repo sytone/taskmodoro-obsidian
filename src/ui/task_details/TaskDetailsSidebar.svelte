@@ -8,7 +8,7 @@
     DurationPickerModal,
     RepeatPickerModal,
   } from '../../modals';
-  import { formatDate } from '../../util';
+  import { formatDate, formatFMDate } from '../../util';
   import { externalLink } from '../../graphics';
   import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
 
@@ -22,53 +22,95 @@
 
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
+
+    const onSet = (newDueDate: Moment) => {
+      td.due = formatDate(newDueDate);
+      td = td;
+      if (TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          td.plugin.app.vault,
+          newDueDate,
+          'due',
+        );
+      }
+    };
+
     new DatePickerModal(
       td.plugin.app,
       pickerStartDate,
       'Due date',
-      (newDueDate: Moment) => {
-        td.due = formatDate(newDueDate);
-        td = td;
-      },
+      onSet,
     ).open();
   };
 
   const showScheduledDatePicker = () => {
     let pickerStartDate =
-      td.scheduled == '' || !td.scheduled ? moment() : moment(td.scheduled);
+      td.scheduled == '' ? moment() : moment(td.scheduled);
+
+    const onSet = (newScheduledDate: Moment) => {
+      td.scheduled = formatDate(newScheduledDate);
+      td = td;
+      if (TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          td.plugin.app.vault,
+          newScheduledDate,
+          'scheduled',
+        );
+      }
+    };
+
     new DatePickerModal(
       td.plugin.app,
       pickerStartDate,
       'Schedule date',
-      (newStartDate: Moment) => {
-        td.scheduled = formatDate(newStartDate);
-        td = td;
-      },
+      onSet,
     ).open();
   };
 
   const showRepeatPicker = () => {
     let startRepeatPickerConfig = td.repeatConfig;
-    new RepeatPickerModal(
-      td.plugin.app,
-      startRepeatPickerConfig,
-      (newRepeatConfig: string) => {
-        td.repeatConfig = newRepeatConfig;
-        td = td;
-      },
-    ).open();
+
+    const onSet = (newRepeatConfig: string) => {
+      td.repeatConfig = newRepeatConfig;
+      td = td;
+      if (TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          td.plugin.app.vault,
+          newRepeatConfig,
+          'repeat',
+        );
+      }
+    };
+
+    new RepeatPickerModal(td.plugin.app, startRepeatPickerConfig, onSet).open();
   };
 
   const showPomoLengthPicker = () => {
+
+    const onSet = (newPomoLength: Duration) => {
+      td.pomodoroLength = newPomoLength;
+
+      td = td;
+      if (TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          td.plugin.app.vault,
+          newPomoLength.format(),
+          'pomodoro_length',
+        );
+      }
+    };
+
     new DurationPickerModal(
       td.plugin.app,
       'Pomodoro length',
       td.pomodoroLength,
-      (newPomoLength: Duration) => {
-        td.pomodoroLength = newPomoLength;
-        td = td;
-      },
+      onSet,
     ).open();
+
   };
 </script>
 
