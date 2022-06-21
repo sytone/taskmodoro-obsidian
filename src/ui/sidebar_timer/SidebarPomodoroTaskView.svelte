@@ -5,10 +5,12 @@
   import { TaskListTileParent } from '../../enums/component-context';
   import TaskListTile from './../TaskListTile.svelte';
   import PomodoroTimer from './PomodoroTimer.svelte';
+import moment from 'moment';
 
   export let task: Task;
   export let plugin: TQPlugin;
-  export let duration: Duration;
+  export let duration: Duration | undefined;
+
 </script>
 
 <div class="tq">
@@ -20,7 +22,7 @@
       view={null}
     />
   </div>
-  <PomodoroTimer />
+  <PomodoroTimer initialDuration={duration} />
 </div>
 
 <style>

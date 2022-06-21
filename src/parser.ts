@@ -23,7 +23,7 @@ export class Frontmatter {
   // [s: string]: any
 
   /**
-   * YAML as string
+   * YAML as list of string
    */
   private readonly lines: string[]
 
@@ -38,7 +38,7 @@ export class Frontmatter {
   private end: number
 
   /**
-   * Serialized YAML
+   * YAML as key value pairs
    */
   private contents: { [k: string]: any }
 

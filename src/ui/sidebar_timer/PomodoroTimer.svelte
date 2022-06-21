@@ -1,6 +1,8 @@
 <script lang="ts">
   import moment from 'moment';
   import MomentDurationSetup from 'moment-duration-format';
+  import { TimerState } from '../../enums/timer-state';
+import type { Duration} from 'moment';
   MomentDurationSetup(moment);
   import { init } from 'svelte/internal';
   import {
@@ -9,12 +11,11 @@
     circledPlay,
     circledStop,
   } from '../../graphics';
-  import { TimerState } from '../../enums/timer-state';
 
+  export let initialDuration: Duration; 
   let leavesCnt = 16;
   let leaves = Array(leavesCnt);
   const rotateVar = (i: number) => `--rotate: ${(i * 360) / leavesCnt}deg;`;
-  const initialDuration = moment.duration(16, 'seconds');
   let duration = initialDuration.clone();
   let state = TimerState.INITIALIZED;
   let startedAt: Date;

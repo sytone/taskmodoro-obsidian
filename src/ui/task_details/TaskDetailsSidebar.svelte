@@ -91,14 +91,14 @@
   const showPomoLengthPicker = () => {
 
     const onSet = (newPomoLength: Duration) => {
-      td.pomodoroLength = newPomoLength;
+      td.pomoDuration = newPomoLength;
 
       td = td;
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          newPomoLength.format(),
+          newPomoLength.asMinutes(),
           'pomodoro_length',
         );
       }
@@ -107,7 +107,7 @@
     new DurationPickerModal(
       td.plugin.app,
       'Pomodoro length',
-      td.pomodoroLength,
+      td.pomoDuration,
       onSet,
     ).open();
 
@@ -122,7 +122,7 @@
     <div class="group">
       <div class="label">Pomodoro length</div>
       <div class="sidebar-input" on:click={showPomoLengthPicker}>
-        {td.pomodoroLength.format()}
+        {td.pomoDuration.format()}
       </div>
     </div>
 

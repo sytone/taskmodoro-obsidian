@@ -1,10 +1,11 @@
 import type TQPlugin from './main'
 import type { Task } from './file-interface'
+import type { TFile } from 'obsidian'
 import { formatDate } from './util'
 import moment from 'moment'
-import MomentDurationSetup from 'moment-duration-format';
-import type { TFile } from 'obsidian';
-MomentDurationSetup(moment);
+import MomentDurationSetup from 'moment-duration-format'
+import { toInteger } from 'lodash'
+MomentDurationSetup(moment)
 export default class TaskDetails {
   public plugin: TQPlugin
   public file: TFile
@@ -17,7 +18,7 @@ export default class TaskDetails {
   public due = ''
   public scheduled = ''
   public tags = ''
-  public pomodoroLength = moment.duration(30,'minutes')
+  public pomoDuration = moment.duration(30, 'minutes')
   public close: () => void
 
   constructor (plugin: TQPlugin, task: Task | undefined = undefined) {
@@ -27,12 +28,15 @@ export default class TaskDetails {
       this.due = formatDate(task.due)
       this.repeatConfig = task.frontmatter.get('repeat')
       this.scheduled = formatDate(task.scheduled)
-      this.taskName= task.taskName
+      this.taskName = task.taskName
       this.description = task.description
       this.completed = task.frontmatter.get('completed')
       this.file = task.file
-      let pomoLen = task.frontmatter.get('pomodoro_length');
-      this.pomodoroLength = pomoLen ? pomoLen : this.pomodoroLength
+      const pomoLen = toInteger(task.frontmatter.get('pomodoro_length')) || 30
+      this.pomoDuration = moment.duration(pomoLen, 'minutes')
+      // this.overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
+
+
     }
   }
 

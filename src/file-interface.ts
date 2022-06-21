@@ -191,7 +191,7 @@ export class FileInterface {
     public readonly updateFMProp = async (
       file: TFile,
       vault: Vault,
-      value: Moment | String ,
+      value: Moment | String | Number ,
       propName: string
     ): Promise<void> =>
       withFileContents(file, vault, (lines: string[]): boolean => {

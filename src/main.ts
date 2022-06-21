@@ -173,7 +173,6 @@ export default class TQPlugin extends Plugin {
       })
     }
 
-    console.log('activatePomodoroTaskView')
     let pomoTaskView = getPomodoroTaskView()
     SetDataPomodoroTaskView(pomoTaskView)
     await pomoTaskView.onOpen()

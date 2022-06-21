@@ -12,8 +12,13 @@
   import { afterUpdate, onMount } from 'svelte';
   import Checkbox from './Checkbox.svelte';
   import PomodoroTaskStartBtn from './PomodoroTaskStartBtn.svelte';
-  import moment from 'moment';
-  import { TaskDetailsMode, TaskListTileParent } from '../enums/component-context';
+  import type moment from 'moment';
+  import {
+    TaskDetailsMode,
+    TaskListTileParent,
+  } from '../enums/component-context';
+  import { toInteger } from 'lodash';
+import TaskDetails from '../task-details';
   type Moment = moment.Moment;
 
   export let plugin: TQPlugin;
@@ -21,25 +26,13 @@
   export let view: Component;
   export let parent: TaskListTileParent;
 
+  let td: TaskDetails;
   let taskNameEl: HTMLElement;
-  let expanded = false;
-  let repeat: any;
-  let due: Moment;
-  let scheduled: Moment;
-  let description: String;
-  let completed: any;
-  let lastCompleted: any;
-  let overdue: boolean;
   let isHeaderFocus = false;
 
+
   $: {
-    due = task.due;
-    repeat = task.frontmatter.get('repeat');
-    scheduled = task.scheduled;
-    description = task.description;
-    completed = task.frontmatter.get('completed');
-    lastCompleted = completed ? completed[completed.length - 1] : undefined;
-    overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
+    td = new TaskDetails(plugin, task);
   }
 
   let taskTileBg =
@@ -92,7 +85,7 @@
   const showDuePicker = () => {
     new DatePickerModal(
       plugin.app,
-      window.moment(due),
+      window.moment(td.due),
       'Due date',
       (newDueDate: Moment) => {
         plugin.fileInterface.updateFMProp(
@@ -108,7 +101,7 @@
   const showSchedulePicker = () => {
     new DatePickerModal(
       plugin.app,
-      window.moment(due),
+      window.moment(td.due),
       'Schedule date',
       (newScheduledDate: Moment) => {
         plugin.fileInterface.updateFMProp(
@@ -122,8 +115,9 @@
   };
 
   const showRepeatPicker = () => {
-    new RepeatPickerModal(plugin.app, repeat, (repeatConfig: string) => {
-      repeat = repeatConfig;
+    new RepeatPickerModal(plugin.app, td.repeat, (repeatConfig: string) => {
+      td.repeat = repeatConfig;
+      td=td
       plugin.fileInterface.updateTaskRepeat(
         task.file,
         plugin.app.vault,
@@ -133,7 +127,7 @@
   };
 
   const showPomodoroTaskView = async () => {
-    await plugin.activatePomodoroTaskView(task, moment.duration(16, 'seconds'));
+    await plugin.activatePomodoroTaskView(task, td.pomoDuration);
   };
 
   const headerMouseOver = () => {
@@ -145,7 +139,7 @@
   };
 
   const openTaskDetails = () => {
-    new TaskDetailsModal(plugin,TaskDetailsMode.Update,task).open();
+    new TaskDetailsModal(plugin, TaskDetailsMode.Update, task).open();
   };
 </script>
 
@@ -172,16 +166,16 @@
         bind:this={taskNameEl}
       />
       <div class="props">
-        {#if due}
+        {#if td.due}
           <span class="group" on:click={showDuePicker}>
             {@html calendar}
-            <span id="due">{due.format('YYYY-MM-DD')}</span>
+            <span id="due">{td.due.format('YYYY-MM-DD')}</span>
           </span>
         {/if}
-        {#if scheduled}
+        {#if td.scheduled}
           <span class="group" on:click={showSchedulePicker}>
             {@html hourglass}
-            <span id="scheduled">{scheduled.format('YYYY-MM-DD')}</span>
+            <span id="scheduled">{td.scheduled.format('YYYY-MM-DD')}</span>
           </span>
         {/if}
       </div>
@@ -201,10 +195,10 @@
     position: relative;
   }
 
-  .task-title:hover{
+  .task-title:hover {
     cursor: pointer;
   }
-  
+
   .trailing {
     position: absolute;
     right: 0px;
@@ -223,8 +217,6 @@
     cursor: pointer;
   }
 
-  :global(.trailing > .external-link-icon) {
-  }
 
   .leading {
     display: flex;
