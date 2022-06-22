@@ -3,6 +3,7 @@ import RRule from 'rrule'
 import { FileInterface } from './file-interface'
 
 import moment from 'moment'
+import { formatDate } from './util'
 type Moment = moment.Moment
 
 export const getDescription = (lines: string[]): string => {
@@ -102,6 +103,8 @@ export class Frontmatter {
     this.contents = fm
   }
 }
+
+
 
 export const setCompletedDate = (frontmatter: Frontmatter): void => {
   // Add the current date to the 'completed' frontmatter

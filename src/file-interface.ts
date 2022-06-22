@@ -1,6 +1,11 @@
-import { Frontmatter, getDescription,setCompletedDate, setDueDateToNext } from './parser'
-import type TQPlugin from './main'
-import type { Moment } from 'moment'
+import {
+  Frontmatter,
+  getDescription,
+  setCompletedDate,
+  setDueDateToNext,
+} from './parser'
+import TQPlugin from './main'
+import { Moment } from 'moment'
 import { err, ok, Result } from 'neverthrow'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Writable, writable } from 'svelte/store'
@@ -12,9 +17,8 @@ export interface Task {
   taskName: string
   description: string
   checked: boolean
-  due: Moment |  undefined
+  due: Moment | undefined
   scheduled: Moment | undefined
-
 }
 
 export const CalcTaskScore = (task: Task): number => {
@@ -106,9 +110,8 @@ export class TaskCache {
    * Update svelte store of tasks by replacing stores` key: (newTask.file.path) with value: (newTask) parsed from modified task file.
    */
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
-    (await this.loadTask(file)).match(
+    ;(await this.loadTask(file)).match(
       newTask => {
-        
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -166,8 +169,8 @@ export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
 
-  public static readonly descStartToken='<!---DESC_START--->'
-  public static readonly descEndToken='<!---DESC_END--->'
+  public static readonly descStartToken = '<!---DESC_START--->'
+  public static readonly descEndToken = '<!---DESC_END--->'
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
@@ -188,26 +191,58 @@ export class FileInterface {
     )
   }
 
-    public readonly updateFMProp = async (
-      file: TFile,
-      vault: Vault,
-      value: Moment | String | Number ,
-      propName: string
-    ): Promise<void> =>
-      withFileContents(file, vault, (lines: string[]): boolean => {
-        let frontmatter: Frontmatter
-        try {
-          frontmatter = new Frontmatter(lines)
-        } catch (error) {
-          console.debug(error)
-          return false
-        }
-  
-        frontmatter.set(propName, value)
-        frontmatter.overwrite()
-        return true
-      })
+  public readonly setTimerActivity = (
+    file: TFile,
+    vault: Vault,
+    start: Moment,
+    end: Moment,
+  ) => {
+    withFileContents(file, vault, (lines: string[]): boolean => {
+      let frontmatter: Frontmatter
 
+      try {
+        frontmatter = new Frontmatter(lines)
+      } catch (error) {
+        console.debug(error)
+        return false
+      }
+
+      const format = 'YYYY-MM-DD H:m:s'
+      const startStr = start.format(format)
+      const endStr = end.format(format)
+      const activity = { start: startStr, end: endStr }
+      if (!frontmatter.contains('timer_activity')) {
+        frontmatter.set('timer_activity', [activity])
+      } else {
+        const ta = frontmatter.get('timer_activity')
+        ta.push(activity)
+      }
+
+      frontmatter.overwrite()
+
+      return true
+    })
+  }
+
+  public readonly updateFMProp = async (
+    file: TFile,
+    vault: Vault,
+    value: Moment | String | Number,
+    propName: string,
+  ): Promise<void> =>
+    withFileContents(file, vault, (lines: string[]): boolean => {
+      let frontmatter: Frontmatter
+      try {
+        frontmatter = new Frontmatter(lines)
+      } catch (error) {
+        console.debug(error)
+        return false
+      }
+
+      frontmatter.set(propName, value)
+      frontmatter.overwrite()
+      return true
+    })
 
   /**
    * processRepeating checks the provided lines to see if they describe a
@@ -294,10 +329,10 @@ export class FileInterface {
     tags: string[],
   ): string => {
     const frontMatter = []
-    if (due ) {
+    if (due) {
       frontMatter.push(`due: '${due}'`)
     }
-    if (scheduled ) {
+    if (scheduled) {
       frontMatter.push(`scheduled: '${scheduled}'`)
     }
     if (repeat) {
@@ -307,7 +342,6 @@ export class FileInterface {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
 
-    
     const contents = []
     if (frontMatter.length > 0) {
       contents.push('---')
@@ -317,7 +351,9 @@ export class FileInterface {
     }
     contents.push('## Task')
     contents.push('- [ ] ' + taskName)
-    contents.push(`\n ${FileInterface.descStartToken} \n ${description} \n ${FileInterface.descEndToken}`)
+    contents.push(
+      `\n ${FileInterface.descStartToken} \n ${description} \n ${FileInterface.descEndToken}`,
+    )
 
     return contents.join('\n')
   }

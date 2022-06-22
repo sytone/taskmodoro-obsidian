@@ -1,10 +1,15 @@
 <script lang="ts">
   import moment from 'moment';
+  import type { Moment } from 'moment';
   import MomentDurationSetup from 'moment-duration-format';
   import { TimerState } from '../../enums/timer-state';
-import type { Duration} from 'moment';
+  // import type { Duration } from 'moment';
+  import type { TFile } from 'obsidian';
+  import type TQPlugin from '../../main';
   MomentDurationSetup(moment);
   import { init } from 'svelte/internal';
+  import type { Duration } from 'moment';
+
   import {
     timerLeaf,
     circledPause,
@@ -12,23 +17,31 @@ import type { Duration} from 'moment';
     circledStop,
   } from '../../graphics';
 
-  export let initialDuration: Duration; 
+  export let initialDuration: Duration;
+  export let plugin: TQPlugin;
+  export let file: TFile;
+
   let leavesCnt = 16;
   let leaves = Array(leavesCnt);
   const rotateVar = (i: number) => `--rotate: ${(i * 360) / leavesCnt}deg;`;
+
   let duration = initialDuration.clone();
+  let activityDur: Duration;
   let state = TimerState.INITIALIZED;
-  let startedAt: Date;
+  let startedAt: Moment;
   let timer: NodeJS.Timer;
 
   const start = (): void => {
-    state = TimerState.STARTED;
-    startedAt = new Date();
+    state = TimerState.ONGOING;
+    startedAt = moment(new Date());
+    activityDur = moment.duration();
+    
     timer = setInterval(() => {
       if (duration.asSeconds() == 0) {
         stop();
       }
       duration = duration.subtract(1, 'second');
+      activityDur = activityDur.add(1, 'second');
       leaves = leaves;
     }, 1000);
   };
@@ -48,14 +61,29 @@ import type { Duration} from 'moment';
 
   const pause = (): void => {
     state = TimerState.PAUSED;
+    setTimerActivity()
     clearInterval(timer);
   };
 
   const stop = (): void => {
+    if (TimerState.ONGOING) {
+        setTimerActivity()
+    }
+    
     state = TimerState.INITIALIZED;
 
+    duration = initialDuration.clone();
     clearInterval(timer);
-    duration = initialDuration;
+  };
+
+  const setTimerActivity = () => {
+    let endedAt = startedAt.clone().add(activityDur);
+    plugin.fileInterface.setTimerActivity(
+      file,
+      plugin.app.vault,
+      startedAt,
+      endedAt,
+    );
   };
 
 </script>
@@ -82,7 +110,7 @@ import type { Duration} from 'moment';
   {#if state == TimerState.INITIALIZED}
     <div class="timer-action" on:click={start}>{@html circledPlay}</div>
   {/if}
-  {#if state == TimerState.STARTED}
+  {#if state == TimerState.ONGOING}
     <div class="timer-action" on:click={pause}>{@html circledPause}</div>
   {/if}
   {#if state == TimerState.PAUSED}

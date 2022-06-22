@@ -55,7 +55,6 @@ export class DurationPickerModal extends Modal {
     duration: Duration,
     set: (duration: Duration) => void,
   ) {
-    console.log(app)
     super(app)
 
     this.title = title

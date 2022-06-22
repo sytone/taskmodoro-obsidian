@@ -1,6 +1,6 @@
 export const enum TimerState{
     INITIALIZED,
-    STARTED,
+    ONGOING,
     
     PAUSED,
   }
