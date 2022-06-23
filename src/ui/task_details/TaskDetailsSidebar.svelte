@@ -1,7 +1,7 @@
 <script lang="ts">
   import moment, { Duration, duration, Moment } from 'moment';
 
-  import type TaskDetails from '../../task-details';
+  import type { TaskDetails } from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
   import {
     DatePickerModal,
@@ -11,6 +11,7 @@
   import { formatDate, formatFMDate } from '../../util';
   import { externalLink } from '../../graphics';
   import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
+  import { DurationPickerType } from './../../enums/duration-picker-type';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -18,8 +19,15 @@
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
-  let isDurationPickerVisible = false;
-
+  // Rewrite as extension method for duration
+  let estWorktimeTitle: string;
+  $: {
+    estWorktimeTitle =
+      td.estWorktime.asMinutes() === 0
+        ? 'None'
+        : `${td.estWorktime.days() * 24 + td.estWorktime.hours()}h
+           ${td.estWorktime.minutes()}min`;
+  }
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
 
@@ -45,8 +53,7 @@
   };
 
   const showScheduledDatePicker = () => {
-    let pickerStartDate =
-      td.scheduled == '' ? moment() : moment(td.scheduled);
+    let pickerStartDate = td.scheduled == '' ? moment() : moment(td.scheduled);
 
     const onSet = (newScheduledDate: Moment) => {
       td.scheduled = formatDate(newScheduledDate);
@@ -88,8 +95,31 @@
     new RepeatPickerModal(td.plugin.app, startRepeatPickerConfig, onSet).open();
   };
 
-  const showPomoLengthPicker = () => {
+  const showEstimatedWorktimePicker = () => {
+    const onSet = (estWorktime: Duration) => {
+      td.estWorktime = estWorktime;
 
+      td = td;
+      if (TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          td.plugin.app.vault,
+          estWorktime.asMinutes(),
+          'estimated_worktime',
+        );
+      }
+    };
+
+    new DurationPickerModal(
+      td.plugin.app,
+      'Estimated worktime',
+      td.estWorktime,
+      DurationPickerType.EstimatedWorktime,
+      onSet,
+    ).open();
+  };
+
+  const showPomoLengthPicker = () => {
     const onSet = (newPomoLength: Duration) => {
       td.pomoDuration = newPomoLength;
 
@@ -108,9 +138,9 @@
       td.plugin.app,
       'Pomodoro length',
       td.pomoDuration,
+      DurationPickerType.PomodoroLength,
       onSet,
     ).open();
-
   };
 </script>
 
@@ -122,10 +152,15 @@
     <div class="group">
       <div class="label">Pomodoro length</div>
       <div class="sidebar-input" on:click={showPomoLengthPicker}>
-        {td.pomoDuration.format()}
+        {`${td.pomoDuration.asMinutes()}min`}
       </div>
     </div>
-
+    <div class="group">
+      <div class="label">Estimated worktime</div>
+      <div class="sidebar-input" on:click={showEstimatedWorktimePicker}>
+        {estWorktimeTitle}
+      </div>
+    </div>
     <div class="group">
       <div class="label">Due date</div>
       <div class="sidebar-input" on:click={showDueDatePicker}>

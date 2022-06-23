@@ -1,32 +1,36 @@
 <!-- Credits: https://github.com/SharifClick/svelte-touch-timepicker -->
 <script lang="ts">
+  import type { SwitcherType } from './../../../enums/duration-picker-type';
+
   import { afterUpdate, onMount, createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
-  export let selected: number;
+  export let selectedPos: number;
   export let data: number[];
-  export let type: 'POMO_LENGTH';
+  export let type: SwitcherType;
 
-  let currOffset = selected ? (-selected+1) * 50 : 0;
+  let currOffset = (-selectedPos + 1) * 50
   let offsetChange = 0;
   let dragging = false;
-  let itemWrapper: HTMLUListElement, previousY: any;
+  let itemWrapper: HTMLUListElement, prevOffsetY: any;
+
+  let bias: 0|1 = data[0] as 0|1
 
   onMount(() => {
     setCurrPositionOffset();
   });
 
   afterUpdate(() => {
-    let selectedPositionOffset = (-selected+1) * 50;
+    let selectedPositionOffset = (-selectedPos + bias) * 50;
     if (!dragging && currOffset !== selectedPositionOffset) {
       currOffset = selectedPositionOffset;
       setCurrPositionOffset();
     }
   });
 
-  function onDurationChange(type: string, newDurationData: number) {
+  function onDurationChange(switcherType: SwitcherType, durInputArg: number) {
     dispatch('durationChange', {
-      type,
-      newDurationData: newDurationData,
+      switcherType,
+      durInputArg,
     });
   }
 
@@ -40,7 +44,7 @@
   }
 
   const onMouseDown = (event: any) => {
-    previousY = event.touches ? event.touches[0].clientY : event.clientY;
+    prevOffsetY = event.touches ? event.touches[0].clientY : event.clientY;
     dragging = true;
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
@@ -50,18 +54,19 @@
 
   const onMouseMove = (event: any) => {
     let clientY = event.touches ? event.touches[0].clientY : event.clientY;
-    offsetChange = clientY - previousY;
+    offsetChange = clientY - prevOffsetY;
     let maxPosition = -data.length * 50;
-    
+
     let _position = currOffset + offsetChange;
     currOffset = Math.max(maxPosition, Math.min(50, _position));
-    previousY = event.touches ? event.touches[0].clientY : event.clientY;
+    prevOffsetY = event.touches ? event.touches[0].clientY : event.clientY;
     setCurrPositionOffset();
   };
 
   const onMouseUp = () => {
-    let maxOffset = -(data.length - 1) * 50;
-    let currRoundedOffset = Math.round((currOffset + offsetChange * 5) / 50) * 50;
+    let maxOffset = -(data.length - bias) * 50;
+    let currRoundedOffset =
+      Math.round((currOffset + offsetChange * 5) / 50) * 50;
     let finalOffset = Math.max(maxOffset, Math.min(0, currRoundedOffset));
     dragging = false;
     currOffset = finalOffset;
@@ -70,8 +75,8 @@
     window.removeEventListener('touchmove', onMouseMove);
     window.removeEventListener('touchend', onMouseUp);
     setCurrPositionOffset();
-    let newDurationData = (-finalOffset / 50)+1
-    onDurationChange(type, newDurationData  );
+    let durInputArg = -finalOffset / 50 + bias;
+    onDurationChange(type, durInputArg);
   };
 </script>
 

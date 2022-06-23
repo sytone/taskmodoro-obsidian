@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type TaskDetails from '../../task-details';
+  import type {TaskDetails} from '../../task-details';
   import type { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
 

@@ -8,6 +8,7 @@ import type { TaskDetailsMode } from './enums/component-context'
 import type { Task } from './file-interface'
 import DurationPicker from './ui/pickers/duration_picker/DurationPicker.svelte'
 import { on } from 'events'
+import type { DurationPickerType } from './enums/duration-picker-type'
 export class TaskDetailsModal extends Modal {
   private readonly plugin: TQPlugin
   private readonly mode: TaskDetailsMode
@@ -49,17 +50,19 @@ export class DurationPickerModal extends Modal {
   private readonly title: string
   private readonly duration: Duration
   private readonly set: (duration: Duration) => void
+  private readonly type: DurationPickerType
   constructor (
     app: App,
     title: string,
     duration: Duration,
+    type: DurationPickerType,
     set: (duration: Duration) => void,
   ) {
     super(app)
-
     this.title = title
     this.duration = duration
-    this.set=set
+    this.type = type
+    this.set = set
   }
 
   public onOpen = (): void => {
@@ -71,6 +74,7 @@ export class DurationPickerModal extends Modal {
         close: () => this.close(),
         set: this.set,
         duration: this.duration,
+        type: this.type
       },
     })
   }
@@ -79,7 +83,6 @@ export class DurationPickerModal extends Modal {
     const { titleEl, contentEl } = this
     titleEl.empty()
     contentEl.empty()
-
   }
 }
 

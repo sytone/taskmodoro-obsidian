@@ -17,8 +17,7 @@
     TaskDetailsMode,
     TaskListTileParent,
   } from '../enums/component-context';
-  import { toInteger } from 'lodash';
-import TaskDetails from '../task-details';
+import {TaskDetails} from '../task-details';
   type Moment = moment.Moment;
 
   export let plugin: TQPlugin;

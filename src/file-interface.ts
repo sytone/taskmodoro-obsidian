@@ -4,11 +4,12 @@ import {
   setCompletedDate,
   setDueDateToNext,
 } from './parser'
-import TQPlugin from './main'
-import { Moment } from 'moment'
+import type TQPlugin from './main'
+import type { Moment } from 'moment'
 import { err, ok, Result } from 'neverthrow'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Writable, writable } from 'svelte/store'
+import type { TimeDuration } from './task-details'
 
 export interface Task {
   file: TFile
@@ -227,7 +228,7 @@ export class FileInterface {
   public readonly updateFMProp = async (
     file: TFile,
     vault: Vault,
-    value: Moment | String | Number,
+    value: Moment | String | Number | TimeDuration,
     propName: string,
   ): Promise<void> =>
     withFileContents(file, vault, (lines: string[]): boolean => {
@@ -291,6 +292,8 @@ export class FileInterface {
   public readonly storeNewTask = async (
     taskName: string,
     description: string,
+    pomodoroLength: number,
+    estWorktime: TimeDuration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -302,6 +305,8 @@ export class FileInterface {
     const data = this.formatNewTask(
       taskName,
       description,
+      pomodoroLength,
+      estWorktime,
       due,
       scheduled,
       repeat,
@@ -323,21 +328,36 @@ export class FileInterface {
   private readonly formatNewTask = (
     taskName: string,
     description: string,
+    pomodoroLength: number,
+    estWorktime: TimeDuration,
     due: string,
     scheduled: string,
     repeat: string,
     tags: string[],
   ): string => {
     const frontMatter = []
+
+    if (pomodoroLength) {
+      frontMatter.push(`pomodoro_length: '${pomodoroLength}'`)
+    }
+
+    if (estWorktime) {
+      let fmH = `  hours: ${estWorktime.hours}`
+      let fmM = `  minutes: ${estWorktime.minutes}`
+      frontMatter.push(`estimated_worktime:\n${fmH}\n${fmM}`)
+    }
+
     if (due) {
       frontMatter.push(`due: '${due}'`)
     }
     if (scheduled) {
       frontMatter.push(`scheduled: '${scheduled}'`)
     }
+
     if (repeat) {
       frontMatter.push('repeat: ' + repeat)
     }
+
     if (tags && tags.length > 0 && tags[0].length > 0) {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }

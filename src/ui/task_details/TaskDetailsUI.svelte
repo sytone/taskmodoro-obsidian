@@ -4,7 +4,7 @@
 import type TQPlugin from '../../main';
 import type { TaskDetailsMode } from '../../enums/component-context';
 import type { Task } from '../../file-interface';
-import TaskDetails from '../../task-details';
+import {TaskDetails} from '../../task-details';
 
   export let close: () => void;
   export let plugin: TQPlugin;
