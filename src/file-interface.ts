@@ -9,7 +9,7 @@ import type { Moment } from 'moment'
 import { err, ok, Result } from 'neverthrow'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Writable, writable } from 'svelte/store'
-import type { TimeDuration } from './task-details'
+import type { Duration} from 'moment';
 
 export interface Task {
   file: TFile
@@ -218,7 +218,7 @@ export class FileInterface {
         const ta = frontmatter.get('timer_activity')
         ta.push(activity)
       }
-
+          
       frontmatter.overwrite()
 
       return true
@@ -228,7 +228,7 @@ export class FileInterface {
   public readonly updateFMProp = async (
     file: TFile,
     vault: Vault,
-    value: Moment | String | Number | TimeDuration,
+    value: Moment | String | Number | Object,
     propName: string,
   ): Promise<void> =>
     withFileContents(file, vault, (lines: string[]): boolean => {
@@ -292,8 +292,8 @@ export class FileInterface {
   public readonly storeNewTask = async (
     taskName: string,
     description: string,
-    pomodoroLength: number,
-    estWorktime: TimeDuration,
+    pomoDuration: Duration,
+    estWorktime: Duration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -305,7 +305,7 @@ export class FileInterface {
     const data = this.formatNewTask(
       taskName,
       description,
-      pomodoroLength,
+      pomoDuration,
       estWorktime,
       due,
       scheduled,
@@ -328,8 +328,8 @@ export class FileInterface {
   private readonly formatNewTask = (
     taskName: string,
     description: string,
-    pomodoroLength: number,
-    estWorktime: TimeDuration,
+    pomoDuration: Duration,
+    estWorktime: Duration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -337,19 +337,20 @@ export class FileInterface {
   ): string => {
     const frontMatter = []
 
-    if (pomodoroLength) {
-      frontMatter.push(`pomodoro_length: '${pomodoroLength}'`)
+    if (pomoDuration) {
+      let pomoLen = `  minutes: ${pomoDuration.asMinutes()}`
+      frontMatter.push(`pomodoro_length:\n${pomoLen}`)
     }
 
     if (estWorktime) {
-      let fmH = `  hours: ${estWorktime.hours}`
-      let fmM = `  minutes: ${estWorktime.minutes}`
-      frontMatter.push(`estimated_worktime:\n${fmH}\n${fmM}`)
+      let fmM = `  minutes: ${estWorktime.asMinutes()}`
+      frontMatter.push(`estimated_worktime:\n${fmM}`)
     }
 
     if (due) {
       frontMatter.push(`due: '${due}'`)
     }
+
     if (scheduled) {
       frontMatter.push(`scheduled: '${scheduled}'`)
     }

@@ -55,8 +55,11 @@ export class Frontmatter {
     (this.contents[key] = value)
 
   public readonly overwrite = (): void => {
-    const replacer = (k: string, v: Moment | string): any =>
-      moment.isMoment(v) ? (v as Moment).endOf('day').format('YYYY-MM-DD') : v
+    const replacer = (k: string, v: any): any => {
+      return moment.isMoment(v)
+        ? (v as Moment).endOf('day').format('YYYY-MM-DD')
+        : v
+    }
 
     const fmLines = dump(this.contents, { replacer }).trim()
 
@@ -103,8 +106,6 @@ export class Frontmatter {
     this.contents = fm
   }
 }
-
-
 
 export const setCompletedDate = (frontmatter: Frontmatter): void => {
   // Add the current date to the 'completed' frontmatter

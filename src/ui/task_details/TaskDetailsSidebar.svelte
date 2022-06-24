@@ -104,7 +104,7 @@
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          estWorktime.asMinutes(),
+          {minutes: estWorktime.asMinutes()},
           'estimated_worktime',
         );
       }
@@ -117,18 +117,19 @@
       DurationPickerType.EstimatedWorktime,
       onSet,
     ).open();
+
   };
 
   const showPomoLengthPicker = () => {
-    const onSet = (newPomoLength: Duration) => {
-      td.pomoDuration = newPomoLength;
+    const onSet = (newPomoDuration: Duration) => {
+      td.pomoDuration = newPomoDuration;
 
       td = td;
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          newPomoLength.asMinutes(),
+          {minutes: newPomoDuration.asMinutes()},
           'pomodoro_length',
         );
       }
