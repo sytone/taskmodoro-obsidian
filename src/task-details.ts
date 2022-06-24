@@ -22,7 +22,7 @@ export class TaskDetails {
   public due = ''
   public scheduled = ''
   public tags = ''
-  public pomoDuration = moment.duration()
+  public pomoDuration = moment.duration(30, 'minutes')
   public estWorktime = moment.duration()
   public close: () => void
 
@@ -38,11 +38,11 @@ export class TaskDetails {
       this.completed = task.frontmatter.get('completed')
       this.file = task.file
 
-      const pomoLen = toInteger(task.frontmatter.get('pomodoro_length').minutes) || 30
+      const pomoLen = toInteger(task.frontmatter.get('pomodoro_length')?.minutes) || 30
       this.pomoDuration = moment.duration(pomoLen, 'minutes')
 
-      let estWorklength = task.frontmatter.get('estimated_worktime').minutes
-
+      let estWorklength = task.frontmatter.get('estimated_worktime')?.minutes
+      
       if (estWorklength) {
         this.estWorktime.add(estWorklength, 'minutes')
       }

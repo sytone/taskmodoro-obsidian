@@ -7,7 +7,7 @@
     SwitcherType,
   } from './../../../enums/duration-picker-type';
 
-  const worktimeHrs: number[] = new Array(100).fill(0).map((v, i) => i);
+  const worktimeHrs: number[] = new Array(101).fill(0).map((v, i) => i);
   const worktimeMin: number[] = new Array(61).fill(0).map((v, i) => i);
   const pomoLenMin: number[] = new Array(180).fill(1).map((v, i) => v + i);
 
@@ -15,31 +15,32 @@
   export let close: () => void;
   export let set: (duration: Duration) => void;
   export let type: DurationPickerType;
-  let title: string;
+  let currValueTitle: string;
 
-  let switcher1Type: SwitcherType, switcher2Type: SwitcherType;
-  let switcher1Data: number[], switcher2Data: number[];
+  let hSwitcherType: SwitcherType, mSwitcherType: SwitcherType;
+  let hSwitcherData: number[], mSwitcherData: number[];
+  let hSwitcherSelectedPos: number, mSwitcherSelectedPos: number;
 
-  // Reactive only for title
   $: {
     if (type === DurationPickerType.PomodoroLength) {
-      title = `${duration.asMinutes()}min`;
-      switcher2Type = SwitcherType.PomoLengthMin;
-      switcher2Data = pomoLenMin;
+      mSwitcherType = SwitcherType.PomoLengthMin;
+      mSwitcherData = pomoLenMin;
+      mSwitcherSelectedPos = duration.asMinutes();
+      currValueTitle = `${mSwitcherSelectedPos}min`;
     } else if (type === DurationPickerType.EstimatedWorktime) {
-      title =
+      hSwitcherType = SwitcherType.WorktimeHrs;
+      hSwitcherData = worktimeHrs;
+      hSwitcherSelectedPos = duration.days() * 24 + duration.hours();
+
+      mSwitcherType = SwitcherType.WorktimeMin;
+      mSwitcherData = worktimeMin;
+      mSwitcherSelectedPos = duration.minutes();
+      currValueTitle =
         duration.asMinutes() === 0
           ? 'None'
-          : `${
-              duration.days() * 24 + duration.hours()
-            }h ${duration.minutes()}min`;
-
-      switcher1Type = SwitcherType.WorktimeHrs;
-      switcher1Data = worktimeHrs;
-      switcher2Type = SwitcherType.WorktimeMin;
-      switcher2Data = worktimeMin;
+          : `${hSwitcherSelectedPos}h ${mSwitcherSelectedPos}min`;
     }
-    title = duration.asMinutes() == 0 ? 'None' : title;
+    currValueTitle = duration.asMinutes() == 0 ? 'None' : currValueTitle;
   }
 
   let durationChanged = (event: CustomEvent) => {
@@ -48,7 +49,7 @@
       duration = moment.duration(duration.minutes(), 'minutes');
       duration = duration.add(durInputArg, 'hours');
     } else if (switcherType === SwitcherType.WorktimeMin) {
-      duration = moment.duration(duration.hours(), 'hours');
+      duration = moment.duration(duration.days() * 24 + duration.hours(), 'hours');
       duration = duration.add(durInputArg, 'minutes');
     } else if (switcherType === SwitcherType.PomoLengthMin) {
       duration = moment.duration(durInputArg, 'minutes');
@@ -61,47 +62,47 @@
   };
 </script>
 
-<div class="duration-wrapper">
-  <div class="duration">{title}</div>
-  <div class="duration-picker-wrapper">
-    {#if switcher1Data}
-    <div class="duration-picker">
+<div class="duration-picker">
+  <div class="value-title">{currValueTitle}</div>
+  <div class="switchers-container">
+    {#if hSwitcherData}
+      <div class="switcher">
         <Switcher
-          type={switcher1Type}
-          data={switcher1Data}
-          selectedPos={duration.hours()}
+          type={hSwitcherType}
+          data={hSwitcherData}
+          selectedPos={hSwitcherSelectedPos}
           on:durationChange={durationChanged}
         />
       </div>
-      {/if}
+    {/if}
 
-    <div class="duration-picker">
+    <div class="switcher">
       <Switcher
-        type={switcher2Type}
-        data={switcher2Data}
-        selectedPos={duration.minutes()}
+        type={mSwitcherType}
+        data={mSwitcherData}
+        selectedPos={mSwitcherSelectedPos}
         on:durationChange={durationChanged}
       />
     </div>
   </div>
-  <div class="duration-actions">
+  <div class="actions">
     <button class="mod-cta secondary-action" on:click={close}>Cancel</button>
     <button class="mod-cta" on:click={onSet}>Save</button>
   </div>
 </div>
 
 <style>
-  .duration-picker-wrapper {
+  .switchers-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin: 0px 20px;
   }
-  .duration-actions {
+  .duration-picker > .actions {
     margin-top: 2rem;
   }
 
-  .duration-wrapper {
+  .duration-picker {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,14 +110,15 @@
     font-size: var(--svtt-font-size, 20px);
     padding: 1.5rem;
   }
-  .duration-picker {
+
+  .switcher {
     display: flex;
     padding: 50px 0;
     margin: 10px 0;
     overflow: hidden;
   }
 
-  .duration {
+  .duration-picker > .value-title {
     font-size: 30px;
     font-weight: 300;
     margin-bottom: 1rem;

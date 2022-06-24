@@ -8,22 +8,22 @@
   export let data: number[];
   export let type: SwitcherType;
 
-  let currOffset = (-selectedPos + 1) * 50
-  let offsetChange = 0;
+  let currPosOffsetY = (-selectedPos + 1) * 50;
+  let offsetYDelta = 0;
   let dragging = false;
   let itemWrapper: HTMLUListElement, prevOffsetY: any;
 
-  let bias: 0|1 = data[0] as 0|1
+  let bias: 0 | 1 = data[0] as 0 | 1;
 
   onMount(() => {
-    setCurrPositionOffset();
+    applyCurrPosOffset();
   });
 
   afterUpdate(() => {
     let selectedPositionOffset = (-selectedPos + bias) * 50;
-    if (!dragging && currOffset !== selectedPositionOffset) {
-      currOffset = selectedPositionOffset;
-      setCurrPositionOffset();
+    if (!dragging && currPosOffsetY !== selectedPositionOffset) {
+      currPosOffsetY = selectedPositionOffset;
+      applyCurrPosOffset();
     }
   });
 
@@ -34,11 +34,11 @@
     });
   }
 
-  function setCurrPositionOffset() {
+  function applyCurrPosOffset() {
     let itemPosition = `
         will-change: 'transform';
-        transition: transform ${Math.abs(offsetChange) / 100 + 0.1}s;
-        transform: translateY(${currOffset}px)
+        transition: transform ${Math.abs(offsetYDelta) / 100 + 0.1}s;
+        transform: translateY(${currPosOffsetY}px)
       `;
     itemWrapper.style.cssText = itemPosition;
   }
@@ -52,40 +52,52 @@
     window.addEventListener('touchend', onMouseUp);
   };
 
+  const setCurrPosOffset = ()=> {
+    let maxPosOffsetY = -data.length * 50;
+    let newPosOffsetY = currPosOffsetY + offsetYDelta;
+    currPosOffsetY = Math.max(maxPosOffsetY, Math.min(50, newPosOffsetY));
+  }
+
+  const onWheel = (event: WheelEvent) => {
+    let sign = -Math.sign(event.deltaY);
+    offsetYDelta = sign * 75;
+    setCurrPosOffset()
+    prevOffsetY = event.clientY;
+    onMouseUp();
+  };
+
   const onMouseMove = (event: any) => {
     let clientY = event.touches ? event.touches[0].clientY : event.clientY;
-    offsetChange = clientY - prevOffsetY;
-    let maxPosition = -data.length * 50;
-
-    let _position = currOffset + offsetChange;
-    currOffset = Math.max(maxPosition, Math.min(50, _position));
-    prevOffsetY = event.touches ? event.touches[0].clientY : event.clientY;
-    setCurrPositionOffset();
+    offsetYDelta = clientY - prevOffsetY;
+    setCurrPosOffset()
+    prevOffsetY = clientY;
+    applyCurrPosOffset();
   };
 
   const onMouseUp = () => {
-    let maxOffset = -(data.length - bias) * 50;
+    let maxOffset = (-data.length+1) * 50;
     let currRoundedOffset =
-      Math.round((currOffset + offsetChange * 5) / 50) * 50;
+      Math.round((currPosOffsetY + offsetYDelta) / 50) * 50;
     let finalOffset = Math.max(maxOffset, Math.min(0, currRoundedOffset));
     dragging = false;
-    currOffset = finalOffset;
+    currPosOffsetY = finalOffset;
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('mouseup', onMouseUp);
     window.removeEventListener('touchmove', onMouseMove);
     window.removeEventListener('touchend', onMouseUp);
-    setCurrPositionOffset();
+    applyCurrPosOffset();
     let durInputArg = -finalOffset / 50 + bias;
     onDurationChange(type, durInputArg);
   };
 </script>
 
 <div
-  class="duration-time-wrapper"
+  class="switcher-items-wrapper"
   on:mousedown={onMouseDown}
   on:touchstart={onMouseDown}
+  on:wheel={onWheel}
 >
-  <ul bind:this={itemWrapper} class="duration-time-container">
+  <ul bind:this={itemWrapper} class="switcher-items">
     {#each data as item}
       <li>{item}</li>
     {/each}
@@ -97,7 +109,7 @@
     margin-bottom: 0px;
   }
 
-  .duration-time-wrapper {
+  .switcher-items-wrapper {
     position: relative;
     height: 50px;
     margin: 0 10px;
@@ -106,13 +118,13 @@
     border-radius: 0;
   }
 
-  .duration-time-container {
+  .switcher-items {
     margin: 0;
     padding: 0;
   }
 
-  .duration-time-wrapper:before,
-  .duration-time-wrapper:after {
+  .switcher-items-wrapper:before,
+  .switcher-items-wrapper:after {
     content: '';
     position: absolute;
     left: 0;
@@ -124,15 +136,15 @@
     z-index: 1;
   }
 
-  .duration-time-wrapper:before {
+  .switcher-items-wrapper:before {
     top: -51px;
   }
 
-  .duration-time-wrapper:after {
+  .switcher-items-wrapper:after {
     bottom: -51px;
   }
 
-  .duration-time-container li {
+  .switcher-items li {
     display: flex;
     justify-content: center;
     align-items: center;
