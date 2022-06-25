@@ -150,7 +150,7 @@ import {TaskDetails} from '../task-details';
     on:mouseleave={headerMouseLeave}
   >
     <span class="leading">
-      <Checkbox context="listTile" bind:checked={task.checked} />
+      <Checkbox context="listTile" on:toggle={toggleChecked} checked={task.checked} />
       {#if parent == TaskListTileParent.TasksList}
         <PomodoroTaskStartBtn
           on:click={showPomodoroTaskView}

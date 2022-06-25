@@ -12,10 +12,14 @@
   import { externalLink } from '../../graphics';
   import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
   import { DurationPickerType } from './../../enums/duration-picker-type';
+  import { StaticSuggest } from '../../suggest';
+  import TextSuggest from '../TextSuggest.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
+  const tagCache = Object.keys((td.plugin.app.metadataCache as any).getTags());
+  let tagsInputElement: HTMLElement;
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
@@ -95,7 +99,7 @@
     new RepeatPickerModal(td.plugin.app, startRepeatPickerConfig, onSet).open();
   };
 
-  const showEstimatedWorktimePicker = () => {
+  const showEstWorktimePicker = () => {
     const onSet = (estWorktime: Duration) => {
       td.estWorktime = estWorktime;
 
@@ -104,7 +108,7 @@
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          {minutes: estWorktime.asMinutes()},
+          { minutes: estWorktime.asMinutes() },
           'estimated_worktime',
         );
       }
@@ -117,7 +121,6 @@
       DurationPickerType.EstimatedWorktime,
       onSet,
     ).open();
-
   };
 
   const showPomoLengthPicker = () => {
@@ -129,7 +132,7 @@
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          {minutes: newPomoDuration.asMinutes()},
+          { minutes: newPomoDuration.asMinutes() },
           'pomodoro_length',
         );
       }
@@ -143,6 +146,11 @@
       onSet,
     ).open();
   };
+
+  // const showTagsSuggester = () => {
+
+  //   new StaticSuggest(td.plugin.app,tagsInputElement,)
+  // };
 </script>
 
 <div class="task-details-sidebar">
@@ -150,18 +158,6 @@
     <span class="external-link-icon">{@html externalLink}</span>
   </span>
   <div class="sidebar-container">
-    <div class="group">
-      <div class="label">Pomodoro length</div>
-      <div class="sidebar-input" on:click={showPomoLengthPicker}>
-        {`${td.pomoDuration.asMinutes()}min`}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Estimated worktime</div>
-      <div class="sidebar-input" on:click={showEstimatedWorktimePicker}>
-        {estWorktimeTitle}
-      </div>
-    </div>
     <div class="group">
       <div class="label">Due date</div>
       <div class="sidebar-input" on:click={showDueDatePicker}>
@@ -179,6 +175,33 @@
       <div class="sidebar-input" on:click={showRepeatPicker}>
         {td.repeatConfig == '' || !td.repeatConfig ? 'None' : td.repeatConfig}
       </div>
+      <div class="group">
+        <div class="label">Pomodoro length</div>
+        <div class="sidebar-input" on:click={showPomoLengthPicker}>
+          {`${td.pomoDuration.asMinutes()}min`}
+        </div>
+      </div>
+      <div class="group">
+        <div class="label">Estimated worktime</div>
+        <div class="sidebar-input" on:click={showEstWorktimePicker}>
+          {estWorktimeTitle}
+        </div>
+      </div>
+      <div class="group">
+        <div class="label">Tags</div>
+        <!-- <input
+          bind:this={tagsInputElement}
+          class="sidebar-input"
+          on:click={showTagsSuggester}
+        /> -->
+        <TextSuggest
+          app={td.plugin.app}
+          suggestions={tagCache}
+          placeholder="None"
+          value={td.tags}
+        />
+      </div>
+      <div />
     </div>
   </div>
   {#if mode === TaskDetailsMode.Create}
