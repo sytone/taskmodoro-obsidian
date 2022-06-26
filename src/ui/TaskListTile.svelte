@@ -1,6 +1,12 @@
 <script lang="ts">
   import type { Task } from '../file-interface';
-  import { calendar, hourglass, externalLink } from '../graphics';
+  import {
+    calendar,
+    hourglass,
+    externalLink,
+    repeat,
+    timer,
+  } from '../graphics';
   import {
     DatePickerModal,
     RepeatPickerModal,
@@ -17,7 +23,8 @@
     TaskDetailsMode,
     TaskListTileParent,
   } from '../enums/component-context';
-import {TaskDetails} from '../task-details';
+  import { TaskDetails } from '../task-details';
+import { durationFormat_hm } from '../util';
   type Moment = moment.Moment;
 
   export let plugin: TQPlugin;
@@ -28,10 +35,10 @@ import {TaskDetails} from '../task-details';
   let td: TaskDetails;
   let taskNameEl: HTMLElement;
   let isHeaderFocus = false;
-
-
+  let worktimeSpent: string;
   $: {
     td = new TaskDetails(plugin, task);
+    // console.log(td.taskName,'   :  ',td.spentWorktime)
   }
 
   let taskTileBg =
@@ -114,15 +121,20 @@ import {TaskDetails} from '../task-details';
   };
 
   const showRepeatPicker = () => {
-    new RepeatPickerModal(plugin.app, td.repeat, (repeatConfig: string) => {
-      td.repeat = repeatConfig;
-      td=td
-      plugin.fileInterface.updateTaskRepeat(
-        task.file,
-        plugin.app.vault,
-        repeatConfig,
-      );
-    }).open();
+    new RepeatPickerModal(
+      plugin.app,
+      td.repeatConfig,
+      (newRepeatConfig: string) => {
+        td.repeatConfig = newRepeatConfig;
+        td = td;
+        plugin.fileInterface.updateFMProp(
+          task.file,
+          plugin.app.vault,
+          newRepeatConfig,
+          'repeat',
+        );
+      },
+    ).open();
   };
 
   const showPomodoroTaskView = async () => {
@@ -150,7 +162,11 @@ import {TaskDetails} from '../task-details';
     on:mouseleave={headerMouseLeave}
   >
     <span class="leading">
-      <Checkbox context="listTile" on:toggle={toggleChecked} checked={task.checked} />
+      <Checkbox
+        context="listTile"
+        on:toggle={toggleChecked}
+        checked={task.checked}
+      />
       {#if parent == TaskListTileParent.TasksList}
         <PomodoroTaskStartBtn
           on:click={showPomodoroTaskView}
@@ -165,7 +181,13 @@ import {TaskDetails} from '../task-details';
         bind:this={taskNameEl}
       />
       <div class="props">
-        {#if td.due}
+        {#if td.spentWorktime && td.spentWorktime.asMinutes() !==0}
+          <span class="group">
+            {@html timer}
+            <span id="timer">{durationFormat_hm(td.spentWorktime)}</span>
+          </span>
+        {/if}
+        {#if td.due }
           <span class="group" on:click={showDuePicker}>
             {@html calendar}
             <span id="due">{td.due.format('YYYY-MM-DD')}</span>
@@ -177,10 +199,16 @@ import {TaskDetails} from '../task-details';
             <span id="scheduled">{td.scheduled.format('YYYY-MM-DD')}</span>
           </span>
         {/if}
+        {#if td.repeatConfig !== ''}
+          <span class="group" on:click={showRepeatPicker}>
+            {@html repeat}
+            <span id="repeat">{td.repeatConfig.toLowerCase()}</span>
+          </span>
+        {/if}
       </div>
     </div>
     {#if isHeaderFocus}
-      <span class="trailing">
+      <span class="trailing-menu">
         <span class="external-link-wrapper" on:click={viewSource}>
           {@html externalLink}
         </span>
@@ -198,7 +226,7 @@ import {TaskDetails} from '../task-details';
     cursor: pointer;
   }
 
-  .trailing {
+  .trailing-menu {
     position: absolute;
     right: 0px;
     top: 0px;
@@ -216,12 +244,12 @@ import {TaskDetails} from '../task-details';
     cursor: pointer;
   }
 
-
   .leading {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
   }
+
   .group {
     display: flex;
     flex-direction: row;
@@ -231,22 +259,6 @@ import {TaskDetails} from '../task-details';
 
   .group:hover {
     cursor: pointer;
-  }
-
-  .props {
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
-  }
-
-  #due {
-    padding-left: 4px;
-    color: #8562cb;
-  }
-
-  #scheduled {
-    padding-left: 4px;
-    color: #54a8b4;
   }
 
   .header > .leading {
@@ -274,5 +286,36 @@ import {TaskDetails} from '../task-details';
     display: inline-block;
     margin: 0 8px;
     font-size: 1.25rem;
+  }
+
+  :global(.repeat-icon, .timer-icon) {
+    width: 16px;
+    height: auto;
+  }
+
+  .props {
+    font-size: 1rem;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #repeat {
+    padding-left: 4px;
+    color: #c86092;
+  }
+
+  #due {
+    padding-left: 4px;
+    color: #8562cb;
+  }
+
+  #timer{
+    padding-left: 4px;
+    color: #B63737;
+  }
+
+  #scheduled {
+    padding-left: 4px;
+    color: #54a8b4;
   }
 </style>

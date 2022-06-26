@@ -23,15 +23,6 @@
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
-  // Rewrite as extension method for duration
-  let estWorktimeTitle: string;
-  $: {
-    estWorktimeTitle =
-      td.estWorktime.asMinutes() === 0
-        ? 'None'
-        : `${td.estWorktime.days() * 24 + td.estWorktime.hours()}h
-           ${td.estWorktime.minutes()}min`;
-  }
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
 
@@ -108,7 +99,9 @@
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          { minutes: estWorktime.asMinutes() },
+          {
+            minutes: estWorktime.asMinutes(),
+          },
           'estimated_worktime',
         );
       }
@@ -132,7 +125,9 @@
         td.plugin.fileInterface.updateFMProp(
           td.file,
           td.plugin.app.vault,
-          { minutes: newPomoDuration.asMinutes() },
+          {
+            minutes: newPomoDuration.asMinutes(),
+          },
           'pomodoro_length',
         );
       }
@@ -175,41 +170,41 @@
       <div class="sidebar-input" on:click={showRepeatPicker}>
         {td.repeatConfig == '' || !td.repeatConfig ? 'None' : td.repeatConfig}
       </div>
-      <div class="group">
-        <div class="label">Pomodoro length</div>
-        <div class="sidebar-input" on:click={showPomoLengthPicker}>
-          {`${td.pomoDuration.asMinutes()}min`}
-        </div>
+    </div>
+    <div class="group">
+      <div class="label">Pomodoro length</div>
+      <div class="sidebar-input" on:click={showPomoLengthPicker}>
+        {`${td.pomoDuration.asMinutes()}min`}
       </div>
-      <div class="group">
-        <div class="label">Estimated worktime</div>
-        <div class="sidebar-input" on:click={showEstWorktimePicker}>
-          {estWorktimeTitle}
-        </div>
+    </div>
+    <div class="group">
+      <div class="label">Estimated worktime</div>
+      <div class="sidebar-input" on:click={showEstWorktimePicker}>
+        {td.estWorktimeStr}
       </div>
-      <div class="group">
-        <div class="label">Tags</div>
-        <!-- <input
+    </div>
+    <div class="group">
+      <div class="label">Tags</div>
+      <!-- <input
           bind:this={tagsInputElement}
           class="sidebar-input"
           on:click={showTagsSuggester}
-        /> -->
-        <TextSuggest
-          app={td.plugin.app}
-          suggestions={tagCache}
-          placeholder="None"
-          value={td.tags}
-        />
-      </div>
-      <div />
+            /> -->
+      <TextSuggest
+        app={td.plugin.app}
+        suggestions={tagCache}
+        placeholder="None"
+        value={td.tags}
+      />
     </div>
   </div>
+  <!-- </div> -->
   {#if mode === TaskDetailsMode.Create}
     <div class="create-btn-wrapper">
       <button
         disabled={!isCreateBtnEnabled}
-        class="mod-cta create-btn 
-      {isCreateBtnEnabled ? '' : 'disabled-btn'}"
+        class="mod-cta create-btn
+                        {isCreateBtnEnabled ? '' : 'disabled-btn'}"
         on:click={td.onCreate}>Create</button
       >
     </div>
@@ -246,12 +241,15 @@
     padding: 24px 24px;
     /* position: relative; */
   }
+
   .sidebar-container {
     padding: 24px 0px;
   }
+
   .group {
     padding-bottom: 24px;
   }
+
   .sidebar-input {
     background-color: transparent;
     border: none;

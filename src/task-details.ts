@@ -1,14 +1,12 @@
 import TQPlugin from './main'
 import { Task } from './file-interface'
 import { TFile } from 'obsidian'
-import { formatDate } from './util'
+import { formatDate, durationFormat_hm } from './util';
 import moment from 'moment'
 import MomentDurationSetup from 'moment-duration-format'
 import { toInteger } from 'lodash'
 import { Duration } from 'moment'
 MomentDurationSetup(moment)
-
-
 
 export class TaskDetails {
   public plugin: TQPlugin
@@ -23,28 +21,49 @@ export class TaskDetails {
   public scheduled = ''
   public tags = ''
   public pomoDuration = moment.duration(30, 'minutes')
-  public estWorktime = moment.duration()
+  public estWorktime: Duration
+  public spentWorktime: Duration
   public close: () => void
+
+
+  public get estWorktimeStr (): string {
+    let estWorktimeStr =
+      !this.estWorktime || this.estWorktime.asMinutes() === 0
+        ? 'None'
+        : `${durationFormat_hm(this.estWorktime)}`
+    return estWorktimeStr
+  }
 
   constructor (plugin: TQPlugin, task: Task | undefined = undefined) {
     this.plugin = plugin
     this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags())
     if (task) {
+      let fm = task.frontmatter
       this.due = formatDate(task.due)
-      this.repeatConfig = task.frontmatter.get('repeat')
+      this.repeatConfig = fm.get('repeat')
       this.scheduled = formatDate(task.scheduled)
       this.taskName = task.taskName
       this.description = task.description
-      this.completed = task.frontmatter.get('completed')
+      this.completed = fm.get('completed')
       this.file = task.file
 
-      const pomoLen = toInteger(task.frontmatter.get('pomodoro_length')?.minutes) || 30
+      const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
       this.pomoDuration = moment.duration(pomoLen, 'minutes')
 
-      let estWorklength = task.frontmatter.get('estimated_worktime')?.minutes
-      
+      let estWorklength = fm.get('estimated_worktime')?.minutes
+
       if (estWorklength) {
-        this.estWorktime.add(estWorklength, 'minutes')
+        this.estWorktime = moment.duration(estWorklength, 'minutes')
+      }
+
+      let ta: [{ start: string; end: string }] = fm.get('timer_activity')
+      // console.log('ta: ', ta, 'fmTA: ', fm.get('timer_acivity'))
+      if (ta) {
+        this.spentWorktime = moment.duration()
+        ta.forEach(a => {
+          let diff = moment(a.end).diff(moment(a.start))
+          this.spentWorktime.add(diff, 'milliseconds')
+        })
       }
 
       // this.overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
