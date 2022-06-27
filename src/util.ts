@@ -1,4 +1,4 @@
-import type { Moment, Duration } from 'moment'
+import { Moment, Duration } from 'moment'
 
 export const formatDate = (date: Moment | undefined): string => {
   if (!date) return
@@ -9,8 +9,20 @@ export const formatFMDate = (date: Moment): Date => {
   return date.endOf('day').toDate()
 }
 
-export const durationFormat_hm =  (dur: Duration): string => {
-  let hours = dur.weeks() * 7 + dur.days() * 24 + dur.hours()
-
-  return `${hours}h ${dur?.minutes()}min`
+export const durationFormat_hm = (dur: Duration): string => {
+  let hrs = Math.round(
+    dur
+      .clone()
+      .subtract(dur.minutes())
+      .asHours(),
+  )
+  let mins = dur.minutes()
+  if (hrs > 0) {
+    if (mins === 0) {
+      return `${hrs}h`
+    }
+    return `${hrs}h ${mins}min`
+  } else {
+    return `${mins}min`
+  }
 }

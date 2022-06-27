@@ -24,7 +24,7 @@
     TaskListTileParent,
   } from '../enums/component-context';
   import { TaskDetails } from '../task-details';
-import { durationFormat_hm } from '../util';
+  import { durationFormat_hm } from '../util';
   type Moment = moment.Moment;
 
   export let plugin: TQPlugin;
@@ -35,10 +35,15 @@ import { durationFormat_hm } from '../util';
   let td: TaskDetails;
   let taskNameEl: HTMLElement;
   let isHeaderFocus = false;
-  let worktimeSpent: string;
+  let showWorktimeGroup: boolean;
+  let showEstWorktimeGroup: boolean;
   $: {
     td = new TaskDetails(plugin, task);
-    // console.log(td.taskName,'   :  ',td.spentWorktime)
+
+    showEstWorktimeGroup = td.estWorktime && td.estWorktime.asMinutes() !== 0;
+    let showSpentWorktimeGroup =
+      td.spentWorktime && td.spentWorktime.asMinutes() !== 0;
+    showWorktimeGroup = showSpentWorktimeGroup || showEstWorktimeGroup;
   }
 
   let taskTileBg =
@@ -181,28 +186,46 @@ import { durationFormat_hm } from '../util';
         bind:this={taskNameEl}
       />
       <div class="props">
-        {#if td.spentWorktime && td.spentWorktime.asMinutes() !==0}
+        {#if showWorktimeGroup}
           <span class="group">
-            {@html timer}
-            <span id="timer">{durationFormat_hm(td.spentWorktime)}</span>
+            <span id="spent-worktime-container" class="group">
+              {@html timer}
+              <span class="prop-text" id="spent-worktime"
+                >{durationFormat_hm(td.spentWorktime)}</span
+              >
+            </span>
+            {#if showEstWorktimeGroup}
+              <span id="worktime-seperator"> / </span>
+              <span id="est-worktime-container" class="group">
+                {@html timer}
+                <span class="prop-text" id="est-worktime"
+                  >{durationFormat_hm(td.estWorktime)}</span
+                >
+              </span>
+            {/if}
           </span>
         {/if}
-        {#if td.due }
+        {#if td.due}
           <span class="group" on:click={showDuePicker}>
             {@html calendar}
-            <span id="due">{td.due.format('YYYY-MM-DD')}</span>
+            <span class="prop-text" id="due">{td.due.format('YYYY-MM-DD')}</span
+            >
           </span>
         {/if}
         {#if td.scheduled}
           <span class="group" on:click={showSchedulePicker}>
             {@html hourglass}
-            <span id="scheduled">{td.scheduled.format('YYYY-MM-DD')}</span>
+            <span class="prop-text" id="scheduled"
+              >{td.scheduled.format('YYYY-MM-DD')}</span
+            >
           </span>
         {/if}
         {#if td.repeatConfig !== ''}
           <span class="group" on:click={showRepeatPicker}>
             {@html repeat}
-            <span id="repeat">{td.repeatConfig.toLowerCase()}</span>
+            <span class="prop-text" id="repeat"
+              >{td.repeatConfig.toLowerCase()}</span
+            >
           </span>
         {/if}
       </div>
@@ -290,7 +313,31 @@ import { durationFormat_hm } from '../util';
 
   :global(.repeat-icon, .timer-icon) {
     width: 16px;
+    min-width: 16px;
     height: auto;
+  }
+
+  :global(#spent-worktime-container > .timer-icon path) {
+    fill: #b63737;
+  }
+
+  :global(#est-worktime-container > .timer-icon path) {
+    fill: #b63737;
+    opacity: 0.7;
+    /* fill: #A58F8E; */
+  }
+
+  #est-worktime-container {
+    margin-right: 0px;
+  }
+
+  #spent-worktime-container {
+    margin-right: 0px;
+  }
+
+  #worktime-seperator {
+    opacity: 0.5;
+    margin-left: 8px;
   }
 
   .props {
@@ -299,23 +346,32 @@ import { durationFormat_hm } from '../util';
     flex-direction: row;
   }
 
-  #repeat {
+  .group:first-of-type {
+    margin-left: 4px;
+  }
+
+  .prop-text {
     padding-left: 4px;
+  }
+
+  #repeat {
     color: #c86092;
   }
 
   #due {
-    padding-left: 4px;
     color: #8562cb;
   }
 
-  #timer{
-    padding-left: 4px;
-    color: #B63737;
+  #spent-worktime {
+    color: #b63737;
+  }
+
+  #est-worktime {
+    color: #b63737;
+    opacity: 0.7;
   }
 
   #scheduled {
-    padding-left: 4px;
     color: #54a8b4;
   }
 </style>
