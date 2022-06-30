@@ -3,29 +3,28 @@
   import type TQPlugin from '../../main';
   import type { Duration } from 'moment';
   import { TaskListTileParent } from '../../enums/component-context';
-  import TaskListTile from './../TaskListTile.svelte';
-  import PomodoroTimer from './PomodoroTimer.svelte';
+  import TaskListTile from '../TaskTile.svelte';
+  import Timer from './Timer.svelte';
   import moment from 'moment';
-
-  export let task: Task;
+  import type { TaskDetails } from 'src/task-details';
+  export let td: TaskDetails;
   export let plugin: TQPlugin;
-  export let duration: Duration | undefined;
 </script>
 
 <div class="tq">
-  <div class="pomodoro-task-wrapper">
+  <div class="timer-task-container">
     <TaskListTile
-      parent={TaskListTileParent.PomodoroTaskView}
-      {plugin}
-      {task}
       view={null}
+      bind:td
+      parent={TaskListTileParent.TimerTaskView}
     />
   </div>
-  <PomodoroTimer file={task.file} {plugin} initialDuration={duration} />
+  <Timer file={td.file} {plugin} initialDuration={td.pomoDuration} />
 </div>
 
 <style>
-  .pomodoro-task-wrapper {
+  .timer-task-container {
     padding: 0 8px;
   }
+
 </style>

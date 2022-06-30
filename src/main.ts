@@ -4,8 +4,8 @@ import { convertLegacyTask } from './legacy-parser'
 import { TaskDetailsModal } from './modals'
 import { ISettings, settingsWithDefaults } from './settings'
 import { stateFromConfig } from './state'
-import TasksList from './ui/TasksList.svelte'
-import { VIEW_TYPE_POMODORO_TASK } from './constants'
+import TasksList from './ui/QueryTasksList.svelte'
+import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './constants'
 import {
   MarkdownPostProcessorContext,
   MarkdownView,
@@ -15,9 +15,10 @@ import {
   Setting,
 } from 'obsidian'
 import { writable } from 'svelte/store'
-import { PomodoroTaskView } from './pomodoro-task-view'
+import { TimerTaskView } from './timer-task-view'
 import type { Duration } from 'moment'
 import { TaskDetailsMode } from './enums/component-context'
+import type { TaskDetails } from './task-details';
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings
@@ -34,8 +35,8 @@ export default class TQPlugin extends Plugin {
     this.taskCache = new TaskCache(this, this.app)
 
     this.registerView(
-      VIEW_TYPE_POMODORO_TASK,
-      leaf => new PomodoroTaskView(leaf, this),
+      VIEW_TYPE_TIMER_TASK,
+      leaf => new TimerTaskView(leaf, this),
     )
 
     this.addRibbonIcon('checkbox-glyph', 'tq', () => {
@@ -133,7 +134,7 @@ export default class TQPlugin extends Plugin {
         new Notice('Cannot create a task with no "task" property')
         return
       }
-      await this.fileInterface.storeNewTask(
+      await this.fileInterface.storeNestedTasks(
         params.taskName,
         params.description,
         params.due,
@@ -146,39 +147,29 @@ export default class TQPlugin extends Plugin {
     })
   }
   onunload () {
-    this.app.workspace.detachLeavesOfType(VIEW_TYPE_POMODORO_TASK)
+    this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
 
-  async activatePomodoroTaskView (task: Task, duration: Duration) {
-
-    const getPomodoroTaskView = (): PomodoroTaskView => {
-      let pomodoroTaskLeaf = this.app.workspace.getLeavesOfType(
-        VIEW_TYPE_POMODORO_TASK,
-      )[0]
-      let pomodoroTaskView = pomodoroTaskLeaf.view as PomodoroTaskView
-      return pomodoroTaskView
-    }
-
-    const SetDataPomodoroTaskView = (pomodoroTaskView: PomodoroTaskView) => {
-      pomodoroTaskView.task = task
-      pomodoroTaskView.duration = duration
-    }
+  async activatePomodoroTaskView (td: TaskDetails, duration: Duration) {
 
     if (
-      this.app.workspace.getLeavesOfType(VIEW_TYPE_POMODORO_TASK).length === 0
+      this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK).length === 0
     ) {
       await this.app.workspace.getRightLeaf(false).setViewState({
-        type: VIEW_TYPE_POMODORO_TASK,
+        type: VIEW_TYPE_TIMER_TASK,
         active: true,
       })
     }
 
-    let pomoTaskView = getPomodoroTaskView()
-    SetDataPomodoroTaskView(pomoTaskView)
-    await pomoTaskView.onOpen()
+    let timerTaskLeaf = this.app.workspace.getLeavesOfType(
+      VIEW_TYPE_TIMER_TASK,
+    )[0]
+    let timerTaskView = timerTaskLeaf.view as TimerTaskView
+    timerTaskView.td = td
+    await timerTaskView.onOpen()
     
     this.app.workspace.revealLeaf(
-      this.app.workspace.getLeavesOfType(VIEW_TYPE_POMODORO_TASK)[0],
+      this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK)[0],
     )
   }
 
@@ -255,7 +246,7 @@ class SettingsTab extends PluginSettingTab {
     )
   }
   onunload () {
-    this.app.workspace.detachLeavesOfType(VIEW_TYPE_POMODORO_TASK)
+    this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
 }
 

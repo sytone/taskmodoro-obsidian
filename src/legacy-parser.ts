@@ -22,7 +22,7 @@ export const convertLegacyTask = (
   const fileDate = window.moment(activeLeaf.file.basename, true);
   const due = fileDate.isValid() ? fileDate.format('YYYY-MM-DD') : undefined;
 
-  fileInterface.storeNewTask(
+  fileInterface.storeNestedTasks(
     parts.taskName,
     due,
     parts.repeat,

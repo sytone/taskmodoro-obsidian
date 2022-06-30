@@ -2,11 +2,12 @@
   import { SharedState, filtersFromState } from '../state';
   import type TQPlugin from '../main';
   import { CalcTaskScore, Task } from '../file-interface';
-  import TaskListTile from './TaskListTile.svelte';
+  import TaskTile from './TaskTile.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
   import {TaskListTileParent} from '../enums/component-context'
+import { TaskDetails } from '../task-details';
 
   export let plugin: TQPlugin;
   export let view: Component;
@@ -86,9 +87,16 @@
 </script>
 
 <div class="tq">
-  {#each sortedKeys as key (key)}
-    {#each tasksGrouped[key] as task (task.taskName)}
-      <TaskListTile {task} {view} {plugin} parent={TaskListTileParent.TasksList} />
+  <div class='query-tasks-list'>
+    {#each sortedKeys as key (key)}
+      {#each tasksGrouped[key] as task (task.taskName)}
+        <TaskTile {view} td={new TaskDetails(plugin,task)} parent={TaskListTileParent.TasksList} />
+      {/each}
     {/each}
-  {/each}
+  </div>
 </div>
+
+<style>
+
+
+</style>

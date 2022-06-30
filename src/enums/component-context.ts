@@ -1,6 +1,7 @@
 export enum TaskListTileParent {
   TasksList,
-  PomodoroTaskView,
+  TimerTaskView,
+  TaskDetailsMainPanel
 }
 
 export enum TaskDetailsMode {

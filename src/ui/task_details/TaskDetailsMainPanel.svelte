@@ -1,8 +1,13 @@
 <script lang="ts">
-  import type {TaskDetails} from '../../task-details';
+  import { TaskDetails } from '../../task-details';
   import type { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
-
+  import { plus } from '../../graphics';
+  import TaskListTile from '../TaskTile.svelte';
+  import { TaskListTileParent } from '../../enums/component-context';
+  import { MarkdownRenderer, TFile, htmlToMarkdown } from 'obsidian';
+  import { onMount, afterUpdate } from 'svelte';
+  import Cursor from 'src/cursor';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
@@ -10,7 +15,38 @@
   let draftDescription = td.description;
   let isInputActive = true;
   let isInputBtnEnabled = true;
+  let subtaskNameMD: string = '';
+  let subtaskNameEl: HTMLElement;
+
   $: isInputBtnEnabled = draftTaskName != '';
+
+  $: {
+    renderMD(subtaskNameMD, subtaskNameEl, td.file);
+  }
+
+  function renderMD(md: string, el: HTMLElement, file: TFile) {
+    if (!el) return;
+    const tempEl = createDiv();
+    MarkdownRenderer.renderMarkdown(md, tempEl, file ? file.path : './', null);
+    let offset = Cursor.getCurrentCursorOffset(el);
+    let prevLen = el.innerText.length;
+
+    el.innerHTML =
+      tempEl.children.length !== 0
+        ? tempEl.children[0].innerHTML
+        : tempEl.innerHTML;
+        
+    if (offset === 0 && prevLen === 0) {
+      offset = el.innerText.length;
+    }
+
+    // console.log('inner-html: ', el.innerHTML, '  inner-text: ', el.innerText);
+    Cursor.setCurrentCursorPosition(offset, el);
+  }
+
+  onMount(() => {
+    renderMD(subtaskNameMD, subtaskNameEl, td.file);
+  });
 
   function saveDraft() {
     td.taskName = draftTaskName;
@@ -35,6 +71,30 @@
       destroy: () => el.removeEventListener('input', resize),
     };
   }
+
+  const addSubtask = () => {
+    let subTd = new TaskDetails(td.plugin);
+    subtaskNameMD = subtaskNameMD.replace(/(\n)+/g, '');
+    subTd.taskName = subtaskNameMD;
+    td.subtasks.push(subTd);
+    td=td;
+    subtaskNameMD = '';
+  };
+
+  const onEnter = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      addSubtask();
+    }
+  };
+
+  // TODO: support live preview propertly
+  const onSubtaskNameInput = (event: any) => {
+
+    // let preprocHtml = event.target.innerHTML.replace(/ {2,}/g, (m: string) => m.replace(/ /g, '\u00a0'))
+    // subtaskNameMD =   htmlToMarkdown(preprocHtml).replace(/\u00a0/g, ' ')
+    subtaskNameMD =   htmlToMarkdown(event.target.innerHTML)
+
+  };
 </script>
 
 <div class="main-task-panel">
@@ -49,7 +109,7 @@
         : ''}"
     >
       <textarea
-        class="task-input-name"
+        class="task-input"
         rows="1"
         placeholder="Task name"
         type="text"
@@ -78,9 +138,47 @@
       on:click={saveDraft}>Save</button
     >
   </div>
+  <div class="subtask-input-wrapper">
+    <span on:click={addSubtask} class="plus-icon-wrapper">
+      {@html plus}
+    </span>
+    <div
+      id="subtask-name-input"
+      class="task-input"
+      rows="1"
+      placeholder="Add a subtask"
+      contenteditable={true}
+      bind:this={subtaskNameEl}
+      on:input={onSubtaskNameInput}
+      on:keypress={onEnter}
+    />
+  </div>
+  <div class="subtasks-list">
+    {#each td.subtasks as subtask (subtask.taskName)}
+      <TaskListTile
+        parent={TaskListTileParent.TaskDetailsMainPanel}
+        bind:td={subtask}
+        view={null}
+      />
+    {/each}
+  </div>
 </div>
 
 <style>
+  :global(.subtask-input-wrapper .plus-icon){
+    margin-left: 4px;
+  }
+
+  .subtasks-list{
+    margin-top: 32px;
+  }
+
+  .subtask-input-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
   .tq-checkbox-wrapper {
     margin-top: 8px;
   }
@@ -90,13 +188,16 @@
     flex-direction: row;
     justify-content: end;
   }
-  .task-input-name {
+
+  .task-input {
+    /* white-space: pre; */
     border: none;
     border-bottom: 1px solid var(--dark2-blue-gray);
     margin: 0 12px;
     padding: 12px 0;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
+    width: 100%;
     overflow: hidden;
     background-color: transparent;
   }
@@ -112,7 +213,7 @@
     padding-bottom: 12px;
   }
 
-  .task-input-name::placeholder {
+  .task-input::placeholder {
     border: none;
     color: var(--dark-blue-gray);
     font-size: 1rem;

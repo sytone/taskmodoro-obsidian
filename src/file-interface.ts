@@ -10,6 +10,7 @@ import { err, ok, Result } from 'neverthrow'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Writable, writable } from 'svelte/store'
 import type { Duration} from 'moment';
+import type { TaskDetails } from './task-details';
 
 export interface Task {
   file: TFile
@@ -83,26 +84,26 @@ export class TaskCache {
    * of the file will trigger that task to be reloaded and the UI to be
    * rerendered.
    */
-  public readonly toggleChecked = async (task: Task): Promise<void> =>
-    withFileContents(task.file, this.app.vault, (lines): boolean => {
-      const re = task.checked ? /^- \[[ ]\]/ : /^- \[[xX]\]/
-      const newValue = task.checked ? '- [x]' : '- [ ]'
+  public readonly toggleChecked = async (td: TaskDetails): Promise<void> =>
+    withFileContents(td.file, this.app.vault, (lines): boolean => {
+      const replacer = td.completed ? /^- \[[ ]\]/ : /^- \[[xX]\]/
+      const newValue = td.completed ? '- [x]' : '- [ ]'
 
       // Look for the task and check status
-      const taskLine = lines.findIndex(line => re.test(line))
+      const taskLine = lines.findIndex(line => replacer.test(line))
       if (taskLine < 0) {
         console.warn(
-          'tq: Unable to find a task line to toggle in file ' + task.file.path,
+          'tq: Unable to find a task line to toggle in file ' + td.file.path,
         )
         return false
       }
 
-      lines[taskLine] = lines[taskLine].replace(re, newValue)
+      lines[taskLine] = lines[taskLine].replace(replacer, newValue)
 
       // We update this here rather than waiting for the file modified handler
       // so that the file is only updated once, rather than twice in rapid
       // succession.
-      this.plugin.fileInterface.processRepeating(task.file.path, lines)
+      this.plugin.fileInterface.processRepeating(td.file.path, lines)
 
       return true
     })
@@ -289,6 +290,29 @@ export class FileInterface {
     return true
   }
 
+  public readonly storeNestedTasks = async (
+    td: TaskDetails,
+  ): Promise<string> => {
+    let subtasksFileNames: string[] = []
+    for(let subtask of td.subtasks){
+      let _filename = await this.storeNestedTasks(subtask)
+      subtasksFileNames.push(_filename)
+    }
+
+    let fileName = this.storeNewTask(      td.taskName,
+      td.description,
+      td.pomoDuration,
+      td.estWorktime,
+      td.due,
+      td.scheduled,
+      td.repeatConfig,
+      td.cleanedTags,
+      subtasksFileNames)
+
+    return await fileName
+
+  }
+
   public readonly storeNewTask = async (
     taskName: string,
     description: string,
@@ -298,7 +322,9 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-  ): Promise<void> => {
+    subtasksNames: string[]
+  ): Promise<string> => {
+
     const tasksDir = this.plugin.settings.TasksDir
     const newHash = this.createTaskBlockHash()
     const fileName = `${tasksDir}/${newHash}.md`
@@ -311,6 +337,7 @@ export class FileInterface {
       scheduled,
       repeat,
       tags,
+      subtasksNames
     )
 
     console.debug('tq: Creating a new task in ' + fileName)
@@ -319,7 +346,11 @@ export class FileInterface {
     if (!(await this.app.vault.adapter.exists(tasksDir))) {
       await this.app.vault.createFolder(tasksDir)
     }
+
     await this.app.vault.create(fileName, data)
+
+    return `${newHash}.md`
+
   }
 
   /**
@@ -334,6 +365,7 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
+    subtasksNames: string[]
   ): string => {
     const frontMatter = []
 
@@ -361,6 +393,14 @@ export class FileInterface {
 
     if (tags && tags.length > 0 && tags[0].length > 0) {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
+    }
+    
+    if(subtasksNames.length !== 0) {
+      let fm = 'subtasks: \n'
+      for(let name of subtasksNames){
+          fm += `  - ${name}\n`
+      }
+      frontMatter.push(fm)
     }
 
     const contents = []

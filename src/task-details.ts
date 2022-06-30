@@ -23,8 +23,15 @@ export class TaskDetails {
   public pomoDuration = moment.duration(30, 'minutes')
   public estWorktime: Duration
   public spentWorktime: Duration
+  public subtasks: TaskDetails[] = []
   public close: () => void
 
+  public get cleanedTags (): string[] {
+    return this.tags
+    .split(/[, ]/)
+    .filter(x => x !== '')
+    .map(tag => tag.trim().replace('#', ''))
+  }
 
   public get estWorktimeStr (): string {
     let estWorktimeStr =
@@ -71,22 +78,9 @@ export class TaskDetails {
   }
 
   onCreate = () => {
-    const cleanedTags = this.tags
-      .split(/[, ]/)
-      .filter(x => x !== '')
-      .map(tag => tag.trim().replace('#', ''))
-
-    this.plugin.fileInterface.storeNewTask(
-      this.taskName,
-      this.description,
-      this.pomoDuration,
-      this.estWorktime,
-      this.due,
-      this.scheduled,
-      this.repeats ? this.repeatConfig : '',
-      cleanedTags,
+    this.plugin.fileInterface.storeNestedTasks(
+      this
     )
-
     this.close()
   }
 }

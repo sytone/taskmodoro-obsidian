@@ -1,15 +1,15 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian'
 import { onMount } from 'svelte'
 import { VIEW_TYPE_POMODORO_TASK } from './constants'
-import SidebarPomodoroTaskView from './ui/sidebar_timer/SidebarPomodoroTaskView.svelte'
+import SidebarTimerTaskView from './ui/sidebar_timer/SidebarTimerTaskView.svelte'
 import type TQPlugin from './main'
 import type { Task } from './file-interface'
 import type { Duration } from 'moment'
+import type { TaskDetails } from './task-details';
 
-export class PomodoroTaskView extends ItemView {
+export class TimerTaskView extends ItemView {
   private readonly plugin: TQPlugin
-  public task: Task
-  public duration: Duration
+  public td: TaskDetails
 
   constructor (leaf: WorkspaceLeaf, plugin: TQPlugin) {
     super(leaf)
@@ -31,9 +31,9 @@ export class PomodoroTaskView extends ItemView {
     console.log('onOpen task view')
     const content = this.containerEl.children[1]
     content.empty()
-    new SidebarPomodoroTaskView({
+    new SidebarTimerTaskView({
       target: content,
-      props: { plugin: this.plugin, task: this.task, duration: this.duration },
+      props: { plugin: this.plugin, td: this.td},
     })
   }
 
