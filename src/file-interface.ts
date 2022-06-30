@@ -4,13 +4,13 @@ import {
   setCompletedDate,
   setDueDateToNext,
 } from './parser'
-import type TQPlugin from './main'
-import type { Moment } from 'moment'
+import TQPlugin from './main'
+import { Moment } from 'moment'
 import { err, ok, Result } from 'neverthrow'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Writable, writable } from 'svelte/store'
-import type { Duration} from 'moment';
-import type { TaskDetails } from './task-details';
+import { Duration } from 'moment'
+import { TaskDetails } from './task-details'
 
 export interface Task {
   file: TFile
@@ -21,6 +21,7 @@ export interface Task {
   checked: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
+  subtasks: Task[]
 }
 
 export const CalcTaskScore = (task: Task): number => {
@@ -136,6 +137,29 @@ export class TaskCache {
     )
   }
 
+  private readonly getTasksFromFileNames =  async (fileNames: string[]): Promise<Task[]>=>{
+    if(!fileNames) return []
+    const tasksDir = this.plugin.settings.TasksDir
+    const subtasks: Task[] = []
+    for (let fileName of fileNames) {
+      const path = `${tasksDir}/${fileName}`
+
+      const file = this.app.metadataCache.getFirstLinkpathDest(path, '/')
+      if (file) {
+        let task = await this.loadTask(file)
+        task.match(
+          t => {
+            subtasks.push(t)
+          },
+          err => {
+            console.debug(err)
+          },
+        )
+      }
+    }
+    return subtasks
+  }
+
   private readonly loadTask = async (
     file: TFile,
   ): Promise<Result<Task, string>> => {
@@ -148,12 +172,14 @@ export class TaskCache {
       return err('tq: No task found in task file ' + file.path)
     }
 
+    
     const contents = await this.app.vault.read(file)
     const lines = contents.split('\n')
     const taskNameLineIdx = metadata.listItems[0].position.start.line
     const frontmatter = new Frontmatter(lines)
     const due = frontmatter.get('due')
     const scheduled = frontmatter.get('scheduled')
+    const subtasks = await this.getTasksFromFileNames(frontmatter.get('subtasks'))
     return ok({
       file,
       md: contents,
@@ -163,6 +189,7 @@ export class TaskCache {
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
+      subtasks
     })
   }
 }
@@ -219,7 +246,7 @@ export class FileInterface {
         const ta = frontmatter.get('timer_activity')
         ta.push(activity)
       }
-          
+
       frontmatter.overwrite()
 
       return true
@@ -294,12 +321,13 @@ export class FileInterface {
     td: TaskDetails,
   ): Promise<string> => {
     let subtasksFileNames: string[] = []
-    for(let subtask of td.subtasks){
+    for (let subtask of td.subtasks) {
       let _filename = await this.storeNestedTasks(subtask)
       subtasksFileNames.push(_filename)
     }
 
-    let fileName = this.storeNewTask(      td.taskName,
+    let fileName = this.storeNewTask(
+      td.taskName,
       td.description,
       td.pomoDuration,
       td.estWorktime,
@@ -307,10 +335,10 @@ export class FileInterface {
       td.scheduled,
       td.repeatConfig,
       td.cleanedTags,
-      subtasksFileNames)
+      subtasksFileNames,
+    )
 
     return await fileName
-
   }
 
   public readonly storeNewTask = async (
@@ -322,9 +350,8 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    subtasksNames: string[]
+    subtasksNames: string[],
   ): Promise<string> => {
-
     const tasksDir = this.plugin.settings.TasksDir
     const newHash = this.createTaskBlockHash()
     const fileName = `${tasksDir}/${newHash}.md`
@@ -337,7 +364,7 @@ export class FileInterface {
       scheduled,
       repeat,
       tags,
-      subtasksNames
+      subtasksNames,
     )
 
     console.debug('tq: Creating a new task in ' + fileName)
@@ -350,7 +377,6 @@ export class FileInterface {
     await this.app.vault.create(fileName, data)
 
     return `${newHash}.md`
-
   }
 
   /**
@@ -365,7 +391,7 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    subtasksNames: string[]
+    subtasksNames: string[],
   ): string => {
     const frontMatter = []
 
@@ -394,11 +420,11 @@ export class FileInterface {
     if (tags && tags.length > 0 && tags[0].length > 0) {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
-    
-    if(subtasksNames.length !== 0) {
+
+    if (subtasksNames.length !== 0) {
       let fm = 'subtasks: \n'
-      for(let name of subtasksNames){
-          fm += `  - ${name}\n`
+      for (let name of subtasksNames) {
+        fm += `  - ${name}\n`
       }
       frontMatter.push(fm)
     }

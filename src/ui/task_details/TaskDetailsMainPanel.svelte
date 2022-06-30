@@ -35,7 +35,7 @@
       tempEl.children.length !== 0
         ? tempEl.children[0].innerHTML
         : tempEl.innerHTML;
-        
+
     if (offset === 0 && prevLen === 0) {
       offset = el.innerText.length;
     }
@@ -77,7 +77,7 @@
     subtaskNameMD = subtaskNameMD.replace(/(\n)+/g, '');
     subTd.taskName = subtaskNameMD;
     td.subtasks.push(subTd);
-    td=td;
+    td = td;
     subtaskNameMD = '';
   };
 
@@ -89,11 +89,9 @@
 
   // TODO: support live preview propertly
   const onSubtaskNameInput = (event: any) => {
-
     // let preprocHtml = event.target.innerHTML.replace(/ {2,}/g, (m: string) => m.replace(/ /g, '\u00a0'))
     // subtaskNameMD =   htmlToMarkdown(preprocHtml).replace(/\u00a0/g, ' ')
-    subtaskNameMD =   htmlToMarkdown(event.target.innerHTML)
-
+    subtaskNameMD = htmlToMarkdown(event.target.innerHTML);
   };
 </script>
 
@@ -147,7 +145,7 @@
       class="task-input"
       rows="1"
       placeholder="Add a subtask"
-      contenteditable={true}
+      contenteditable="true"
       bind:this={subtaskNameEl}
       on:input={onSubtaskNameInput}
       on:keypress={onEnter}
@@ -165,11 +163,19 @@
 </div>
 
 <style>
-  :global(.subtask-input-wrapper .plus-icon){
+  [contenteditable='true']:empty:before {
+    content: attr(placeholder);
+    color: var(--dark-blue-gray);
+    font-size: 1rem;
+    font-weight: normal;
+    /* For Firefox */
+  }
+
+  :global(.subtask-input-wrapper .plus-icon) {
     margin-left: 4px;
   }
 
-  .subtasks-list{
+  .subtasks-list {
     margin-top: 32px;
   }
 

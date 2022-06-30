@@ -64,7 +64,7 @@ export class TaskDetails {
       }
 
       let ta: [{ start: string; end: string }] = fm.get('timer_activity')
-      // console.log('ta: ', ta, 'fmTA: ', fm.get('timer_acivity'))
+
       if (ta) {
         this.spentWorktime = moment.duration()
         ta.forEach(a => {
@@ -72,7 +72,11 @@ export class TaskDetails {
           this.spentWorktime.add(diff, 'milliseconds')
         })
       }
-
+      const subtasks: Task[] = task.subtasks
+      
+      for(let subtask of subtasks){
+        this.subtasks.push(new TaskDetails(this.plugin,subtask))
+      }
       // this.overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
     }
   }

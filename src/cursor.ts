@@ -44,7 +44,7 @@ export default class Cursor {
         range.collapse(false)
         selection.removeAllRanges()
         selection.addRange(range)
-        console.log('range_end: ',range.endOffset,'  focus_offset: ',selection.focusOffset)
+        // console.log('range_end: ',range.endOffset,'  focus_offset: ',selection.focusOffset)
       }
     }
   }
