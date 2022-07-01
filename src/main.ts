@@ -1,4 +1,5 @@
-import { FileInterface, Task, TaskCache } from './file-interface'
+import { FileInterface, Task } from './file-interface'
+import { TaskCache } from "./stores/TaskCache"
 import { buyMeACoffee, paypal } from './graphics'
 import { convertLegacyTask } from './legacy-parser'
 import { TaskDetailsModal } from './modals'

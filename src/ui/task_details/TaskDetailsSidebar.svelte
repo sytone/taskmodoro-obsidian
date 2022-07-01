@@ -205,7 +205,7 @@
         disabled={!isCreateBtnEnabled}
         class="mod-cta create-btn
                         {isCreateBtnEnabled ? '' : 'disabled-btn'}"
-        on:click={td.onCreate}>Create</button
+        on:click={td.create}>Create</button
       >
     </div>
   {/if}

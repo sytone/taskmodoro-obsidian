@@ -11,10 +11,12 @@ import { TaskDetails } from '../task-details';
 
   export let plugin: TQPlugin;
   export let view: Component;
+
   /**
    * Config state that is parsed from query codeblock
    */
   export let state: Writable<SharedState>;
+    
   const getGrouper = (state: SharedState): ((t: Task) => string) => {
     switch (state.group) {
       case 'due':

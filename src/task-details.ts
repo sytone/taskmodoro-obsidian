@@ -81,10 +81,14 @@ export class TaskDetails {
     }
   }
 
-  onCreate = () => {
-    this.plugin.fileInterface.storeNestedTasks(
+  create = async (): Promise<string> => {
+    let fileName = this.plugin.fileInterface.storeNestedTasks(
       this
     )
-    this.close()
+
+    if(this.close){
+      this.close()
+    }
+    return await fileName
   }
 }

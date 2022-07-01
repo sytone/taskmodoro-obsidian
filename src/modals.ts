@@ -13,20 +13,17 @@ import { TaskDetails } from './task-details';
 
 export class TaskDetailsModal extends Modal {
   private readonly mode: TaskDetailsMode
-  private readonly td: TaskDetails
-
+  private readonly filePath: string
+  private readonly plugin: TQPlugin
   constructor (
     plugin: TQPlugin,
     mode: TaskDetailsMode,
-    td: TaskDetails = undefined,
+    filePath: string = undefined,
   ) {
     super(plugin.app)
+    this.plugin=plugin
     this.mode = mode
-    if(!td){
-      this.td = new TaskDetails(plugin)
-    }else {
-      this.td = td
-    }
+    this.filePath=filePath
   }
 
   public onOpen = (): void => {
@@ -37,8 +34,9 @@ export class TaskDetailsModal extends Modal {
       target: contentEl,
       props: {
         close: () => this.close(),
+        plugin: this.plugin,
         mode: this.mode,
-        td: this.td,
+        filePath: this.filePath
       },
     })
   }

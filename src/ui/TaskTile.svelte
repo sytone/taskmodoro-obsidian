@@ -66,7 +66,7 @@
   };
 
   const openTaskDetails = () => {
-    new TaskDetailsModal(td.plugin, TaskDetailsMode.Update, td).open();
+    new TaskDetailsModal(td.plugin, TaskDetailsMode.Update, td.file.path).open();
   };
   
 </script>
@@ -91,11 +91,11 @@
         class="task-title"
         bind:this={taskNameEl}
       />
-      <TaskTileProps {td} />
+      <TaskTileProps bind:td />
     </div>
     <TrailingMenu
       {showTrailingMenu}
-      {td}
+      bind:td
       showTimerOpenBtn={parent != TaskListTileParent.TaskDetailsMainPanel}
     />
   </div>

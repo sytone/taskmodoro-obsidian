@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TaskDetails } from '../../task-details';
-  import type { TaskDetailsMode } from '../../enums/component-context';
+  import { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
   import { plus } from '../../graphics';
   import TaskListTile from '../TaskTile.svelte';
@@ -18,9 +18,8 @@
   let subtaskNameMD: string = '';
   let subtaskNameEl: HTMLElement;
 
-  $: isInputBtnEnabled = draftTaskName != '';
-
   $: {
+    isInputBtnEnabled = draftTaskName != '';
     renderMD(subtaskNameMD, subtaskNameEl, td.file);
   }
 
@@ -73,18 +72,44 @@
   }
 
   const addSubtask = () => {
-    let subTd = new TaskDetails(td.plugin);
+    let subtask = new TaskDetails(td.plugin);
     subtaskNameMD = subtaskNameMD.replace(/(\n)+/g, '');
-    subTd.taskName = subtaskNameMD;
-    td.subtasks.push(subTd);
-    td = td;
+    subtask.taskName = subtaskNameMD;
     subtaskNameMD = '';
+    td.subtasks.push(subtask);
+    if (mode === TaskDetailsMode.Update) {
+      storeSubtask(subtask);
+    } else {
+      td = td;
+    }
   };
 
+  const storeSubtask = (subtask: TaskDetails) => {
+    subtask.create().then((fileName) => {
+      console.log('f-created');
+      const tasksDir = td.plugin.settings.TasksDir;
+      const path = `${tasksDir}/${fileName}`;
+      const file = td.plugin.app.metadataCache.getFirstLinkpathDest(path, '/');
+      if (file) {
+        subtask.file = file;
+        updateSubtasksFM();
+      }
+    });
+  };
   const onEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       addSubtask();
     }
+  };
+
+  const updateSubtasksFM = () => {
+    let subtasksFileNames = td.subtasks.map((s) => s.file.name);
+    td.plugin.fileInterface.updateFMProp(
+      td.file,
+      td.plugin.app.vault,
+      subtasksFileNames,
+      'subtasks',
+    );
   };
 
   // TODO: support live preview propertly
@@ -168,7 +193,6 @@
     color: var(--dark-blue-gray);
     font-size: 1rem;
     font-weight: normal;
-    /* For Firefox */
   }
 
   :global(.subtask-input-wrapper .plus-icon) {
