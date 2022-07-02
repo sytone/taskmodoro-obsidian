@@ -18,12 +18,10 @@ export class TaskDetailsModal extends Modal {
   constructor (
     plugin: TQPlugin,
     mode: TaskDetailsMode,
-    filePath: string = undefined,
   ) {
     super(plugin.app)
     this.plugin=plugin
     this.mode = mode
-    this.filePath=filePath
   }
 
   public onOpen = (): void => {
@@ -35,15 +33,17 @@ export class TaskDetailsModal extends Modal {
       props: {
         close: () => this.close(),
         plugin: this.plugin,
-        mode: this.mode,
-        filePath: this.filePath
+        mode: this.mode
       },
     })
   }
 
   public onClose = (): void => {
     const { contentEl } = this
+
     contentEl.empty()
+    let tasksNav = this.plugin.taskNav.tasksNavigation
+    tasksNav.set([])
   }
 }
 

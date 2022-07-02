@@ -1,11 +1,11 @@
-import TQPlugin from './main'
-import { Task } from './file-interface'
-import { TFile } from 'obsidian'
-import { formatDate, durationFormat_hm } from './util';
+import type TQPlugin from './main'
+import type { Task } from './file-interface'
+import type { TFile } from 'obsidian'
+import { formatDate, durationFormat_hm } from './util'
 import moment from 'moment'
 import MomentDurationSetup from 'moment-duration-format'
 import { toInteger } from 'lodash'
-import { Duration } from 'moment'
+import type { Duration } from 'moment'
 MomentDurationSetup(moment)
 
 export class TaskDetails {
@@ -24,13 +24,14 @@ export class TaskDetails {
   public estWorktime: Duration
   public spentWorktime: Duration
   public subtasks: TaskDetails[] = []
+  public parents: TaskDetails[]=[]
   public close: () => void
 
   public get cleanedTags (): string[] {
     return this.tags
-    .split(/[, ]/)
-    .filter(x => x !== '')
-    .map(tag => tag.trim().replace('#', ''))
+      .split(/[, ]/)
+      .filter(x => x !== '')
+      .map(tag => tag.trim().replace('#', ''))
   }
 
   public get estWorktimeStr (): string {
@@ -41,9 +42,13 @@ export class TaskDetails {
     return estWorktimeStr
   }
 
-  constructor (plugin: TQPlugin, task: Task | undefined = undefined) {
+  constructor (
+    plugin: TQPlugin,
+    task: Task = undefined,
+  ) {
     this.plugin = plugin
     this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags())
+
     if (task) {
       let fm = task.frontmatter
       this.due = formatDate(task.due)
@@ -73,20 +78,26 @@ export class TaskDetails {
         })
       }
       const subtasks: Task[] = task.subtasks
-      
-      for(let subtask of subtasks){
-        this.subtasks.push(new TaskDetails(this.plugin,subtask))
+
+      for (let subtask of subtasks) {
+        let subtd = new TaskDetails(this.plugin, subtask)
+        this.subtasks.push(subtd)
       }
-      // this.overdue = (!task.checked && task.due?.isBefore(window.moment())) || false;
+
+      const parents: Task[] = task.parents
+
+      for (let parent of parents) {
+        let parentTd = new TaskDetails(this.plugin, parent)
+        this.parents.push(parentTd)
+      }
+      
     }
   }
 
   create = async (): Promise<string> => {
-    let fileName = this.plugin.fileInterface.storeNestedTasks(
-      this
-    )
+    let fileName = this.plugin.fileInterface.storeNestedTasks(this)
 
-    if(this.close){
+    if (this.close) {
       this.close()
     }
     return await fileName

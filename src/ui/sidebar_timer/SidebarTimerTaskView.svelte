@@ -16,7 +16,7 @@
     <TaskListTile
       view={null}
       bind:td
-      parent={TaskListTileParent.TimerTaskView}
+      parentComponent={TaskListTileParent.TimerTaskView}
     />
   </div>
   <Timer file={td.file} {plugin} initialDuration={td.pomoDuration} />

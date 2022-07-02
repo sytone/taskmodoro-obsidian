@@ -128,6 +128,7 @@ export class TaskCache {
     const due = frontmatter.get('due');
     const scheduled = frontmatter.get('scheduled');
     const subtasks = await this.getTasksFromFileNames(frontmatter.get('subtasks'));
+    const parents = await this.getTasksFromFileNames(frontmatter.get('parents'));
     return ok({
       file,
       md: contents,
@@ -137,7 +138,8 @@ export class TaskCache {
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
-      subtasks
+      subtasks,
+      parents
     });
   };
 }

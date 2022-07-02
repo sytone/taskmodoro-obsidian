@@ -18,7 +18,8 @@ export interface Task {
   checked: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
-  subtasks: Task[]
+  subtasks: Task[],
+  parents: Task[]
 }
 
 export const CalcTaskScore = (task: Task): number => {
@@ -201,6 +202,7 @@ export class FileInterface {
       td.scheduled,
       td.repeatConfig,
       td.cleanedTags,
+      td.file.name,
       subtasksFileNames,
     )
 
@@ -216,6 +218,7 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
+    parentName: string,
     subtasksNames: string[],
   ): Promise<string> => {
     const tasksDir = this.plugin.settings.TasksDir
@@ -230,6 +233,7 @@ export class FileInterface {
       scheduled,
       repeat,
       tags,
+      parentName,
       subtasksNames,
     )
 
@@ -257,6 +261,7 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
+    parentName: string,
     subtasksNames: string[],
   ): string => {
     const frontMatter = []
@@ -285,6 +290,11 @@ export class FileInterface {
 
     if (tags && tags.length > 0 && tags[0].length > 0) {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
+    }
+
+    if (parentName) {
+      let parentFm = `  - ${parentName}`
+      frontMatter.push('parents: \n' + parentFm)
     }
 
     if (subtasksNames.length !== 0) {

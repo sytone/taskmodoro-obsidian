@@ -7,7 +7,7 @@
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
   import {TaskListTileParent} from '../enums/component-context'
-import { TaskDetails } from '../task-details';
+  import { TaskDetails } from '../task-details';
 
   export let plugin: TQPlugin;
   export let view: Component;
@@ -92,7 +92,7 @@ import { TaskDetails } from '../task-details';
   <div class='query-tasks-list'>
     {#each sortedKeys as key (key)}
       {#each tasksGrouped[key] as task (task.taskName)}
-        <TaskTile {view} td={new TaskDetails(plugin,task)} parent={TaskListTileParent.TasksList} />
+        <TaskTile {view} td={new TaskDetails(plugin,task)} parentComponent={TaskListTileParent.TasksList} />
       {/each}
     {/each}
   </div>

@@ -3,32 +3,32 @@
   import TaskDetailsSidebar from './TaskDetailsSidebar.svelte';
   import type TQPlugin from '../../main';
   import type { TaskDetailsMode } from '../../enums/component-context';
-  import type { Task } from '../../file-interface';
+  import type { FilePath, Task } from '../../file-interface';
   import { TaskDetails } from '../../task-details';
+import type { Writable } from 'svelte/store';
 
   export let close: () => void;
   export let mode: TaskDetailsMode;
   export let plugin: TQPlugin;
-  // export let td: TaskDetails;
-  export let filePath: string;
   let td: TaskDetails;
-  let tasks = plugin.taskCache.tasks;
+  let tasksCache: Writable<Record<string, Task>> = plugin.taskCache.tasks;
+  let tasksNav: Writable<FilePath[]> = plugin.taskNav.tasksNavigation;
+
   $: {
-    td = getTd($tasks);
+    td = getTd($tasksCache, $tasksNav);
   }
 
-  const getTd = (tasks: Record<string, Task>) => {
+  const getTd = (tasks: Record<string, Task>, tasksNav: FilePath[]) => {
     let _td: TaskDetails;
-    if (filePath) {
-      _td = new TaskDetails(plugin, tasks[filePath]);
+    let currTask: FilePath = tasksNav.last();
+    if (currTask) {
+      _td = new TaskDetails(plugin, tasks[currTask]);
     } else {
       _td = new TaskDetails(plugin);
     }
-    console.log('td.subtasks: ', _td.subtasks);
     _td.close = close;
     return _td;
   };
-
 </script>
 
 <TaskDetailsMainPanel {mode} bind:td />

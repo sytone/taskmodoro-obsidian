@@ -20,11 +20,13 @@ import { TimerTaskView } from './timer-task-view'
 import type { Duration } from 'moment'
 import { TaskDetailsMode } from './enums/component-context'
 import type { TaskDetails } from './task-details';
+import { TaskDetailsNavigation } from './stores/TaskNavigationRecord';
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings
   public fileInterface: FileInterface
   public taskCache: TaskCache
+  public taskNav: TaskDetailsNavigation
 
   public async onload (): Promise<void> {
     console.log('tq: Loading plugin' + this.manifest.version)
@@ -34,7 +36,8 @@ export default class TQPlugin extends Plugin {
 
     this.fileInterface = new FileInterface(this, this.app)
     this.taskCache = new TaskCache(this, this.app)
-
+    this.taskNav = new TaskDetailsNavigation()
+    
     this.registerView(
       VIEW_TYPE_TIMER_TASK,
       leaf => new TimerTaskView(leaf, this),

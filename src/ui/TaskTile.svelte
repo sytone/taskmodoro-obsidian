@@ -1,8 +1,5 @@
 <script lang="ts">
-  import {
-
-    TaskDetailsModal,
-  } from '../modals';
+  import { TaskDetailsModal } from '../modals';
   import type { Component } from 'obsidian';
   import { MarkdownRenderer } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
@@ -15,12 +12,15 @@
   import type { TaskDetails } from 'src/task-details';
   import TaskTileProps from './TaskTileProps.svelte';
   import TrailingMenu from './TrailingMenu.svelte';
+  import type { FilePath } from '../file-interface';
+
   type Moment = moment.Moment;
 
   export let view: Component;
-  export let parent: TaskListTileParent;
+  export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
 
+  let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
 
@@ -34,7 +34,9 @@
       td.file ? td.file.path : './',
       view,
     );
-    taskNameEl.innerHTML = tempEl.children[0].innerHTML;
+    taskNameEl.innerHTML = tempEl.children.length !== 0
+        ? tempEl.children[0].innerHTML
+        : tempEl.innerHTML;
   });
 
   afterUpdate(() => {
@@ -45,7 +47,10 @@
       td.file ? td.file.path : './',
       view,
     );
-    taskNameEl.innerHTML = tempEl.children[0].innerHTML;
+    if(!taskNameEl) return
+    taskNameEl.innerHTML = tempEl.children.length !== 0
+        ? tempEl.children[0].innerHTML
+        : tempEl.innerHTML;
   });
 
   const toggleChecked = () => {
@@ -66,9 +71,14 @@
   };
 
   const openTaskDetails = () => {
-    new TaskDetailsModal(td.plugin, TaskDetailsMode.Update, td.file.path).open();
+    $tasksNav.push(td.file.path);
+    $tasksNav=[...$tasksNav]
+
+    //We open new modal only if there were previously no tasks in task navigation
+    if ($tasksNav.length == 1) {
+      new TaskDetailsModal(td.plugin, TaskDetailsMode.Update).open();
+    }
   };
-  
 </script>
 
 <div class="task-tile">
@@ -96,7 +106,8 @@
     <TrailingMenu
       {showTrailingMenu}
       bind:td
-      showTimerOpenBtn={parent != TaskListTileParent.TaskDetailsMainPanel}
+      showTimerOpenBtn={parentComponent !=
+        TaskListTileParent.TaskDetailsMainPanel}
     />
   </div>
 </div>
@@ -107,7 +118,6 @@
     flex-direction: column;
   }
 
-  
   :global(.subtasks-list .task-tile) {
     margin: 16px 0;
     background-color: var(--background-nav);
@@ -120,7 +130,6 @@
     background-color: var(--background-nav);
   }
 
-
   :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
     border-radius: 10px;
     padding: 8px 8px;
@@ -130,7 +139,7 @@
   :global(.timer-task-container .leading, .query-tasks-list .leading) {
     margin-top: 8px;
   }
-  
+
   :global(.timer-task-container .task-tile) {
     background-color: #202327;
     border: thin solid #343941;
@@ -167,5 +176,4 @@
     margin: 0 8px;
     font-size: 1.25rem;
   }
-
 </style>
