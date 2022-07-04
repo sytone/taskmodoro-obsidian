@@ -111,9 +111,7 @@
       {@html plus}
     </span>
     <div
-      id="subtask-name-input"
-      class="task-input"
-      rows="1"
+      class="subtask-name-input"
       placeholder="Add a subtask"
       contenteditable="true"
       bind:this={subtaskNameEl}
@@ -139,8 +137,22 @@
     font-weight: normal;
   }
 
+  .subtask-name-input {
+    border: none;
+    border-bottom: 1px solid var(--dark2-blue-gray);
+    margin: 0 16px;
+    padding: 12px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background-color: transparent;
+  }
+
   :global(.subtask-input-wrapper .plus-icon) {
-    margin-left: 4px;
+    margin-left: 3px;
+    margin-top: 8px;
   }
 
   .subtasks-list {
@@ -153,18 +165,6 @@
     align-items: center;
   }
 
-  .task-input {
-    /* white-space: pre; */
-    border: none;
-    border-bottom: 1px solid var(--dark2-blue-gray);
-    margin: 0 12px;
-    padding: 12px 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    width: 100%;
-    overflow: hidden;
-    background-color: transparent;
-  }
 
 </style>
 

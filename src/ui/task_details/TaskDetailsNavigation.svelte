@@ -1,0 +1,76 @@
+<script lang="ts">
+  import type { FilePath } from '../../file-interface';
+  import type { Writable } from 'svelte/store';
+  import type { Task } from '../../file-interface';
+  import type TQPlugin from '../../main';
+
+  export let plugin: TQPlugin;
+
+  let tasksNav: Writable<FilePath[]> = plugin.taskNav.tasksNavigation;
+  let tasksCache = plugin.taskCache.tasks;
+  let tasksNavMap: Map<FilePath, string>;
+
+  const getTasksNavMap = (
+    tasksNav: FilePath[],
+    tasksCache: Record<string, Task>,
+  ): Map<FilePath, string> => {
+    let navigationTexts: string[] = [];
+    let tasksNavMap: Map<FilePath, string> = new Map();
+    for (const taskPath of tasksNav) {
+      let charCnt = 20;
+      let task = tasksCache[taskPath];
+      let navText: string;
+      if (task.taskName.length > charCnt) {
+        navText = task.taskName.substring(0, charCnt) + '...';
+      } else {
+        navText = task.taskName;
+      }
+
+      tasksNavMap.set(taskPath, navText);
+      navigationTexts = [navText, ...navigationTexts];
+    }
+
+    return tasksNavMap;
+  };
+
+  const navigateToTask = (targetTask: FilePath) => {
+    let _tasksNav = [];
+    for (let task of tasksNavMap.keys()) {
+      if (task === targetTask) {
+        _tasksNav.push(targetTask);
+        break;
+      } else {
+        _tasksNav.push(task);
+      }
+    }
+    $tasksNav = _tasksNav;
+  };
+
+  $: tasksNavMap = getTasksNavMap($tasksNav, $tasksCache);
+</script>
+
+<div class="task-navigation">
+  {#if tasksNavMap.size > 1}
+    {#each [...tasksNavMap.keys()] as taskPath (taskPath)}
+      <span on:click={() => navigateToTask(taskPath)} class="navigation-text"
+        >{tasksNavMap.get(taskPath)}</span
+      >
+      <span class="navigation-seperator">></span>
+    {/each}
+  {/if}
+</div>
+
+<style>
+  .task-navigation {
+    min-height: 56px;
+  }
+
+  .navigation-text:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .navigation-seperator {
+    padding: 0 4px;
+  }
+</style>

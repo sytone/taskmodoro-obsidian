@@ -8,6 +8,7 @@ import { App, TFile } from 'obsidian';
 import { Writable, writable } from 'svelte/store';
 import { TaskDetails } from '../task-details';
 import { FilePath, Task, withFileContents } from '../file-interface';
+import { Parser } from '../parser';
 
 /**
  * TaskCache is the main interface for querying and modifying tasks. It
@@ -120,10 +121,8 @@ export class TaskCache {
       return err('tq: No task found in task file ' + file.path);
     }
 
-
     const contents = await this.app.vault.read(file);
     const lines = contents.split('\n');
-    const taskNameLineIdx = metadata.listItems[0].position.start.line;
     const frontmatter = new Frontmatter(lines);
     const due = frontmatter.get('due');
     const scheduled = frontmatter.get('scheduled');
@@ -133,8 +132,8 @@ export class TaskCache {
       file,
       md: contents,
       frontmatter,
-      taskName: lines[taskNameLineIdx].replace(/- \[[xX ]\]/, ''),
-      description: getDescription(lines),
+      taskName: Parser.getTaskName(lines,metadata),
+      description: Parser.getDescription(lines),
       checked: ['x', 'X'].contains(metadata.listItems[0].task),
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,

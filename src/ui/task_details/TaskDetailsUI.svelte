@@ -15,6 +15,7 @@ import type { Writable } from 'svelte/store';
   let tasksNav: Writable<FilePath[]> = plugin.taskNav.tasksNavigation;
 
   $: {
+    
     td = getTd($tasksCache, $tasksNav);
   }
 

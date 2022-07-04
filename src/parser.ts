@@ -4,19 +4,73 @@ import { FileInterface } from './file-interface'
 
 import moment from 'moment'
 import { formatDate } from './util'
+import { CachedMetadata } from 'obsidian'
+
 type Moment = moment.Moment
 
-export const getDescription = (lines: string[]): string => {
-  let descStart = lines.findIndex(line =>
-    line.includes(FileInterface.descStartToken),
-  )
-  let descEnd = lines.findIndex(line =>
-    line.includes(FileInterface.descEndToken),
-  )
-  if (descStart == -1 || descEnd == -1) return ''
-  let descLines = lines.slice(descStart + 1, descEnd)
-  let description = descLines.join('\n')
-  return description
+export class Parser {
+  public static readonly getTaskName = (
+    content: string[],
+    metadata: CachedMetadata,
+  ): string => {
+    const start = metadata.listItems[0].position.start.line
+    return content[start].replace(/- \[[xX ]\]/, '')
+  }
+
+  public static readonly isTaskCompleted = (
+    metadata: CachedMetadata,
+  ): boolean => {
+    return ['x', 'X'].contains(metadata.listItems[0].task)
+  }
+
+  public static readonly replaceTaskName = (
+    content: string[],
+    taskName: string[],
+    metadata: CachedMetadata,
+  ) => {
+    const start = metadata.listItems[0].position.start.line
+    const end = metadata.listItems[0].position.end.line
+    let prefix = ''
+    if(this.isTaskCompleted(metadata)){
+      prefix='- [x] '
+    }else{
+      prefix='- [ ] '
+    }
+    taskName[0]=prefix+taskName[0]
+    const deleteCount = end+1 - start
+    content.splice(start, deleteCount, ...taskName)
+    return content
+  }
+
+  public static readonly replaceDescription = (
+    content: string[],
+    description: string[],
+  ): string[] => {
+    const descStart = content.findIndex(line =>
+      line.includes(FileInterface.descStartToken),
+    )
+    const descEnd = content.findIndex(line =>
+      line.includes(FileInterface.descEndToken),
+    )
+    const deleteCount = descEnd-1 - descStart
+    if (descStart == -1 || descEnd == -1) return
+
+    content.splice(descStart + 1, deleteCount, ...description)
+    return content
+  }
+
+  public static readonly getDescription = (content: string[]): string => {
+    const descStart = content.findIndex(line =>
+      line.includes(FileInterface.descStartToken),
+    )
+    const descEnd = content.findIndex(line =>
+      line.includes(FileInterface.descEndToken),
+    )
+    if (descStart == -1 || descEnd == -1) return ''
+    const descLines = content.slice(descStart + 1, descEnd)
+    const description = descLines.join('\n')
+    return description
+  }
 }
 
 export class Frontmatter {

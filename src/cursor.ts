@@ -20,7 +20,7 @@ export default class Cursor {
 
           if (node.previousSibling) {
             node = node.previousSibling
-            charOffset += node.textContent.length
+            charOffset += node.textContent?.length
           } else {
             node = node.parentNode
             if (node === null) {
@@ -33,7 +33,6 @@ export default class Cursor {
 
     return charOffset
   }
-
 
   static setCurrentCursorPosition (focusOffset: number, el: HTMLElement) {
     if (focusOffset >= 0) {
@@ -94,4 +93,17 @@ export default class Cursor {
 
     return range
   }
+
+
+  static getMDCursorOffset (md: string, text: string, textOffset: number) {
+    for (let ti = 0, mi = 0; mi < md.length; mi++) {
+      if (text[ti] === md[mi]) {
+        ti++
+        if (textOffset === ti) {
+          return mi + 1
+        }
+      }
+    }
+  }
+
 }

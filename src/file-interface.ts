@@ -1,8 +1,4 @@
-import {
-  Frontmatter,
-  setCompletedDate,
-  setDueDateToNext,
-} from './parser'
+import { Frontmatter, setCompletedDate, setDueDateToNext, Parser } from './parser';
 import TQPlugin from './main'
 import { Moment } from 'moment'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
@@ -18,7 +14,7 @@ export interface Task {
   checked: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
-  subtasks: Task[],
+  subtasks: Task[]
   parents: Task[]
 }
 
@@ -62,7 +58,7 @@ export type FilePath = string
 export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
-  
+
   public static readonly descStartToken = '<!---DESC_START--->'
   public static readonly descEndToken = '<!---DESC_END--->'
 
@@ -121,7 +117,7 @@ export class FileInterface {
   public readonly updateFMProp = async (
     file: TFile,
     vault: Vault,
-    value: Moment | string | string[] | Number | Object ,
+    value: Moment | string | string[] | Number | Object,
     propName: string,
   ): Promise<void> =>
     withFileContents(file, vault, (lines: string[]): boolean => {
@@ -137,8 +133,6 @@ export class FileInterface {
       frontmatter.overwrite()
       return true
     })
-
-
 
   /**
    * processRepeating checks the provided lines to see if they describe a
@@ -247,6 +241,26 @@ export class FileInterface {
     await this.app.vault.create(fileName, data)
 
     return `${newHash}.md`
+  }
+
+  public readonly updateTaskName = async (file: TFile, taskName: string) => {
+    const metadata = this.app.metadataCache.getFileCache(file);
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let taskNameLines = taskName.split('\n')
+    contentLines = Parser.replaceTaskName(contentLines,taskNameLines,metadata)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file,content)
+  }
+
+  
+  public readonly updateDescription = async (file: TFile, description: string) => {
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let descLines = description.split('\n')
+    contentLines = Parser.replaceDescription(contentLines,descLines)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file,content)
   }
 
   /**
