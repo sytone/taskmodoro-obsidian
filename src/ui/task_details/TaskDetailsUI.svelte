@@ -2,10 +2,10 @@
   import TaskDetailsMainPanel from './TaskDetailsMainPanel.svelte';
   import TaskDetailsSidebar from './TaskDetailsSidebar.svelte';
   import type TQPlugin from '../../main';
-  import type { TaskDetailsMode } from '../../enums/component-context';
   import type { FilePath, Task } from '../../file-interface';
   import { TaskDetails } from '../../task-details';
-import type { Writable } from 'svelte/store';
+  import type { Writable } from 'svelte/store';
+  import { TaskDetailsMode } from '../../enums/component-context';
 
   export let close: () => void;
   export let mode: TaskDetailsMode;
@@ -15,7 +15,6 @@ import type { Writable } from 'svelte/store';
   let tasksNav: Writable<FilePath[]> = plugin.taskNav.tasksNavigation;
 
   $: {
-    
     td = getTd($tasksCache, $tasksNav);
   }
 
@@ -32,8 +31,13 @@ import type { Writable } from 'svelte/store';
   };
 </script>
 
-<TaskDetailsMainPanel {mode} bind:td />
-<TaskDetailsSidebar {mode} bind:td />
+{#if mode === TaskDetailsMode.Create}
+  <TaskDetailsMainPanel {mode} bind:td />
+  <TaskDetailsSidebar {mode} bind:td />
+{:else if mode === TaskDetailsMode.Update}
+  <TaskDetailsMainPanel {mode} {td} />
+  <TaskDetailsSidebar {mode} {td} />
+{/if}
 
 <style>
 </style>

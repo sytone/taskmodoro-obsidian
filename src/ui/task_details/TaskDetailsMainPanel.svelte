@@ -51,7 +51,7 @@
     taskName: string,
     description: string,
   ) => {
-    
+
     if (!_isTaskNameInputFocus) {
 
       Render.renderMD(taskName, taskNameEl, td.file);
@@ -68,6 +68,7 @@
 
   const onEnterTaskName = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      td.taskName=temp.taskName
       td.plugin.fileInterface.updateTaskName(td.file,temp.taskName)
       isTaskNameInputEnabled = false;
       window.getSelection().removeAllRanges();
@@ -76,6 +77,7 @@
 
   const onEnterDescription = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      td.description=temp.description
       td.plugin.fileInterface.updateDescription(td.file,temp.description)
       isDescriptionInputEnabled = false;
       window.getSelection().removeAllRanges();
