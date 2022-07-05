@@ -16,14 +16,12 @@
   let taskNameEl: HTMLElement;
   let descriptionEl: HTMLElement;
   let temp = { taskName: td.taskName, description: td.description };
-  let isTaskNameInputEnabled = false;
-  let isDescriptionInputEnabled = false;
+  let isInputEnabled = {taskName: false, description: false}
 
   onMount(() => {
     removeLeadingWhitespace(td);
     renderTaskInput(
-      isTaskNameInputEnabled,
-      isDescriptionInputEnabled,
+      isInputEnabled,
       td.taskName,
       td.description,
     );
@@ -31,10 +29,13 @@
   });
 
   $: {
+    // if(!isTaskNameInputEnabled || !isTaskNameInputEnabled){
+    //   onEnter()
+    // }
+
     removeLeadingWhitespace(td);
     renderTaskInput(
-      isTaskNameInputEnabled,
-      isDescriptionInputEnabled,
+      isInputEnabled,
       td.taskName,
       td.description,
     );
@@ -46,43 +47,45 @@
   };
 
   const renderTaskInput = (
-    _isTaskNameInputFocus: boolean,
-    _isDescriptionInputFocus: boolean,
+    _isInputEnabled: {taskName: boolean,description: boolean},
     taskName: string,
     description: string,
   ) => {
 
-    if (!_isTaskNameInputFocus) {
-
+    if (!_isInputEnabled.taskName) {
       Render.renderMD(taskName, taskNameEl, td.file);
     } else {
       Render.displayMD(taskName, taskNameEl);
     }
 
-    if (!_isDescriptionInputFocus) {
+    if (!_isInputEnabled.description) {
       Render.renderMD(description, descriptionEl, td.file);
     } else {
       Render.displayMD(description, descriptionEl);
     }
   };
 
-  const onEnterTaskName = (event: KeyboardEvent) => {
+  const onEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      td.taskName=temp.taskName
-      td.plugin.fileInterface.updateTaskName(td.file,temp.taskName)
-      isTaskNameInputEnabled = false;
+      submitInput()
+      isInputEnabled=isInputEnabled
       window.getSelection().removeAllRanges();
     }
   };
 
-  const onEnterDescription = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      td.description=temp.description
-      td.plugin.fileInterface.updateDescription(td.file,temp.description)
-      isDescriptionInputEnabled = false;
-      window.getSelection().removeAllRanges();
-    }
-  };
+  const submitInput = ()=>{
+      isInputEnabled.taskName = false;
+      isInputEnabled.description = false;
+    if(td.taskName!==temp.taskName){
+        td.plugin.fileInterface.updateTaskName(td.file,temp.taskName)
+        td.taskName=temp.taskName
+      }
+      if(td.description!==temp.description){
+        td.plugin.fileInterface.updateDescription(td.file,temp.description)
+        td.description=temp.description
+      }
+     
+  }
 
   const onTaskNameInput = (event: any) => {
     temp.taskName = htmlToMarkdown(event.target.innerHTML);
@@ -108,9 +111,11 @@
         contenteditable="true"
         bind:this={taskNameEl}
         on:input={onTaskNameInput}
-        on:keypress={onEnterTaskName}
+        on:keypress={onEnter}
         on:click={() => {
-          isTaskNameInputEnabled = true;
+          submitInput()
+          isInputEnabled.taskName = true;
+          isInputEnabled=isInputEnabled
         }}
       />
 
@@ -120,9 +125,11 @@
         contenteditable="true"
         bind:this={descriptionEl}
         on:input={onDescriptionInput}
-        on:keypress={onEnterDescription}
+        on:keypress={onEnter}
         on:click={() => {
-          isDescriptionInputEnabled = true;
+          submitInput()
+          isInputEnabled.description = true;
+          isInputEnabled=isInputEnabled
         }}
       />
     </div>
