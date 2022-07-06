@@ -32,7 +32,6 @@
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
-          td.plugin.app.vault,
           newDueDate,
           'due',
         );
@@ -56,7 +55,6 @@
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
-          td.plugin.app.vault,
           newScheduledDate,
           'scheduled',
         );
@@ -80,7 +78,6 @@
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
-          td.plugin.app.vault,
           newRepeatConfig,
           'repeat',
         );
@@ -98,7 +95,6 @@
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
-          td.plugin.app.vault,
           {
             minutes: estWorktime.asMinutes(),
           },
@@ -124,7 +120,6 @@
       if (TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
-          td.plugin.app.vault,
           {
             minutes: newPomoDuration.asMinutes(),
           },

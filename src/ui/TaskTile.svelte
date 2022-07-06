@@ -20,6 +20,7 @@
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
 
+
   let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
@@ -34,7 +35,8 @@
       td.file ? td.file.path : './',
       view,
     );
-    taskNameEl.innerHTML = tempEl.children.length !== 0
+    taskNameEl.innerHTML =
+      tempEl.children.length !== 0
         ? tempEl.children[0].innerHTML
         : tempEl.innerHTML;
   });
@@ -47,8 +49,9 @@
       td.file ? td.file.path : './',
       view,
     );
-    if(!taskNameEl) return
-    taskNameEl.innerHTML = tempEl.children.length !== 0
+    if (!taskNameEl) return;
+    taskNameEl.innerHTML =
+      tempEl.children.length !== 0
         ? tempEl.children[0].innerHTML
         : tempEl.innerHTML;
   });
@@ -72,13 +75,14 @@
 
   const openTaskDetails = () => {
     $tasksNav.push(td.file.path);
-    $tasksNav=[...$tasksNav]
+    $tasksNav = [...$tasksNav];
 
     //We open new modal only if there were previously no tasks in task navigation
     if ($tasksNav.length == 1) {
       new TaskDetailsModal(td.plugin, TaskDetailsMode.Update).open();
     }
   };
+
 </script>
 
 <div class="task-tile">
@@ -131,7 +135,7 @@
   }
 
   :global(.subtasks-list .header-content) {
-    margin-left:8px;
+    margin-left: 8px;
   }
 
   :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {

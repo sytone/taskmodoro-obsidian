@@ -1,4 +1,9 @@
-import { Frontmatter, setCompletedDate, setDueDateToNext, Parser } from './parser';
+import {
+  Frontmatter,
+  setCompletedDate,
+  setDueDateToNext,
+  Parser,
+} from './parser'
 import TQPlugin from './main'
 import { Moment } from 'moment'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
@@ -117,11 +122,11 @@ export class FileInterface {
 
   public readonly updateFMProp = async (
     file: TFile,
-    vault: Vault,
     value: Moment | string | string[] | Number | Object,
     propName: string,
+    reloadParent = true
   ): Promise<void> =>
-    withFileContents(file, vault, (lines: string[]): boolean => {
+    withFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
       try {
         frontmatter = new Frontmatter(lines)
@@ -132,8 +137,33 @@ export class FileInterface {
 
       frontmatter.set(propName, value)
       frontmatter.overwrite()
+      if(reloadParent){
+        this.plugin.taskCache.reloadParent(file)
+      }
       return true
     })
+
+  public readonly updateTaskName = async (file: TFile, taskName: string) => {
+    const metadata = this.app.metadataCache.getFileCache(file)
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let taskNameLines = taskName.split('\n')
+    contentLines = Parser.replaceTaskName(contentLines, taskNameLines, metadata)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file, content)
+  }
+
+  public readonly updateDescription = async (
+    file: TFile,
+    description: string,
+  ) => {
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let descLines = description.split('\n')
+    contentLines = Parser.replaceDescription(contentLines, descLines)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file, content)
+  }
 
   /**
    * processRepeating checks the provided lines to see if they describe a
@@ -242,26 +272,6 @@ export class FileInterface {
     await this.app.vault.create(filePath, data)
 
     return `${newHash}.md`
-  }
-
-  public readonly updateTaskName = async (file: TFile, taskName: string) => {
-    const metadata = this.app.metadataCache.getFileCache(file);
-    let content = await this.app.vault.read(file)
-    let contentLines = content.split('\n')
-    let taskNameLines = taskName.split('\n')
-    contentLines = Parser.replaceTaskName(contentLines,taskNameLines,metadata)
-    content = contentLines.join('\n')
-    this.app.vault.modify(file,content)
-  }
-
-  
-  public readonly updateDescription = async (file: TFile, description: string) => {
-    let content = await this.app.vault.read(file)
-    let contentLines = content.split('\n')
-    let descLines = description.split('\n')
-    contentLines = Parser.replaceDescription(contentLines,descLines)
-    content = contentLines.join('\n')
-    this.app.vault.modify(file,content)
   }
 
   /**
