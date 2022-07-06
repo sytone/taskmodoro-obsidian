@@ -62,9 +62,9 @@ export class TaskCache {
    * Update svelte store of tasks by replacing stores` key: (newTask.file.path) with value: (newTask) parsed from modified task file.
    */
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
-    ; (await this.loadTask(file)).match(
+     (await this.loadTask(file)).match(
       newTask => {
-        console.log('tasks-modified: ', newTask.taskName);
+        console.log('task-loaded:', newTask.taskName);
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask;

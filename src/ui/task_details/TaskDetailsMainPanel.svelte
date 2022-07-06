@@ -5,7 +5,7 @@
   import { htmlToMarkdown } from 'obsidian';
 
   import type { TaskDetails } from '../../task-details';
-  import type { TaskDetailsMode } from '../../enums/component-context';
+  import { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
   import { onMount } from 'svelte';
   import Cursor from '../../cursor';
@@ -16,42 +16,28 @@
   let taskNameEl: HTMLElement;
   let descriptionEl: HTMLElement;
   let temp = { taskName: td.taskName, description: td.description };
-  let isInputEnabled = {taskName: false, description: false}
+  let isInputEnabled = { taskName: false, description: false };
 
   onMount(() => {
-    removeLeadingWhitespace(td);
-    renderTaskInput(
-      isInputEnabled,
-      td.taskName,
-      td.description,
-    );
+    renderTaskInput(isInputEnabled, td.taskName, td.description);
     Cursor.setCurrentCursorPosition(td.taskName.length, taskNameEl);
   });
 
   $: {
-    // if(!isTaskNameInputEnabled || !isTaskNameInputEnabled){
-    //   onEnter()
-    // }
 
-    removeLeadingWhitespace(td);
-    renderTaskInput(
-      isInputEnabled,
-      td.taskName,
-      td.description,
-    );
+    renderTaskInput(isInputEnabled, td.taskName, td.description);
   }
 
-  const removeLeadingWhitespace = (_td: TaskDetails) => {
-    _td.taskName = Render.removeLeadingWhitespace(_td.taskName);
-    _td.description = Render.removeLeadingWhitespace(_td.description);
+  const removeLeadingWhitespace = (input: any) => {
+    input.taskName = Render.removeLeadingWhitespace(input.taskName);
+    input.description = Render.removeLeadingWhitespace(input.description);
   };
 
   const renderTaskInput = (
-    _isInputEnabled: {taskName: boolean,description: boolean},
+    _isInputEnabled: { taskName: boolean; description: boolean },
     taskName: string,
     description: string,
   ) => {
-
     if (!_isInputEnabled.taskName) {
       Render.renderMD(taskName, taskNameEl, td.file);
     } else {
@@ -67,34 +53,34 @@
 
   const onEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      submitInput()
-      isInputEnabled=isInputEnabled
       window.getSelection().removeAllRanges();
     }
   };
 
-  const submitInput = ()=>{
-      isInputEnabled.taskName = false;
-      isInputEnabled.description = false;
-    if(td.taskName!==temp.taskName){
-        td.plugin.fileInterface.updateTaskName(td.file,temp.taskName)
-        td.taskName=temp.taskName
+  const submitInput = () => {
+    removeLeadingWhitespace(temp)
+    // console.log('td:',td.taskName,' temp:',temp.taskName,'name=? ',td.taskName==temp.taskName)
+    // console.log('td:',td.description,' temp:',temp.description,'des=? ',td.description==temp.description)
+    if (td.taskName !== temp.taskName) {
+      td.taskName = temp.taskName;
+      if(mode === TaskDetailsMode.Update){
+        td.plugin.fileInterface.updateTaskName(td.file, temp.taskName);
       }
-      if(td.description!==temp.description){
-        td.plugin.fileInterface.updateDescription(td.file,temp.description)
-        td.description=temp.description
+    }
+    if (td.description !== temp.description) {
+      td.description = temp.description;
+      if(mode === TaskDetailsMode.Update){
+      td.plugin.fileInterface.updateDescription(td.file, temp.description);
       }
-     
-  }
+    }
+  };
 
   const onTaskNameInput = (event: any) => {
     temp.taskName = htmlToMarkdown(event.target.innerHTML);
-
   };
 
   const onDescriptionInput = (event: any) => {
     temp.description = htmlToMarkdown(event.target.innerHTML);
-
   };
 </script>
 
@@ -108,28 +94,41 @@
       <div
         class="task-input-name"
         placeholder="Task name"
+        autocorrect="false"
+
         contenteditable="true"
         bind:this={taskNameEl}
         on:input={onTaskNameInput}
         on:keypress={onEnter}
-        on:click={() => {
-          submitInput()
+        on:focusin={() => {
+          submitInput();
           isInputEnabled.taskName = true;
-          isInputEnabled=isInputEnabled
+          isInputEnabled = isInputEnabled;
+        }}
+        on:focusout={() => {
+          submitInput();
+          isInputEnabled.taskName = false;
+          isInputEnabled = isInputEnabled;
         }}
       />
 
       <div
         class="task-input-description"
         placeholder="Description"
+        autocorrect="false"
         contenteditable="true"
         bind:this={descriptionEl}
         on:input={onDescriptionInput}
         on:keypress={onEnter}
-        on:click={() => {
-          submitInput()
+        on:focusin={() => {
+          submitInput();
           isInputEnabled.description = true;
-          isInputEnabled=isInputEnabled
+          isInputEnabled = isInputEnabled;
+        }}
+        on:focusout={() => {
+          submitInput();
+          isInputEnabled.description = false;
+          isInputEnabled = isInputEnabled;
         }}
       />
     </div>

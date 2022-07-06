@@ -54,17 +54,18 @@ export const CalcTaskScore = (task: Task): number => {
 }
 
 export type FilePath = string
-
+export type FileName = string
 export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
-
+  public readonly tasksDir: string
   public static readonly descStartToken = '<!---DESC_START--->'
   public static readonly descEndToken = '<!---DESC_END--->'
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
     this.app = app
+    this.tasksDir = this.plugin.settings.TasksDir
   }
 
   public readonly handleTaskModified = async (
@@ -183,11 +184,11 @@ export class FileInterface {
   ): Promise<string> => {
     let subtasksFileNames: string[] = []
     for (let subtask of td.subtasks) {
-      let _filename = await this.storeNestedTasks(subtask)
-      subtasksFileNames.push(_filename)
+      let fileName = await this.storeNestedTasks(subtask)
+      subtasksFileNames.push(fileName)
     }
 
-    let fileName = this.storeNewTask(
+    let currTaskPath = await this.storeNewTask(
       td.taskName,
       td.description,
       td.pomoDuration,
@@ -196,11 +197,15 @@ export class FileInterface {
       td.scheduled,
       td.repeatConfig,
       td.cleanedTags,
-      td.file.name,
       subtasksFileNames,
     )
 
-    return await fileName
+    // for(let fileName of subtasksFileNames){
+    //   let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(`${this.tasksDir}/${fileName}`, '/')
+    //   this.updateFMProp(subtaskFile, [currTaskfile.name], 'parents',false)
+    // }
+
+    return currTaskPath
   }
 
   public readonly storeNewTask = async (
@@ -212,12 +217,10 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    parentName: string,
-    subtasksNames: string[],
+    subtasksNames: FileName[],
   ): Promise<string> => {
-    const tasksDir = this.plugin.settings.TasksDir
     const newHash = this.createTaskBlockHash()
-    const fileName = `${tasksDir}/${newHash}.md`
+    const filePath = `${this.tasksDir}/${newHash}.md`
     const data = this.formatNewTask(
       taskName,
       description,
@@ -227,18 +230,16 @@ export class FileInterface {
       scheduled,
       repeat,
       tags,
-      parentName,
       subtasksNames,
     )
 
-    console.debug('tq: Creating a new task in ' + fileName)
+    console.debug('tq: Creating a new task in ' + filePath)
     console.debug(data)
 
-    if (!(await this.app.vault.adapter.exists(tasksDir))) {
-      await this.app.vault.createFolder(tasksDir)
+    if (!(await this.app.vault.adapter.exists(this.tasksDir))) {
+      await this.app.vault.createFolder(this.tasksDir)
     }
-
-    await this.app.vault.create(fileName, data)
+    await this.app.vault.create(filePath, data)
 
     return `${newHash}.md`
   }
@@ -266,7 +267,7 @@ export class FileInterface {
   /**
    * @return YAML frontmatter
    */
-  private readonly formatNewTask = (
+   private readonly formatNewTask = (
     taskName: string,
     description: string,
     pomoDuration: Duration,
@@ -275,7 +276,6 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    parentName: string,
     subtasksNames: string[],
   ): string => {
     const frontMatter = []
@@ -306,10 +306,10 @@ export class FileInterface {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
 
-    if (parentName) {
-      let parentFm = `  - ${parentName}`
-      frontMatter.push('parents: \n' + parentFm)
-    }
+    // if (parentName) {
+    //   let parentFm = `  - ${parentName}`
+    //   frontMatter.push('parents: \n' + parentFm)
+    // }
 
     if (subtasksNames.length !== 0) {
       let fm = 'subtasks: \n'

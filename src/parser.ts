@@ -14,7 +14,7 @@ export class Parser {
     metadata: CachedMetadata,
   ): string => {
     const start = metadata.listItems[0].position.start.line
-    return content[start].replace(/- \[[xX ]\]/, '')
+    return content[start].replace(/- \[[xX ]\] /, '')
   }
 
   public static readonly isTaskCompleted = (
