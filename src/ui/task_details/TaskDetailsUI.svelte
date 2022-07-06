@@ -15,25 +15,33 @@
   let tasksNav: Writable<FilePath[]> = plugin.taskNav.tasksNavigation;
 
   $: {
-    td = getTd($tasksCache, $tasksNav);
+    getTaskNavTd($tasksCache, $tasksNav);
   }
 
-  const getTd = (tasks: Record<string, Task>, tasksNav: FilePath[]) => {
-    let _td: TaskDetails;
+  // Either gets last navigation task or a new one is created
+  const getTaskNavTd = (tasks: Record<string, Task>, tasksNav: FilePath[]) => {
+    console.log('getTaskFromStores')
+    // let _td: TaskDetails;
     let currTask: FilePath = tasksNav.last();
+
     if (currTask) {
-      _td = new TaskDetails(plugin, tasks[currTask]);
+      td = new TaskDetails(plugin, tasks[currTask]);
     } else {
-      _td = new TaskDetails(plugin);
+      td = new TaskDetails(plugin);
     }
-    _td.close = close;
-    return _td;
+    td.close = close;
+    // return _td;
   };
+
+  // figure out how to prevent this method from being triggered
+  // Two unique indicators - mode and empty task nav
 </script>
 
 {#if mode === TaskDetailsMode.Create}
   <TaskDetailsMainPanel {mode} bind:td />
   <TaskDetailsSidebar {mode} bind:td />
+  <!-- Changes in update mode are made by modifying file contents
+    which trigger a change in svelte store that rerenders dependant UI -->
 {:else if mode === TaskDetailsMode.Update}
   <TaskDetailsMainPanel {mode} {td} />
   <TaskDetailsSidebar {mode} {td} />

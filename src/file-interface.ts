@@ -1,4 +1,9 @@
-import { Frontmatter, setCompletedDate, setDueDateToNext, Parser } from './parser';
+import {
+  Frontmatter,
+  setCompletedDate,
+  setDueDateToNext,
+  Parser,
+} from './parser'
 import TQPlugin from './main'
 import { Moment } from 'moment'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
@@ -54,17 +59,18 @@ export const CalcTaskScore = (task: Task): number => {
 }
 
 export type FilePath = string
-
+export type FileName = string
 export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
-
+  public readonly tasksDir: string
   public static readonly descStartToken = '<!---DESC_START--->'
   public static readonly descEndToken = '<!---DESC_END--->'
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
     this.app = app
+    this.tasksDir = this.plugin.settings.TasksDir
   }
 
   public readonly handleTaskModified = async (
@@ -116,11 +122,11 @@ export class FileInterface {
 
   public readonly updateFMProp = async (
     file: TFile,
-    vault: Vault,
     value: Moment | string | string[] | Number | Object,
     propName: string,
+    reloadParent = true
   ): Promise<void> =>
-    withFileContents(file, vault, (lines: string[]): boolean => {
+    withFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
       try {
         frontmatter = new Frontmatter(lines)
@@ -131,8 +137,33 @@ export class FileInterface {
 
       frontmatter.set(propName, value)
       frontmatter.overwrite()
+      if(reloadParent){
+        this.plugin.taskCache.reloadParent(file)
+      }
       return true
     })
+
+  public readonly updateTaskName = async (file: TFile, taskName: string) => {
+    const metadata = this.app.metadataCache.getFileCache(file)
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let taskNameLines = taskName.split('\n')
+    contentLines = Parser.replaceTaskName(contentLines, taskNameLines, metadata)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file, content)
+  }
+
+  public readonly updateDescription = async (
+    file: TFile,
+    description: string,
+  ) => {
+    let content = await this.app.vault.read(file)
+    let contentLines = content.split('\n')
+    let descLines = description.split('\n')
+    contentLines = Parser.replaceDescription(contentLines, descLines)
+    content = contentLines.join('\n')
+    this.app.vault.modify(file, content)
+  }
 
   /**
    * processRepeating checks the provided lines to see if they describe a
@@ -183,11 +214,11 @@ export class FileInterface {
   ): Promise<string> => {
     let subtasksFileNames: string[] = []
     for (let subtask of td.subtasks) {
-      let _filename = await this.storeNestedTasks(subtask)
-      subtasksFileNames.push(_filename)
+      let fileName = await this.storeNestedTasks(subtask)
+      subtasksFileNames.push(fileName)
     }
 
-    let fileName = this.storeNewTask(
+    let currTaskPath = await this.storeNewTask(
       td.taskName,
       td.description,
       td.pomoDuration,
@@ -196,11 +227,15 @@ export class FileInterface {
       td.scheduled,
       td.repeatConfig,
       td.cleanedTags,
-      td.file.name,
       subtasksFileNames,
     )
 
-    return await fileName
+    // for(let fileName of subtasksFileNames){
+    //   let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(`${this.tasksDir}/${fileName}`, '/')
+    //   this.updateFMProp(subtaskFile, [currTaskfile.name], 'parents',false)
+    // }
+
+    return currTaskPath
   }
 
   public readonly storeNewTask = async (
@@ -212,12 +247,10 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    parentName: string,
-    subtasksNames: string[],
+    subtasksNames: FileName[],
   ): Promise<string> => {
-    const tasksDir = this.plugin.settings.TasksDir
     const newHash = this.createTaskBlockHash()
-    const fileName = `${tasksDir}/${newHash}.md`
+    const filePath = `${this.tasksDir}/${newHash}.md`
     const data = this.formatNewTask(
       taskName,
       description,
@@ -227,40 +260,18 @@ export class FileInterface {
       scheduled,
       repeat,
       tags,
-      parentName,
       subtasksNames,
     )
 
-    console.debug('tq: Creating a new task in ' + fileName)
+    console.debug('tq: Creating a new task in ' + filePath)
     console.debug(data)
 
-    if (!(await this.app.vault.adapter.exists(tasksDir))) {
-      await this.app.vault.createFolder(tasksDir)
+    if (!(await this.app.vault.adapter.exists(this.tasksDir))) {
+      await this.app.vault.createFolder(this.tasksDir)
     }
-
-    await this.app.vault.create(fileName, data)
+    await this.app.vault.create(filePath, data)
 
     return `${newHash}.md`
-  }
-
-  public readonly updateTaskName = async (file: TFile, taskName: string) => {
-    const metadata = this.app.metadataCache.getFileCache(file);
-    let content = await this.app.vault.read(file)
-    let contentLines = content.split('\n')
-    let taskNameLines = taskName.split('\n')
-    contentLines = Parser.replaceTaskName(contentLines,taskNameLines,metadata)
-    content = contentLines.join('\n')
-    this.app.vault.modify(file,content)
-  }
-
-  
-  public readonly updateDescription = async (file: TFile, description: string) => {
-    let content = await this.app.vault.read(file)
-    let contentLines = content.split('\n')
-    let descLines = description.split('\n')
-    contentLines = Parser.replaceDescription(contentLines,descLines)
-    content = contentLines.join('\n')
-    this.app.vault.modify(file,content)
   }
 
   /**
@@ -275,7 +286,6 @@ export class FileInterface {
     scheduled: string,
     repeat: string,
     tags: string[],
-    parentName: string,
     subtasksNames: string[],
   ): string => {
     const frontMatter = []
@@ -306,10 +316,10 @@ export class FileInterface {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
 
-    if (parentName) {
-      let parentFm = `  - ${parentName}`
-      frontMatter.push('parents: \n' + parentFm)
-    }
+    // if (parentName) {
+    //   let parentFm = `  - ${parentName}`
+    //   frontMatter.push('parents: \n' + parentFm)
+    // }
 
     if (subtasksNames.length !== 0) {
       let fm = 'subtasks: \n'

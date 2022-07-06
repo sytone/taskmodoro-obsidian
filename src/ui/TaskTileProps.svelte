@@ -31,7 +31,6 @@ let showWorktimeGroup: boolean;
         if (td.file) {
           td.plugin.fileInterface.updateFMProp(
             td.file,
-            td.plugin.app.vault,
             newDueDate,
             'due',
           );
@@ -49,7 +48,6 @@ let showWorktimeGroup: boolean;
         if (td.file) {
           td.plugin.fileInterface.updateFMProp(
             td.file,
-            td.plugin.app.vault,
             newScheduledDate,
             'scheduled',
           );
@@ -66,7 +64,6 @@ let showWorktimeGroup: boolean;
         if (td.file) {
           td.plugin.fileInterface.updateFMProp(
             td.file,
-            td.plugin.app.vault,
             newRepeatConfig,
             'repeat',
           );

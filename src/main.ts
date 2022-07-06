@@ -36,7 +36,7 @@ export default class TQPlugin extends Plugin {
 
     this.fileInterface = new FileInterface(this, this.app)
     this.taskCache = new TaskCache(this, this.app)
-    this.taskNav = new TaskDetailsNavigation()
+    this.taskNav = new TaskDetailsNavigation(this)
     
     this.registerView(
       VIEW_TYPE_TIMER_TASK,

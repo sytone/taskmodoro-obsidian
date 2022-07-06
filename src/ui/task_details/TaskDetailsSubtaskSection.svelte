@@ -3,8 +3,8 @@
   import { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from '../Checkbox.svelte';
   import { plus } from '../../graphics';
-  import TaskListTile from '../TaskTile.svelte';
-  import { TaskListTileParent } from '../../enums/component-context';
+  import TaskTile from '../TaskTile.svelte';
+  import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
   import { MarkdownRenderer, TFile, htmlToMarkdown } from 'obsidian';
   import { onMount, afterUpdate } from 'svelte';
   import Cursor from 'src/cursor';
@@ -92,7 +92,6 @@
     let subtasksFileNames = td.subtasks.map((s) => s.file.name);
     td.plugin.fileInterface.updateFMProp(
       td.file,
-      td.plugin.app.vault,
       subtasksFileNames,
       'subtasks',
     );
@@ -121,8 +120,8 @@
   </div>
   <div class="subtasks-list">
     {#each td.subtasks as subtask (subtask.taskName)}
-      <TaskListTile
-        parentComponent={TaskListTileParent.TaskDetailsMainPanel}
+      <TaskTile
+        parentComponent={TaskTileParent.TaskDetailsMainPanel}
         bind:td={subtask}
         view={null}
       />
