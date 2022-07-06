@@ -76,7 +76,7 @@ export class TaskCache {
     )
   }
 
-  // We reload parent data in svelte store to represent change in subtask
+  // // We reload parent data in svelte store to represent change in subtask
   // public reloadParent = (file: TFile) => {
   //   let tasksNav = get(this.plugin.taskNav.tasksNavigation)
   //   let currTask = get(this.tasks)[file.path]

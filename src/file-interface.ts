@@ -9,6 +9,7 @@ import { Moment } from 'moment'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Duration } from 'moment'
 import { TaskDetails } from './task-details'
+import moment from 'moment'
 
 export interface Task {
   file: TFile
@@ -229,10 +230,10 @@ export class FileInterface {
       subtasksFileNames,
     )
 
-    // for(let fileName of subtasksFileNames){
-    //   let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(`${this.tasksDir}/${fileName}`, '/')
-    //   this.updateFMProp(subtaskFile, [currTaskfile.name], 'parents',false)
-    // }
+    for(let fileName of subtasksFileNames){
+      let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(`${this.tasksDir}/${fileName}`, '/')
+      this.updateFMProp(subtaskFile, [currTaskPath], 'parents',false)
+    }
 
     return currTaskPath
   }
@@ -289,6 +290,10 @@ export class FileInterface {
   ): string => {
     const frontMatter = []
 
+    
+    let createdAt = moment(new Date()).toISOString()
+    frontMatter.push(`created_at: ${createdAt}`)
+    
     if (pomoDuration) {
       let pomoLen = `  minutes: ${pomoDuration.asMinutes()}`
       frontMatter.push(`pomodoro_length:\n${pomoLen}`)
