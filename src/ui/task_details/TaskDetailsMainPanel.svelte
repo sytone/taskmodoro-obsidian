@@ -24,8 +24,9 @@
   });
 
   $: {
-
     renderTaskInput(isInputEnabled, td.taskName, td.description);
+    temp.taskName=td.taskName
+    temp.description=td.description
   }
 
   const removeLeadingWhitespace = (input: any) => {
@@ -64,13 +65,13 @@
     if (td.taskName !== temp.taskName) {
       td.taskName = temp.taskName;
       if(mode === TaskDetailsMode.Update){
-        td.plugin.fileInterface.updateTaskName(td.file, temp.taskName);
+        td.plugin.fileInterface.updateTaskName(td.file, td.taskName);
       }
     }
     if (td.description !== temp.description) {
       td.description = temp.description;
       if(mode === TaskDetailsMode.Update){
-      td.plugin.fileInterface.updateDescription(td.file, temp.description);
+      td.plugin.fileInterface.updateDescription(td.file, td.description);
       }
     }
   };

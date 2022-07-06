@@ -82,18 +82,17 @@ export class FileInterface {
       return
     }
 
-    return withFileContents(tfile, this.app.vault, (lines: string[]): boolean =>
+    return modifyFileContents(tfile, this.app.vault, (lines: string[]): boolean =>
       this.processRepeating(tfile.path, lines),
     )
   }
 
   public readonly setTimerActivity = (
     file: TFile,
-    vault: Vault,
     start: Moment,
     end: Moment,
   ) => {
-    withFileContents(file, vault, (lines: string[]): boolean => {
+    modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
 
       try {
@@ -126,7 +125,7 @@ export class FileInterface {
     propName: string,
     reloadParent = true
   ): Promise<void> =>
-    withFileContents(file, this.app.vault, (lines: string[]): boolean => {
+    modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
       try {
         frontmatter = new Frontmatter(lines)
@@ -137,9 +136,9 @@ export class FileInterface {
 
       frontmatter.set(propName, value)
       frontmatter.overwrite()
-      if(reloadParent){
-        this.plugin.taskCache.reloadParent(file)
-      }
+      // if(reloadParent){
+      //   this.plugin.taskCache.reloadParent(file)
+      // }
       return true
     })
 
@@ -361,16 +360,16 @@ export class FileInterface {
  * If the provided function returns true, write the array back to the file.
  * NOTE: If useCache is true, the fn is not allowed to update the file!
  */
-export const withFileContents = async (
+export const modifyFileContents = async (
   file: TFile,
   vault: Vault,
-  fn: (lines: string[]) => boolean,
+  modificator: (lines: string[]) => boolean,
 ): Promise<void> => {
   const fileContents = (await vault.read(file)) || ''
   const lines = fileContents.split('\n')
 
-  const updated = fn(lines)
-  if (updated) {
+  const modified = modificator(lines)
+  if (modified) {
     return vault.modify(file, lines.join('\n'))
   }
 }

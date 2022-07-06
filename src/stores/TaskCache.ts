@@ -4,7 +4,7 @@ import { err, ok, Result } from 'neverthrow'
 import { App, TFile } from 'obsidian'
 import { Writable, writable, get } from 'svelte/store'
 import { TaskDetails } from '../task-details'
-import { FilePath, Task, withFileContents } from '../file-interface'
+import { FilePath, Task, modifyFileContents } from '../file-interface'
 import { Parser } from '../parser'
 
 /**
@@ -33,7 +33,7 @@ export class TaskCache {
    * rerendered.
    */
   public readonly toggleChecked = async (td: TaskDetails): Promise<void> =>
-    withFileContents(td.file, this.app.vault, (lines): boolean => {
+    modifyFileContents(td.file, this.app.vault, (lines): boolean => {
       const replacer = td.completed ? /^- \[[ ]\]/ : /^- \[[xX]\]/
       const newValue = td.completed ? '- [x]' : '- [ ]'
 
@@ -77,32 +77,32 @@ export class TaskCache {
   }
 
   // We reload parent data in svelte store to represent change in subtask
-  public reloadParent = (file: TFile) => {
-    let tasksNav = get(this.plugin.taskNav.tasksNavigation)
-    let currTask = get(this.tasks)[file.path]
-    currTask.parents
+  // public reloadParent = (file: TFile) => {
+  //   let tasksNav = get(this.plugin.taskNav.tasksNavigation)
+  //   let currTask = get(this.tasks)[file.path]
+  //   currTask.parents
 
-    const doesCurrTaskHasTaskNavAsParent = (parentPath: string) => {
-      return (
-        currTask.parents.findIndex((t: Task) => t.file.path === parentPath) >= 0
-      )
-    }
+  //   const doesCurrTaskHasTaskNavAsParent = (parentPath: string) => {
+  //     return (
+  //       currTask.parents.findIndex((t: Task) => t.file.path === parentPath) >= 0
+  //     )
+  //   }
 
-    const idx = tasksNav.findIndex(path => {
-      return doesCurrTaskHasTaskNavAsParent(path)
-    })
+  //   const idx = tasksNav.findIndex(path => {
+  //     return doesCurrTaskHasTaskNavAsParent(path)
+  //   })
 
-    if (idx >= 0) {
-      let parentPath = tasksNav[idx - 1]
-      let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
-        parentPath,
-        '/',
-      )
-      if (parentFile) {
-        this.handleTaskModified(parentFile)
-      }
-    }
-  }
+  //   if (idx >= 0) {
+  //     let parentPath = tasksNav[idx - 1]
+  //     let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
+  //       parentPath,
+  //       '/',
+  //     )
+  //     if (parentFile) {
+  //       this.handleTaskModified(parentFile)
+  //     }
+  //   }
+  // }
 
   public readonly handleTaskDeleted = (path: string): void => {
     this.tasks.update(
@@ -143,7 +143,7 @@ export class TaskCache {
   ): Promise<Result<Task, string>> => {
     const metadata = this.app.metadataCache.getFileCache(file)
     if (
-      metadata?.listItems ||
+      !metadata.listItems ||
       metadata.listItems.length < 1 ||
       metadata.listItems[0].task === undefined
     ) {
