@@ -3,7 +3,7 @@
   import type { Writable } from 'svelte/store';
   import type { Task } from '../../file-interface';
   import type TQPlugin from '../../main';
-import { getTextAbv } from '../../util';
+import { getTextAbv } from '../../helpers/util';
 
   export let plugin: TQPlugin;
 

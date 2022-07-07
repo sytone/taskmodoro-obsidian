@@ -112,14 +112,14 @@ class Suggest<T> {
  */
 abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
   protected app: App;
-  protected inputEl: HTMLInputElement;
+  protected inputEl: HTMLInputElement | HTMLTextAreaElement;
 
   private popper: PopperInstance;
   private readonly scope: Scope;
   private readonly suggestEl: HTMLElement;
   private readonly suggest: Suggest<T>;
 
-  constructor(app: App, inputEl: HTMLInputElement) {
+  constructor(app: App, inputEl: HTMLInputElement | HTMLTextAreaElement) {
     this.app = app;
     this.inputEl = inputEl;
     this.scope = new Scope();
@@ -203,7 +203,7 @@ abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
 export class StaticSuggest extends TextInputSuggest<string> {
   private readonly suggestions: string[];
 
-  constructor(app: App, inputEl: HTMLInputElement, suggestions: string[]) {
+  constructor(app: App, inputEl: HTMLInputElement | HTMLTextAreaElement, suggestions: string[]) {
     super(app, inputEl);
     this.suggestions = suggestions;
   }

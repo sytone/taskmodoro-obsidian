@@ -1,9 +1,9 @@
-import { Frontmatter, getDescription } from '../parser'
-import TQPlugin from '../main'
+import { Frontmatter} from '../parser'
+import type TQPlugin from '../main'
 import { err, ok, Result } from 'neverthrow'
-import { App, TFile } from 'obsidian'
+import type { App, TFile } from 'obsidian'
 import { Writable, writable, get } from 'svelte/store'
-import { TaskDetails } from '../task-details'
+import type { TaskDetails } from '../task-details'
 import { FilePath, Task, modifyFileContents, FileName } from '../file-interface'
 import { Parser } from '../parser'
 

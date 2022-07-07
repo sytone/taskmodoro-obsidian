@@ -1,4 +1,4 @@
-import { Moment, Duration } from 'moment'
+import type { Moment, Duration } from 'moment'
 
 export const formatDate = (date: Moment | undefined): string => {
   if (!date) return

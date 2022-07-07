@@ -8,18 +8,15 @@
     DurationPickerModal,
     RepeatPickerModal,
   } from '../../modals';
-  import { formatDate, formatFMDate } from '../../util';
+  import { formatDate, formatFMDate } from '../../helpers/util';
   import { externalLink } from '../../graphics';
-  import DurationPicker from './../pickers/duration_picker/DurationPicker.svelte';
   import { DurationPickerType } from './../../enums/duration-picker-type';
-  import { StaticSuggest } from '../../suggest';
   import TextSuggest from '../TextSuggest.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
   const tagCache = Object.keys((td.plugin.app.metadataCache as any).getTags());
-  let tagsInputElement: HTMLElement;
   let isCreateBtnEnabled = true;
   $: isCreateBtnEnabled = td.taskName != '';
 
@@ -137,10 +134,6 @@
     ).open();
   };
 
-  // const showTagsSuggester = () => {
-
-  //   new StaticSuggest(td.plugin.app,tagsInputElement,)
-  // };
 </script>
 
 <div class="task-details-sidebar">
@@ -180,11 +173,6 @@
     </div>
     <div class="group">
       <div class="label">Tags</div>
-      <!-- <input
-          bind:this={tagsInputElement}
-          class="sidebar-input"
-          on:click={showTagsSuggester}
-            /> -->
       <TextSuggest
         app={td.plugin.app}
         suggestions={tagCache}

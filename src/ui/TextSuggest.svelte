@@ -2,6 +2,7 @@
   import type { App } from 'obsidian';
   import { onMount } from 'svelte';
   import { StaticSuggest } from '../suggest';
+import { textareaResize } from '../helpers/textarea-resize';
 
   export let app: App;
   export let suggestions: string[];
@@ -9,17 +10,20 @@
   export let value: string;
   export let classes: string = '';
 
-  let inputEl: HTMLInputElement;
+  let inputEl: HTMLTextAreaElement;
 
   onMount(() => {
     new StaticSuggest(app, inputEl, suggestions);
   });
+
+
 </script>
 
-<input
+<textarea
   class={classes}
   type="text"
   {placeholder}
+  use:textareaResize
   bind:this={inputEl}
   bind:value
 />

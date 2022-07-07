@@ -8,8 +8,8 @@
   import { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
   import { onMount } from 'svelte';
-  import Cursor from '../../cursor';
-  import { Render } from '../../render';
+  import Cursor from '../../helpers/cursor';
+  import { Render } from '../../helpers/render';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
@@ -54,6 +54,7 @@
 
   const onEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      event.preventDefault()
       window.getSelection().removeAllRanges();
     }
   };

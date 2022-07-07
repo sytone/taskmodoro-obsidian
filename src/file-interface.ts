@@ -4,15 +4,14 @@ import {
   setDueDateToNext,
   Parser,
 } from './parser'
-import TQPlugin from './main'
-import { Moment } from 'moment'
+import type TQPlugin from './main'
+import type { Moment } from 'moment'
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
-import { Duration } from 'moment'
-import { TaskDetails } from './task-details'
+import type { Duration } from 'moment'
+import type { TaskDetails } from './task-details'
 import moment from 'moment'
 import { isArrayLike } from 'lodash'
-import { getTextAbv } from './util';
-import { Frontmatter } from './parser';
+import { getTextAbv } from './helpers/util';
 
 export interface Task {
   file: TFile

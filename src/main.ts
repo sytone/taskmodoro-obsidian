@@ -6,7 +6,7 @@ import { TaskDetailsModal } from './modals'
 import { ISettings, settingsWithDefaults } from './settings'
 import { stateFromConfig } from './state'
 import TasksList from './ui/QueryTasksList.svelte'
-import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './constants'
+import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
 import {
   MarkdownPostProcessorContext,
   MarkdownView,

@@ -1,4 +1,4 @@
-// Credit to Liam (Stack Overflow)
+// Reproduced from to Liam (Stack Overflow)
 
 // https://stackoverflow.com/a/41034697/3480193
 export default class Cursor {

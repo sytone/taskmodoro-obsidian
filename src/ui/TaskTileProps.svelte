@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { TaskDetails } from '../task-details';
-import { durationFormat_hm } from '../util';
+import { durationFormat_hm } from '../helpers/util';
 import { RepeatPickerModal, DatePickerModal } from '../modals';
 import type { Moment} from 'moment';
 import {

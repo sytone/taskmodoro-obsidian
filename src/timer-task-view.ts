@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian'
 import { onMount } from 'svelte'
-import { VIEW_TYPE_POMODORO_TASK } from './constants'
+import { VIEW_TYPE_POMODORO_TASK } from './helpers/constants'
 import SidebarTimerTaskView from './ui/sidebar_timer/SidebarTimerTaskView.svelte'
 import type TQPlugin from './main'
 import type { Task } from './file-interface'

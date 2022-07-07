@@ -3,7 +3,7 @@ import RRule from 'rrule'
 import { FileInterface } from './file-interface'
 
 import moment from 'moment'
-import { formatDate } from './util'
+import { formatDate } from './helpers/util'
 import { CachedMetadata } from 'obsidian'
 
 type Moment = moment.Moment
