@@ -77,3 +77,10 @@ Settings Page
   opacity: 0.5;
   cursor: default;
 }
+
+[contenteditable='true']:empty:before {
+  content: attr(placeholder);
+  color: var(--dark-blue-gray);
+  font-size: 1rem;
+  font-weight: normal;
+}

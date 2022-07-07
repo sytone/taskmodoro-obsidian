@@ -344,7 +344,11 @@ export class FileInterface {
     }
 
     if (tags && tags.length > 0 && tags[0].length > 0) {
-      frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
+      let tagsFm = ``
+      for (let tag of tags) {
+        tagsFm += `\n  - '${tag}'`
+      }
+      frontMatter.push(`tags:${tagsFm}`)
     }
 
     if (subtasksNames.length !== 0) {

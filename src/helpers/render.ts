@@ -10,7 +10,7 @@ export class Render {
     Cursor.setCurrentCursorPosition(mdOffset, el)
   }
 
-  static renderMD (md: string, el: HTMLElement, file: TFile) {
+  static renderMD (md: string, el: HTMLElement, file: TFile=undefined) {
     if (!el) return
     const tempEl = createDiv()
     MarkdownRenderer.renderMarkdown(md, tempEl, file ? file.path : './', null)

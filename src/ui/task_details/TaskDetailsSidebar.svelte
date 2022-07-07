@@ -18,7 +18,10 @@
 
   const tagCache = Object.keys((td.plugin.app.metadataCache as any).getTags());
   let isCreateBtnEnabled = true;
-  $: isCreateBtnEnabled = td.taskName != '';
+  $: {
+    isCreateBtnEnabled = td.taskName != '';
+    console.log('tags: ',td.tags)
+  }
 
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
@@ -27,11 +30,7 @@
       td.due = formatDate(newDueDate);
       td = td;
       if (TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          newDueDate,
-          'due',
-        );
+        td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
       }
     };
 
@@ -134,6 +133,12 @@
     ).open();
   };
 
+  const updateTagsFm = () => {
+    if (mode == TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(td.file, td.cleanedTags, 'tags');
+    }
+  };
+
 </script>
 
 <div class="task-details-sidebar">
@@ -174,10 +179,12 @@
     <div class="group">
       <div class="label">Tags</div>
       <TextSuggest
+        classes={'tag-input'}
         app={td.plugin.app}
         suggestions={tagCache}
-        placeholder="None"
-        value={td.tags}
+        placeholder="Add a tag"
+        bind:value={td.tags}
+        onFocusout={updateTagsFm}
       />
     </div>
   </div>
@@ -195,6 +202,10 @@
 </div>
 
 <style>
+  :global(.task-details-sidebar .tag-input) {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a2d30;
+  }
   .create-btn {
     width: 100%;
   }
@@ -218,7 +229,7 @@
   }
 
   .task-details-sidebar {
-    background-color: #151719 !important;
+    background-color: #151719;
 
     width: 30%;
     padding: 24px 24px;

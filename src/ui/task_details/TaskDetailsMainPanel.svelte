@@ -143,13 +143,6 @@
     margin-top: 8px;
   }
 
-  [contenteditable='true']:empty:before {
-    content: attr(placeholder);
-    color: var(--dark-blue-gray);
-    font-size: 1rem;
-    font-weight: normal;
-  }
-
   .task-input-name {
     border: none;
     border-bottom: 1px solid var(--dark2-blue-gray);

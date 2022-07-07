@@ -112,14 +112,14 @@ class Suggest<T> {
  */
 abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
   protected app: App;
-  protected inputEl: HTMLInputElement | HTMLTextAreaElement;
+  protected inputEl: HTMLElement;
 
   private popper: PopperInstance;
   private readonly scope: Scope;
   private readonly suggestEl: HTMLElement;
   private readonly suggest: Suggest<T>;
 
-  constructor(app: App, inputEl: HTMLInputElement | HTMLTextAreaElement) {
+  constructor(app: App, inputEl: HTMLElement) {
     this.app = app;
     this.inputEl = inputEl;
     this.scope = new Scope();
@@ -185,7 +185,7 @@ abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
   };
 
   private readonly onInputChanged = (): void => {
-    const inputStr = this.inputEl.value;
+    const inputStr = this.inputEl.innerText;
     const suggestions = this.getSuggestions(inputStr);
 
     if (suggestions.length > 0) {
@@ -203,7 +203,7 @@ abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
 export class StaticSuggest extends TextInputSuggest<string> {
   private readonly suggestions: string[];
 
-  constructor(app: App, inputEl: HTMLInputElement | HTMLTextAreaElement, suggestions: string[]) {
+  constructor(app: App, inputEl: HTMLElement, suggestions: string[]) {
     super(app, inputEl);
     this.suggestions = suggestions;
   }
@@ -223,11 +223,11 @@ export class StaticSuggest extends TextInputSuggest<string> {
 
   public selectSuggestion = (string: string): void => {
     // Only replace the last word of the input with the selected suggestion
-    const startingVal = this.inputEl.value;
+    const startingVal = this.inputEl.innerText;
     const existingValues = startingVal.split(/ +/).slice(0, -1);
     existingValues.push(string);
 
-    this.inputEl.value = existingValues.join(' ');
+    this.inputEl.innerText = existingValues.join(' ');
     this.inputEl.trigger('input');
     this.close();
   };

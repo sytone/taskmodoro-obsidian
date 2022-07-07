@@ -30,9 +30,8 @@ export class TaskDetails {
 
   public get cleanedTags (): string[] {
     return this.tags
-      .split(/[, ]/)
+      .split(/[ ]+/)
       .filter(x => x !== '')
-      .map(tag => tag.trim().replace('#', ''))
   }
 
   public get estWorktimeStr (): string {
@@ -59,14 +58,18 @@ export class TaskDetails {
       this.description = task.description
       this.completed = fm.get('completed')
       this.file = task.file
-
       const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
       this.pomoDuration = moment.duration(pomoLen, 'minutes')
-
+      
       let estWorklength = fm.get('estimated_worktime')?.minutes
-
+      
       if (estWorklength) {
         this.estWorktime = moment.duration(estWorklength, 'minutes')
+      }
+      let tags:string[]=fm.get('tags')
+      
+      if(tags){
+        this.tags = tags.join(' ')
       }
 
       let ta: [{ start: string; end: string }] = fm.get('timer_activity')
