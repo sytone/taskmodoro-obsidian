@@ -11,6 +11,8 @@ import { Duration } from 'moment'
 import { TaskDetails } from './task-details'
 import moment from 'moment'
 import { isArrayLike } from 'lodash'
+import { getTextAbv } from './util';
+import { Frontmatter } from './parser';
 
 export interface Task {
   file: TFile
@@ -128,6 +130,7 @@ export class FileInterface {
     value: Moment | string | string[] | Number | Object,
     propName: string,
     append = false,
+    reloadParent = true
   ): Promise<void> =>
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
@@ -139,22 +142,27 @@ export class FileInterface {
       }
 
       if (append) {
-        let fmArr = frontmatter.get(propName)
-        if (!fmArr) {
-          value = [value]
-        }
-        if (fmArr && isArrayLike(fmArr)) {
-          value = [...fmArr, value]
-        }
+        value = this.appendValue(propName,value,frontmatter)
       }
 
       frontmatter.set(propName, value)
       frontmatter.overwrite()
-      // if(reloadParent){
-      //   this.plugin.taskCache.reloadParent(file)
-      // }
+      if(reloadParent){
+        this.plugin.taskCache.reloadParent(file)
+      }
       return true
     })
+
+  private readonly appendValue = (propName: string,value: any,frontmatter:Frontmatter)=> {
+    let fmArr = frontmatter.get(propName)
+    if (!fmArr) {
+      value = [value]
+    }
+    if (fmArr && isArrayLike(fmArr)) {
+      value = [...fmArr, value]
+    }
+    return value
+  }
 
   public readonly updateTaskName = async (file: TFile, taskName: string) => {
     const metadata = this.app.metadataCache.getFileCache(file)
@@ -164,6 +172,7 @@ export class FileInterface {
     contentLines = Parser.replaceTaskName(contentLines, taskNameLines, metadata)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
+    this.plugin.taskCache.reloadParent(file)
   }
 
   public readonly updateDescription = async (
@@ -176,6 +185,7 @@ export class FileInterface {
     contentLines = Parser.replaceDescription(contentLines, descLines)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
+    this.plugin.taskCache.reloadParent(file)
   }
 
   /**
@@ -248,7 +258,7 @@ export class FileInterface {
         `${this.tasksDir}/${fileName}`,
         `/`,
       )
-      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true)
+      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true,false)
     }
 
     return currTaskPath
@@ -265,8 +275,9 @@ export class FileInterface {
     tags: string[],
     subtasksNames: FileName[],
   ): Promise<string> => {
-    const newHash = this.createTaskBlockHash()
-    const filePath = `${this.tasksDir}/${newHash}.md`
+    const hash = this.createTaskBlockHash()
+    const fileName = `${hash}.md`
+    const filePath = `${this.tasksDir}/${fileName}`
     const data = this.formatNewTask(
       taskName,
       description,
@@ -287,7 +298,7 @@ export class FileInterface {
     }
     await this.app.vault.create(filePath, data)
 
-    return `${newHash}.md`
+    return fileName
   }
 
   /**
@@ -362,13 +373,13 @@ export class FileInterface {
   }
 
   private readonly createTaskBlockHash = (): string => {
-    let result = 'task-'
+    let hash = 'task-'
     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'
     const charactersLength = characters.length
-    for (let i = 0; i < 4; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    for (let i = 0; i < 6; i++) {
+      hash += characters.charAt(Math.floor(Math.random() * charactersLength))
     }
-    return result
+    return hash
   }
 }
 

@@ -26,3 +26,11 @@ export const durationFormat_hm = (dur: Duration): string => {
     return `${mins}min`
   }
 }
+
+export const getTextAbv = (text: string, charCnt: number) => {
+  if (text.length > charCnt) {
+    return text.substring(0, charCnt) + '...'
+  } else {
+    return text
+  }
+}

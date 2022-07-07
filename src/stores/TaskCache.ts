@@ -4,7 +4,7 @@ import { err, ok, Result } from 'neverthrow'
 import { App, TFile } from 'obsidian'
 import { Writable, writable, get } from 'svelte/store'
 import { TaskDetails } from '../task-details'
-import { FilePath, Task, modifyFileContents } from '../file-interface'
+import { FilePath, Task, modifyFileContents, FileName } from '../file-interface'
 import { Parser } from '../parser'
 
 /**
@@ -60,9 +60,9 @@ export class TaskCache {
    * Update svelte store of tasks by replacing stores` key: (newTask.file.path) with value: (newTask) parsed from modified task file.
    */
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
-     (await this.loadTask(file)).match(
+    ;(await this.loadTask(file)).match(
       newTask => {
-        console.log('task-loaded:', newTask.taskName);
+        console.log('task-loaded:', newTask.taskName)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -76,33 +76,36 @@ export class TaskCache {
     )
   }
 
-  // // We reload parent data in svelte store to represent change in subtask
-  // public reloadParent = (file: TFile) => {
-  //   let tasksNav = get(this.plugin.taskNav.tasksNavigation)
-  //   let currTask = get(this.tasks)[file.path]
-  //   currTask.parents
+  // We reload parent data in svelte store to represent change in subtask
+  public reloadParent = (file: TFile) => {
+    let tasksNav = get(this.plugin.taskNav.tasksNavigation)
+    let currTask = get(this.tasks)[file.path]
+    if(!currTask.parents) return
 
-  //   const doesCurrTaskHasTaskNavAsParent = (parentPath: string) => {
-  //     return (
-  //       currTask.parents.findIndex((t: Task) => t.file.path === parentPath) >= 0
-  //     )
-  //   }
+    const doesCurrTaskHasTaskNavAsParent = (parentPath: FilePath) => {
+      const dir = this.plugin.fileInterface.tasksDir
+      const parentIndex = currTask.parents.findIndex(
+        (name: FileName) => `${dir}/${name}` === parentPath,
+      )
+      return parentIndex >= 0
+    }
 
-  //   const idx = tasksNav.findIndex(path => {
-  //     return doesCurrTaskHasTaskNavAsParent(path)
-  //   })
+    const idx = tasksNav.findIndex(path => {
+      return doesCurrTaskHasTaskNavAsParent(path)
+    })
 
-  //   if (idx >= 0) {
-  //     let parentPath = tasksNav[idx - 1]
-  //     let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
-  //       parentPath,
-  //       '/',
-  //     )
-  //     if (parentFile) {
-  //       this.handleTaskModified(parentFile)
-  //     }
-  //   }
-  // }
+    if (idx >= 0) {
+      const selectIdx = idx == 0 ? idx : idx - 1
+      let parentPath = tasksNav[selectIdx]
+      let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
+        parentPath,
+        '/',
+      )
+      if (parentFile) {
+        this.handleTaskModified(parentFile)
+      }
+    }
+  }
 
   public readonly handleTaskDeleted = (path: string): void => {
     this.tasks.update(
@@ -154,7 +157,7 @@ export class TaskCache {
     const lines = contents.split('\n')
     const frontmatter = new Frontmatter(lines)
     const due = frontmatter.get('due')
-    const scheduled =frontmatter.get('scheduled')
+    const scheduled = frontmatter.get('scheduled')
     const subtasks = await this.getTasksFromFileNames(
       frontmatter.get('subtasks'),
     )

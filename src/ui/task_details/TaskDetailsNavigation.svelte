@@ -3,6 +3,7 @@
   import type { Writable } from 'svelte/store';
   import type { Task } from '../../file-interface';
   import type TQPlugin from '../../main';
+import { getTextAbv } from '../../util';
 
   export let plugin: TQPlugin;
 
@@ -17,14 +18,8 @@
     let navigationTexts: string[] = [];
     let tasksNavMap: Map<FilePath, string> = new Map();
     for (const taskPath of tasksNav) {
-      let charCnt = 20;
       let task = tasksCache[taskPath];
-      let navText: string;
-      if (task.taskName.length > charCnt) {
-        navText = task.taskName.substring(0, charCnt) + '...';
-      } else {
-        navText = task.taskName;
-      }
+      let navText = getTextAbv(task.taskName,20)
 
       tasksNavMap.set(taskPath, navText);
       navigationTexts = [navText, ...navigationTexts];
