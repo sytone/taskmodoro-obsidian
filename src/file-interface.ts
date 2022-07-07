@@ -10,6 +10,7 @@ import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import { Duration } from 'moment'
 import { TaskDetails } from './task-details'
 import moment from 'moment'
+import { isArrayLike } from 'lodash'
 
 export interface Task {
   file: TFile
@@ -21,7 +22,7 @@ export interface Task {
   due: Moment | undefined
   scheduled: Moment | undefined
   subtasks: Task[]
-  parents: Task[]
+  parents: FileName[]
 }
 
 export const CalcTaskScore = (task: Task): number => {
@@ -83,8 +84,10 @@ export class FileInterface {
       return
     }
 
-    return modifyFileContents(tfile, this.app.vault, (lines: string[]): boolean =>
-      this.processRepeating(tfile.path, lines),
+    return modifyFileContents(
+      tfile,
+      this.app.vault,
+      (lines: string[]): boolean => this.processRepeating(tfile.path, lines),
     )
   }
 
@@ -124,7 +127,7 @@ export class FileInterface {
     file: TFile,
     value: Moment | string | string[] | Number | Object,
     propName: string,
-    reloadParent = true
+    append = false,
   ): Promise<void> =>
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
@@ -133,6 +136,16 @@ export class FileInterface {
       } catch (error) {
         console.debug(error)
         return false
+      }
+
+      if (append) {
+        let fmArr = frontmatter.get(propName)
+        if (!fmArr) {
+          value = [value]
+        }
+        if (fmArr && isArrayLike(fmArr)) {
+          value = [...fmArr, value]
+        }
       }
 
       frontmatter.set(propName, value)
@@ -230,9 +243,12 @@ export class FileInterface {
       subtasksFileNames,
     )
 
-    for(let fileName of subtasksFileNames){
-      let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(`${this.tasksDir}/${fileName}`, '/')
-      this.updateFMProp(subtaskFile, [currTaskPath], 'parents',false)
+    for (let fileName of subtasksFileNames) {
+      let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(
+        `${this.tasksDir}/${fileName}`,
+        `/`,
+      )
+      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true)
     }
 
     return currTaskPath
@@ -277,7 +293,7 @@ export class FileInterface {
   /**
    * @return YAML frontmatter
    */
-   private readonly formatNewTask = (
+  private readonly formatNewTask = (
     taskName: string,
     description: string,
     pomoDuration: Duration,
@@ -290,10 +306,11 @@ export class FileInterface {
   ): string => {
     const frontMatter = []
 
-    
+
+
     let createdAt = moment(new Date()).toISOString()
     frontMatter.push(`created_at: ${createdAt}`)
-    
+
     if (pomoDuration) {
       let pomoLen = `  minutes: ${pomoDuration.asMinutes()}`
       frontMatter.push(`pomodoro_length:\n${pomoLen}`)
@@ -320,17 +337,12 @@ export class FileInterface {
       frontMatter.push(`tags: [ ${tags.join(', ')} ]`)
     }
 
-    // if (parentName) {
-    //   let parentFm = `  - ${parentName}`
-    //   frontMatter.push('parents: \n' + parentFm)
-    // }
-
     if (subtasksNames.length !== 0) {
-      let fm = 'subtasks: \n'
+      let subtasks = ``
       for (let name of subtasksNames) {
-        fm += `  - ${name}\n`
+        subtasks += `\n  - ${name}`
       }
-      frontMatter.push(fm)
+      frontMatter.push(`subtasks:${subtasks}`)
     }
 
     const contents = []

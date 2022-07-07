@@ -6,6 +6,7 @@ import moment from 'moment'
 import MomentDurationSetup from 'moment-duration-format'
 import { toInteger } from 'lodash'
 import type { Duration } from 'moment'
+import { FileName } from './file-interface';
 MomentDurationSetup(moment)
 
 export class TaskDetails {
@@ -24,7 +25,7 @@ export class TaskDetails {
   public estWorktime: Duration
   public spentWorktime: Duration
   public subtasks: TaskDetails[] = []
-  public parents: TaskDetails[]=[]
+  public parents: FileName[]=[]
   public close: () => void
 
   public get cleanedTags (): string[] {
@@ -84,12 +85,7 @@ export class TaskDetails {
         this.subtasks.push(subtd)
       }
 
-      const parents: Task[] = task.parents
-
-      for (let parent of parents) {
-        let parentTd = new TaskDetails(this.plugin, parent)
-        this.parents.push(parentTd)
-      }
+      this.parents = task.parents
       
     }
   }

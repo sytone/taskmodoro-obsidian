@@ -158,7 +158,7 @@ export class TaskCache {
     const subtasks = await this.getTasksFromFileNames(
       frontmatter.get('subtasks'),
     )
-    const parents = await this.getTasksFromFileNames(frontmatter.get('parents'))
+    const parents = frontmatter.get('parents')
     return ok({
       file,
       md: contents,
