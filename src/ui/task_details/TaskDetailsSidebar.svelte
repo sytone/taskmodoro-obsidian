@@ -20,7 +20,6 @@
   let isCreateBtnEnabled = true;
   $: {
     isCreateBtnEnabled = td.taskName != '';
-    console.log('tags: ',td.tags)
   }
 
   const showDueDatePicker = () => {

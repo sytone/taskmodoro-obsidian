@@ -6,6 +6,7 @@ import { Writable, writable, get } from 'svelte/store'
 import type { TaskDetails } from '../task-details'
 import { FilePath, Task, modifyFileContents, FileName } from '../file-interface'
 import { Parser } from '../parser'
+import moment from 'moment';
 
 /**
  * TaskCache is the main interface for querying and modifying tasks. It
@@ -62,7 +63,7 @@ export class TaskCache {
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
     ;(await this.loadTask(file)).match(
       newTask => {
-        console.log('task-loaded:', newTask.taskName)
+        console.log('task-loaded:', newTask.taskName,'subtasks:',newTask.subtasks)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -102,7 +103,8 @@ export class TaskCache {
         '/',
       )
       if (parentFile) {
-        this.handleTaskModified(parentFile)
+        const now =  moment(new Date()).toISOString()
+        this.plugin.fileInterface.updateFMProp(parentFile,now,'updated_at',false,false)
       }
     }
   }
@@ -120,7 +122,7 @@ export class TaskCache {
     fileNames: string[],
   ): Promise<Task[]> => {
     if (!fileNames) return []
-    const tasksDir = this.plugin.settings.TasksDir
+    const tasksDir = this.plugin.fileInterface.tasksDir
     const subtasks: Task[] = []
     for (let fileName of fileNames) {
       const path = `${tasksDir}/${fileName}`

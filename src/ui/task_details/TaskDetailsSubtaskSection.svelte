@@ -4,6 +4,7 @@
   import { plus } from '../../graphics';
   import TaskTile from '../TaskTile.svelte';
   import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
+  import { TFile } from 'obsidian';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
@@ -28,29 +29,37 @@
 
   const storeSubtask = (subtask: TaskDetails) => {
     subtask.create().then((fileName) => {
-      const tasksDir = td.plugin.settings.TasksDir;
+      const tasksDir = td.plugin.fileInterface.tasksDir;
       const path = `${tasksDir}/${fileName}`;
       const file = td.plugin.app.metadataCache.getFirstLinkpathDest(path, '/');
       if (file) {
         subtask.file = file;
-        updateSubtasksFM();
+        updateParentChildTaskFm(file);
       }
     });
   };
 
   const onEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      event.preventDefault()
+      event.preventDefault();
       addSubtask();
     }
   };
 
-  const updateSubtasksFM = () => {
-    let subtasksFileNames = td.subtasks.map((s) => s.file.name);
+  const updateParentChildTaskFm = (subtaskFile: TFile) => {
+    td.plugin.fileInterface.updateFMProp(
+      subtaskFile,
+      td.file.name,
+      'parents',
+      true,
+      false
+    );
+
     td.plugin.fileInterface.updateFMProp(
       td.file,
-      subtasksFileNames,
+      subtaskFile.name,
       'subtasks',
+      true,
     );
   };
 

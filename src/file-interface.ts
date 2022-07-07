@@ -128,7 +128,7 @@ export class FileInterface {
     file: TFile,
     value: Moment | string | string[] | Number | Object,
     propName: string,
-    append = false,
+    appendArr = false,
     reloadParent = true
   ): Promise<void> =>
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
@@ -140,7 +140,7 @@ export class FileInterface {
         return false
       }
 
-      if (append) {
+      if (appendArr) {
         value = this.appendValue(propName,value,frontmatter)
       }
 
