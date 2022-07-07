@@ -115,6 +115,12 @@
   :global(.subtask-input-wrapper .plus-icon) {
     margin-left: 3px;
     margin-top: 8px;
+   
+  
+  }
+  :global(.subtask-input-wrapper .plus-icon rect) {
+    fill: var(--mid3-blue-gray);
+  
   }
 
   .subtasks-list {

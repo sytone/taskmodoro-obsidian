@@ -81,14 +81,14 @@
   /* main-task-panel */
 
   :global(.main-task-panel .check-mark-icon) {
-    width: 12px;
+    width: 10px;
     height: auto;
     stroke-width: 7%;
   }
 
   :global(.main-task-panel .checkbox-circle) {
-    width: 24px;
-    height: 24px;
-    border: 1.5px solid var(--mid-blue-gray);
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--mid3-blue-gray);
   }
 </style>

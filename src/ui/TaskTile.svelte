@@ -13,13 +13,13 @@
   import TaskTileProps from './TaskTileProps.svelte';
   import TrailingMenu from './TrailingMenu.svelte';
   import type { FilePath } from '../file-interface';
+  import { TaskListTileParent as TaskTileParent } from './../enums/component-context';
 
   type Moment = moment.Moment;
 
   export let view: Component;
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
-
 
   let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskNameEl: HTMLElement;
@@ -82,7 +82,6 @@
       new TaskDetailsModal(td.plugin, TaskDetailsMode.Update).open();
     }
   };
-
 </script>
 
 <div class="task-tile">
@@ -114,16 +113,30 @@
         TaskListTileParent.TaskDetailsMainPanel}
     />
   </div>
+  <div class="nested-subtasks-list">
+    {#if parentComponent === TaskTileParent.TaskDetailsMainPanel}
+      {#each td.subtasks as subtask (subtask.taskName)}
+        <svelte:self
+          parentComponent={TaskTileParent.TaskDetailsMainPanel}
+          bind:td={subtask}
+          view={null}
+        />
+      {/each}
+    {/if}
+  </div>
 </div>
 
 <style>
+  .nested-subtasks-list {
+    margin-left: 36px;
+  }
   .task-tile {
     display: flex;
     flex-direction: column;
   }
 
   :global(.subtasks-list .task-tile) {
-    margin: 16px 0;
+    margin: 8px 0;
     background-color: var(--background-nav);
     font-size: 1.25rem;
     font-weight: 700;
@@ -136,6 +149,10 @@
 
   :global(.subtasks-list .header-content) {
     margin-left: 8px;
+  }
+
+  :global(.subtasks-list .leading) {
+    margin-top: 2px;
   }
 
   :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {

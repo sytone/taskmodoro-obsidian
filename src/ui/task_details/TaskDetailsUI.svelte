@@ -24,7 +24,6 @@
 
     if (currTask) {
       td = new TaskDetails(plugin, tasks[currTask]);
-      console.log('tdUI:',td.subtasks)
     } else {
       td = new TaskDetails(plugin);
     }

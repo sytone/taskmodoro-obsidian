@@ -140,7 +140,7 @@
 
 <style>
   .tq-checkbox-wrapper {
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   .task-input-name {
