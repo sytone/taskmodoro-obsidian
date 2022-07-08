@@ -91,17 +91,20 @@ export class TaskCache {
       return parentIndex >= 0
     }
 
-    const idx = tasksNav.findIndex(path => {
+
+    let idx = tasksNav.findIndex(path => {
       return doesCurrTaskHasTaskNavAsParent(path)
     })
 
-    if (idx >= 0) {
-      const selectIdx = idx == 0 ? idx : idx - 1
-      let parentPath = tasksNav[selectIdx]
+    while (idx >= 0) {
+      idx = idx == 0 ? idx : idx - 1
+      let parentPath = tasksNav[idx]
+      idx = idx == 0 ? idx-1 : idx
       let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
         parentPath,
         '/',
       )
+      
       if (parentFile) {
         const now =  moment(new Date()).toISOString()
         this.plugin.fileInterface.updateFMProp(parentFile,now,'updated_at',false,false)

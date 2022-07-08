@@ -14,6 +14,7 @@
   import TrailingMenu from './TrailingMenu.svelte';
   import type { FilePath } from '../file-interface';
   import { TaskListTileParent as TaskTileParent } from './../enums/component-context';
+  import { Task } from '../file-interface';
 
   type Moment = moment.Moment;
 
@@ -22,6 +23,7 @@
   export let td: TaskDetails;
 
   let tasksNav = td.plugin.taskNav.tasksNavigation;
+  let taskCache = td.plugin.taskCache.tasks;
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
 
@@ -73,8 +75,31 @@
     showTrailingMenu = false;
   };
 
+  const findTaskNavPath = (task: Task, insertIdx: number): boolean => {
+    let idx = task.subtasks.findIndex((st) => st.file.path === td.file.path);
+    if (idx >= 0) {
+      $tasksNav.push(task.subtasks[idx].file.path);
+      return true;
+    } else {
+      for (let subtask of task.subtasks) {
+        let isFound = findTaskNavPath(subtask, insertIdx);
+        let isInTaskNav = $tasksNav.contains(subtask.file.path);
+        if (isFound && !isInTaskNav) {
+          $tasksNav.splice(insertIdx, 0, subtask.file.path);
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
   const openTaskDetails = () => {
-    $tasksNav.push(td.file.path);
+    let lastTaskNavTask = $taskCache[$tasksNav.last()];
+    if (lastTaskNavTask) {
+      findTaskNavPath(lastTaskNavTask, $tasksNav.length);
+    } else {
+      $tasksNav.push(td.file.path);
+    }
     $tasksNav = [...$tasksNav];
 
     //We open new modal only if there were previously no tasks in task navigation
