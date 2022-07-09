@@ -79,7 +79,7 @@ Settings Page
   cursor: default;
 }
 
-[contenteditable='true']:empty:before {
+[contenteditable='true']:empty:after {
   content: attr(placeholder);
   color: var(--dark-blue-gray);
   font-size: 1rem;

@@ -1,10 +1,13 @@
 <script lang="ts">
+  import ChevronBtn from '../SubtasksExpansionBtn.svelte';
+
   import { TaskDetails } from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
-  import { plus } from '../../graphics';
+  import { chevronDown, plus } from '../../graphics';
   import TaskTile from '../TaskTile.svelte';
   import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
   import { TFile } from 'obsidian';
+import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
@@ -52,7 +55,7 @@
       td.file.name,
       'parents',
       true,
-      false
+      false,
     );
 
     td.plugin.fileInterface.updateFMProp(
@@ -66,15 +69,19 @@
   const onSubtaskNameInput = (event: any) => {
     subtaskName = event.target.innerText;
   };
+  let showExpansionBtn = true
+  let expanded = true
 </script>
 
+<div class="subtask-section-title-wrapper">
+  <SubtasksExpansionBtn {showExpansionBtn} bind:expanded></SubtasksExpansionBtn>
+  <span class="subtask-section-title">Subtasks</span>
+</div>
 <div class="subtask-input-wrapper">
-  <span on:click={addSubtask} class="plus-icon-wrapper">
-    {@html plus}
-  </span>
   <div
     class="subtask-name-input"
     placeholder="Add a subtask"
+    prefix=""
     contenteditable="true"
     on:input={onSubtaskNameInput}
     bind:this={subtaskInputEl}
@@ -93,10 +100,41 @@
 
 <style>
   [contenteditable='true']:empty:before {
-    content: attr(placeholder);
+    content: attr(prefix);
+    font-size: 1.5rem;
     color: var(--dark-blue-gray);
-    font-size: 1rem;
-    font-weight: normal;
+  }
+
+  :global(.subtask-section-title-wrapper .chevron-down-icon, .subtasks-list
+      .chevron-down-icon) {
+    width: 12px;
+  }
+
+  :global(.subtask-section-title-wrapper .chevron-wrapper, .subtasks-list .chevron-wrapper) {
+    margin-top: 8px;
+    margin-right: 12px;
+    margin-left: 12px;
+    width: 12px;
+  }
+
+  :global(.subtask-section-title-wrapper .chevron-wrapper) {
+    margin-top: 2px;
+  }
+
+  :global(.subtask-section-title-wrapper .chevron-down-icon path, .subtasks-list
+      .chevron-down-icon
+      path) {
+    fill: var(--mid3-blue-gray);
+  }
+
+  .subtask-section-title {
+    /* margin-left: 16px; */
+    color: var(--mid-blue-gray);
+  }
+
+  .subtask-section-title-wrapper{
+    display:flex;
+    flex-direction: row;
   }
 
   .subtask-name-input {
@@ -110,21 +148,22 @@
     max-width: 100%;
     overflow: hidden;
     background-color: transparent;
+    margin-left: 36px;
+    margin-bottom: -12px;
   }
 
   :global(.subtask-input-wrapper .plus-icon) {
     margin-left: 3px;
     margin-top: 8px;
-   
-  
   }
+
   :global(.subtask-input-wrapper .plus-icon rect) {
     fill: var(--mid3-blue-gray);
-  
   }
 
   .subtasks-list {
-    margin-top: 32px;
+    margin-top: 24px;
+    /* margin-left: 36px; */
   }
 
   .subtask-input-wrapper {

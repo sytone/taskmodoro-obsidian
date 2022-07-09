@@ -12,9 +12,10 @@
   import type { TaskDetails } from 'src/task-details';
   import TaskTileProps from './TaskTileProps.svelte';
   import TrailingMenu from './TrailingMenu.svelte';
-  import type { FilePath } from '../file-interface';
   import { TaskListTileParent as TaskTileParent } from './../enums/component-context';
-  import { Task } from '../file-interface';
+  import type { Task } from '../file-interface';
+  import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
+  import { Render } from '../helpers/render';
 
   type Moment = moment.Moment;
 
@@ -24,38 +25,19 @@
 
   let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskCache = td.plugin.taskCache.tasks;
+  let expState = td.plugin.expRec.expansionRecord;
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
-
-  // TODO: Links in rendered markdown do not work yet
+  let showExpansionBtn = false;
+  let expanded = false;
 
   onMount(() => {
-    const tempEl = createDiv();
-    MarkdownRenderer.renderMarkdown(
-      td.taskName,
-      tempEl,
-      td.file ? td.file.path : './',
-      view,
-    );
-    taskNameEl.innerHTML =
-      tempEl.children.length !== 0
-        ? tempEl.children[0].innerHTML
-        : tempEl.innerHTML;
+    cacheExpandedState(expanded);
+    Render.renderMD(td.taskName, taskNameEl);
   });
 
   afterUpdate(() => {
-    const tempEl = createDiv();
-    MarkdownRenderer.renderMarkdown(
-      td.taskName,
-      tempEl,
-      td.file ? td.file.path : './',
-      view,
-    );
-    if (!taskNameEl) return;
-    taskNameEl.innerHTML =
-      tempEl.children.length !== 0
-        ? tempEl.children[0].innerHTML
-        : tempEl.innerHTML;
+    Render.renderMD(td.taskName, taskNameEl);
   });
 
   const toggleChecked = () => {
@@ -107,57 +89,93 @@
       new TaskDetailsModal(td.plugin, TaskDetailsMode.Update).open();
     }
   };
+
+  const cacheExpandedState = (expanded: boolean) => {
+    $expState[td.file.path] = expanded;
+  };
+
+  $: {
+    showExpansionBtn =
+      td.subtasks.length > 0 &&
+      parentComponent === TaskTileParent.TaskDetailsMainPanel;
+    cacheExpandedState(expanded);
+  }
+  // $: expanded = false
 </script>
 
-<div class="task-tile">
-  <div
-    class="header"
-    on:mouseover={headerMouseOver}
-    on:focus={headerMouseOver}
-    on:mouseleave={headerMouseLeave}
-  >
-    <span class="leading">
-      <Checkbox
-        context="listTile"
-        on:toggle={toggleChecked}
-        checked={td.completed}
-      />
-    </span>
-    <div class="header-content">
-      <div
-        on:click={openTaskDetails}
-        class="task-title"
-        bind:this={taskNameEl}
-      />
-      <TaskTileProps bind:td />
-    </div>
-    <TrailingMenu
-      {showTrailingMenu}
-      bind:td
-      showTimerOpenBtn={parentComponent !=
-        TaskListTileParent.TaskDetailsMainPanel}
-    />
-  </div>
-  <div class="nested-subtasks-list">
-    {#if parentComponent === TaskTileParent.TaskDetailsMainPanel}
-      {#each td.subtasks as subtask (subtask.taskName)}
-        <svelte:self
-          parentComponent={TaskTileParent.TaskDetailsMainPanel}
-          bind:td={subtask}
-          view={null}
+<div class="task-tile-wrapper">
+  <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
+  <div class="task-tile">
+    <div
+      class="header"
+      on:mouseover={headerMouseOver}
+      on:focus={headerMouseOver}
+      on:mouseleave={headerMouseLeave}
+    >
+      <span class="leading">
+        <Checkbox
+          context="listTile"
+          on:toggle={toggleChecked}
+          checked={td.completed}
         />
-      {/each}
-    {/if}
+      </span>
+      <div class="header-content">
+        <div
+          on:click={openTaskDetails}
+          class="task-title"
+          bind:this={taskNameEl}
+        />
+        <TaskTileProps bind:td />
+      </div>
+      <TrailingMenu
+        {showTrailingMenu}
+        bind:td
+        showTimerOpenBtn={parentComponent !=
+          TaskListTileParent.TaskDetailsMainPanel}
+      />
+    </div>
+    <div class="nested-subtasks-list {!expanded ? 'show-transition' : ''}">
+      {#if parentComponent === TaskTileParent.TaskDetailsMainPanel && expanded}
+        {#each td.subtasks as subtask (subtask.taskName)}
+          <svelte:self
+            parentComponent={TaskTileParent.TaskDetailsMainPanel}
+            bind:td={subtask}
+            view={null}
+          />
+        {/each}
+      {/if}
+    </div>
   </div>
 </div>
 
 <style>
+  .show-transition {
+    transform: translateY(-100px);
+    opacity: 0;
+    /* transition: all 0.1s cubic-bezier(0.02,0.01,0.47,1); */
+  }
+
   .nested-subtasks-list {
     margin-left: 36px;
+    transition: all 0.1s cubic-bezier(0.02,0.01,0.47,1);
+    transform: translateY(0);
+    /* transition: all 0.1s ease-out; */
+    opacity: 1;
   }
+
+  :global(.nested-subtasks-list div.chevron-wrapper) {
+    margin-left: -24px;
+  }
+
   .task-tile {
+    width: 100%;
     display: flex;
     flex-direction: column;
+  }
+
+  .task-tile-wrapper {
+    display: flex;
+    flex-direction: row;
   }
 
   :global(.subtasks-list .task-tile) {

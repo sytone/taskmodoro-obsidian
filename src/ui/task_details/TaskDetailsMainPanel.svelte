@@ -97,7 +97,6 @@
         class="task-input-name"
         placeholder="Task name"
         autocorrect="false"
-
         contenteditable="true"
         bind:this={taskNameEl}
         on:input={onTaskNameInput}

@@ -13,6 +13,7 @@ export const plus = `<svg class="plus-icon" width="18" height="18" viewBox="0 0 
 <rect x="10" width="18" height="2" transform="rotate(90 10 0)" fill="#6F7979"/>
 </svg>
 `
+export const plus_css = `data:image/svg+xml,%3Csvg class='chevron-down-icon' width='24' height='15' viewBox='0 0 24 15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.8909 0.723612C21.4999 0.325652 20.8589 0.324519 20.4666 0.721096L12.7109 8.56042C12.3195 8.95601 11.6805 8.95602 11.2891 8.56042L3.5334 0.721095C3.14106 0.324518 2.50009 0.32565 2.10915 0.72361L0.690869 2.16735C0.30773 2.55736 0.308834 3.18278 0.693349 3.57144L11.2891 14.2814C11.6805 14.677 12.3195 14.677 12.7109 14.2814L23.3067 3.57144C23.6912 3.18278 23.6923 2.55737 23.3091 2.16735L21.8909 0.723612Z' fill='%236F7979'/%3E%3C/svg%3E`
 
 export const play = `
 <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,9 +61,10 @@ export const checkMark = `<svg class="check-mark-icon" width="16" height="16" vi
     <path d="M15.0852 2.14289L15.1833 2.05145L15.0852 1.96002L13.9572 0.908564L13.872 0.829154L13.7868 0.908524L5.39994 8.71889L2.21312 5.75559L2.1279 5.67634L2.04277 5.75569L0.914769 6.80715L0.816676 6.89858L0.914769 6.99002L5.31477 11.0914L5.4 11.1709L5.48523 11.0914L15.0852 2.14289Z" />
 </svg>
 `
-export const chevronDown = `<svg fill=var(--text-muted) width="12" height="12" version="1.1" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
- <path d="m10.293 2.4395-4.293 4.293-4.293-4.293-1.414 1.414 5.707 5.707 5.707-5.707z"/>
-</svg>`
+export const chevronDown = `<svg class="chevron-down-icon" width="24" height="15" viewBox="0 0 24 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.8909 0.723612C21.4999 0.325652 20.8589 0.324519 20.4666 0.721096L12.7109 8.56042C12.3195 8.95601 11.6805 8.95602 11.2891 8.56042L3.5334 0.721095C3.14106 0.324518 2.50009 0.32565 2.10915 0.72361L0.690869 2.16735C0.30773 2.55736 0.308834 3.18278 0.693349 3.57144L11.2891 14.2814C11.6805 14.677 12.3195 14.677 12.7109 14.2814L23.3067 3.57144C23.6912 3.18278 23.6923 2.55737 23.3091 2.16735L21.8909 0.723612Z" fill="#6F7979"/>
+</svg>
+`
 
 export const overdueAlert = `<svg fill=var(--text-error) width="18" height="18" version="1.1" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
  <path d="m4 0v2h-1c-1.11 0-2 0.89-2 2v14c0 1.11 0.9 2 2 2h14c1.11 0 2-0.89 2-2v-14c0-1.1-0.89-2-2-2h-1v-2h-2v2h-8v-2h-2m-1 7h14v11h-14v-12m6 2v5h2v-5h-2m0 7v2h2v-2z"/>
