@@ -77,8 +77,10 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
   <SubtasksExpansionBtn {showExpansionBtn} bind:expanded></SubtasksExpansionBtn>
   <span class="subtask-section-title">Subtasks</span>
 </div>
-<div class="subtask-input-wrapper">
-  <div
+{#if expanded}
+<div class="subtask-section-body">
+  <div class="subtask-input-wrapper">
+    <div
     class="subtask-name-input"
     placeholder="Add a subtask"
     prefix=""
@@ -86,17 +88,19 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
     on:input={onSubtaskNameInput}
     bind:this={subtaskInputEl}
     on:keypress={onEnter}
-  />
-</div>
-<div class="subtasks-list">
-  {#each td.subtasks as subtask (subtask.taskName)}
-    <TaskTile
-      parentComponent={TaskTileParent.TaskDetailsMainPanel}
-      bind:td={subtask}
-      view={null}
     />
-  {/each}
+  </div>
+  <div class="subtasks-list">
+    {#each td.subtasks as subtask (subtask.taskName)}
+    <TaskTile
+    parentComponent={TaskTileParent.TaskDetailsMainPanel}
+    bind:td={subtask}
+    view={null}
+    />
+    {/each}
+  </div>
 </div>
+{/if}
 
 <style>
   [contenteditable='true']:empty:before {

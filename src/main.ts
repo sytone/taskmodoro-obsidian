@@ -21,14 +21,14 @@ import type { Duration } from 'moment'
 import { TaskDetailsMode } from './enums/component-context'
 import type { TaskDetails } from './task-details';
 import { TaskDetailsNavigation } from './stores/TaskNavigationRecord';
-import SubtasksExpansionRecord  from './stores/SubtasksExpansionRecord';
+import SubtasksExpandedState  from './stores/SubtasksExpansionRecord';
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings
   public fileInterface: FileInterface
   public taskCache: TaskCache
   public taskNav: TaskDetailsNavigation
-  public expRec: SubtasksExpansionRecord
+  public expState: SubtasksExpandedState
   public async onload (): Promise<void> {
     console.log('tq: Loading plugin' + this.manifest.version)
 
@@ -38,7 +38,7 @@ export default class TQPlugin extends Plugin {
     this.fileInterface = new FileInterface(this, this.app)
     this.taskCache = new TaskCache(this, this.app)
     this.taskNav = new TaskDetailsNavigation()
-    this.expRec = new SubtasksExpansionRecord()
+    this.expState = new SubtasksExpandedState()
     this.registerView(
       VIEW_TYPE_TIMER_TASK,
       leaf => new TimerTaskView(leaf, this),

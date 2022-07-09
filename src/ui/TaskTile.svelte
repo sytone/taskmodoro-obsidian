@@ -23,16 +23,20 @@
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
 
+  let expanded:boolean
   let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskCache = td.plugin.taskCache.tasks;
-  let expState = td.plugin.expRec.expansionRecord;
+  let expState = td.plugin.expState.expandedState;
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
   let showExpansionBtn = false;
-  let expanded = false;
 
   onMount(() => {
-    cacheExpandedState(expanded);
+    if(td.file && $expState[td.file.path]!==undefined){
+      expanded=$expState[td.file.path]
+    }else{
+      expanded=false
+    }
     Render.renderMD(td.taskName, taskNameEl);
   });
 
@@ -91,7 +95,9 @@
   };
 
   const cacheExpandedState = (expanded: boolean) => {
-    $expState[td.file.path] = expanded;
+    if(td.file && expanded !== undefined){
+      $expState[td.file.path] = expanded;
+    }
   };
 
   $: {
@@ -100,7 +106,6 @@
       parentComponent === TaskTileParent.TaskDetailsMainPanel;
     cacheExpandedState(expanded);
   }
-  // $: expanded = false
 </script>
 
 <div class="task-tile-wrapper">
@@ -152,14 +157,12 @@
   .show-transition {
     transform: translateY(-100px);
     opacity: 0;
-    /* transition: all 0.1s cubic-bezier(0.02,0.01,0.47,1); */
   }
 
   .nested-subtasks-list {
     margin-left: 36px;
     transition: all 0.1s cubic-bezier(0.02,0.01,0.47,1);
     transform: translateY(0);
-    /* transition: all 0.1s ease-out; */
     opacity: 1;
   }
 
