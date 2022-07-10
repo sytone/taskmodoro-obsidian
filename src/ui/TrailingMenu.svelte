@@ -39,7 +39,6 @@
   .trailing-menu {
     position: absolute;
     right: 4px;
-    top: 8px;
     padding-right: 4px;
     padding-left: 4px;
     height: 2.5rem;
@@ -49,6 +48,7 @@
   }
 
   :global(.timer-task-container .trailing-menu){
+    top:2px;
     background: linear-gradient(
       to right,
       transparent 0%,
@@ -58,6 +58,7 @@
   }
 
   :global(.main-task-panel .trailing-menu){
+    top: -8px;
     background: linear-gradient(
       to right,
       transparent 0%,
@@ -65,8 +66,14 @@
       var(--background-nav)
     );
   }
+  
+  :global(.main-task-panel .nested-subtasks-list .trailing-menu){
+    top:-8px;
+  }
 
   :global(.query-tasks-list .trailing-menu){
+    top:4px;
+    right:8px;
     background: linear-gradient(
       to right,
       transparent 0%,
@@ -75,11 +82,16 @@
     );
   }
 
+  :global(.query-tasks-list .nested-subtasks-list .trailing-menu){
+    right:0px;
+  }
+
   .trailing-menu-item {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-left: 16px;
+    padding-bottom: 2px;
   }
 
   .trailing-menu-item:hover {

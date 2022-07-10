@@ -62,8 +62,6 @@
     fill: var(--mid-blue-gray);
   }
 
-  /* query-tasks-list AND sidebar-timer-task-view */
-
   :global(.query-tasks-list .check-mark-icon, .timer-task-container
       .check-mark-icon) {
     width: 10px;
@@ -75,10 +73,8 @@
       .checkbox-circle) {
     width: 20px;
     height: 20px;
-    border: 1.5px solid var(--mid-blue-gray);
+    border: 1.5px solid var(--mid3-blue-gray);
   }
-
-  /* main-task-panel */
 
   :global(.main-task-panel .check-mark-icon) {
     width: 10px;

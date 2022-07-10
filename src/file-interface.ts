@@ -19,7 +19,7 @@ export interface Task {
   frontmatter: Frontmatter
   taskName: string
   description: string
-  checked: boolean
+  completed: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
   subtasks: Task[]
@@ -35,7 +35,7 @@ export const CalcTaskScore = (task: Task): number => {
   // - How long ago it was created (more recent task are more important)
 
   let score = 1
-  if (task.checked) {
+  if (task.completed) {
     return score
   }
 

@@ -206,9 +206,6 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
 </div>
 
 <style>
-  :global(.timer-open-btn-wrapper){
-
-  }
   :global(.task-details-sidebar .tag-input) {
     padding-bottom: 8px;
     border-bottom: 1px solid #2a2d30;

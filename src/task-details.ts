@@ -61,7 +61,7 @@ export class TaskDetails {
       this.scheduled = formatDate(task.scheduled)
       this.taskName = task.taskName
       this.description = task.description
-      this.completed = fm.get('completed')
+      this.completed = task.completed
       this.file = task.file
       const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
       this.pomoDuration = moment.duration(pomoLen, 'minutes')

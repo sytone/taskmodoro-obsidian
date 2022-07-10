@@ -1,12 +1,13 @@
-import { Frontmatter} from '../parser'
-import type TQPlugin from '../main'
+import { Frontmatter } from '../parser'
+import TQPlugin from '../main'
 import { err, ok, Result } from 'neverthrow'
-import type { App, TFile } from 'obsidian'
+import { App, TFile } from 'obsidian'
 import { Writable, writable, get } from 'svelte/store'
-import type { TaskDetails } from '../task-details'
+import { TaskDetails } from '../task-details'
 import { FilePath, Task, modifyFileContents, FileName } from '../file-interface'
 import { Parser } from '../parser'
-import moment from 'moment';
+import moment from 'moment'
+import { CachedMetadata } from 'obsidian'
 
 /**
  * TaskCache is the main interface for querying and modifying tasks. It
@@ -35,11 +36,14 @@ export class TaskCache {
    */
   public readonly toggleChecked = async (td: TaskDetails): Promise<void> =>
     modifyFileContents(td.file, this.app.vault, (lines): boolean => {
+      const metadata = this.app.metadataCache.getFileCache(td.file)
+
       const replacer = td.completed ? /^- \[[ ]\]/ : /^- \[[xX]\]/
       const newValue = td.completed ? '- [x]' : '- [ ]'
 
       // Look for the task and check status
       const taskLine = lines.findIndex(line => replacer.test(line))
+
       if (taskLine < 0) {
         console.warn(
           'tq: Unable to find a task line to toggle in file ' + td.file.path,
@@ -63,7 +67,12 @@ export class TaskCache {
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
     ;(await this.loadTask(file)).match(
       newTask => {
-        console.log('task-loaded:', newTask.taskName,'subtasks:',newTask.subtasks)
+        console.log(
+          'task-loaded:',
+          newTask.taskName,
+          'subtasks:',
+          newTask.subtasks,
+        )
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
@@ -81,7 +90,7 @@ export class TaskCache {
   public reloadParent = (file: TFile) => {
     let tasksNav = get(this.plugin.taskNav.tasksNavigation)
     let currTask = get(this.tasks)[file.path]
-    if(!currTask.parents) return
+    if (!currTask.parents) return
 
     const doesCurrTaskHasTaskNavAsParent = (parentPath: FilePath) => {
       const dir = this.plugin.fileInterface.tasksDir
@@ -91,7 +100,6 @@ export class TaskCache {
       return parentIndex >= 0
     }
 
-
     let idx = tasksNav.findIndex(path => {
       return doesCurrTaskHasTaskNavAsParent(path)
     })
@@ -99,15 +107,21 @@ export class TaskCache {
     while (idx >= 0) {
       idx = idx == 0 ? idx : idx - 1
       let parentPath = tasksNav[idx]
-      idx = idx == 0 ? idx-1 : idx
+      idx = idx == 0 ? idx - 1 : idx
       let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
         parentPath,
         '/',
       )
-      
+
       if (parentFile) {
-        const now =  moment(new Date()).toISOString()
-        this.plugin.fileInterface.updateFMProp(parentFile,now,'updated_at',false,false)
+        const now = moment(new Date()).toISOString()
+        this.plugin.fileInterface.updateFMProp(
+          parentFile,
+          now,
+          'updated_at',
+          false,
+          false,
+        )
       }
     }
   }
@@ -146,14 +160,19 @@ export class TaskCache {
     return subtasks
   }
 
+  public isTaskAbsent = (metadata: CachedMetadata) => {
+    return (
+      !metadata.listItems ||
+      metadata.listItems.length < 1 ||
+      metadata.listItems[0].task === undefined
+    )
+  }
   private readonly loadTask = async (
     file: TFile,
   ): Promise<Result<Task, string>> => {
     const metadata = this.app.metadataCache.getFileCache(file)
     if (
-      !metadata.listItems ||
-      metadata.listItems.length < 1 ||
-      metadata.listItems[0].task === undefined
+      this.isTaskAbsent(metadata)
     ) {
       return err('tq: No task found in task file ' + file.path)
     }
@@ -173,7 +192,7 @@ export class TaskCache {
       frontmatter,
       taskName: Parser.getTaskName(lines, metadata),
       description: Parser.getDescription(lines),
-      checked: ['x', 'X'].contains(metadata.listItems[0].task),
+      completed: Parser.isTaskCompleted(metadata),
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
       subtasks,

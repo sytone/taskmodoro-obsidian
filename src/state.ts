@@ -176,7 +176,7 @@ export const filtersFromState = (state: SharedState): Filter[] => {
         (task: Task) =>
           task.due === undefined ||
           task.due.format('YYYY-MM-DD') === state.selectDay ||
-          (task.due.isBefore(selectedDay) && !task.checked),
+          (task.due.isBefore(selectedDay) && !task.completed),
       );
     } else {
       filters.push(
@@ -188,9 +188,9 @@ export const filtersFromState = (state: SharedState): Filter[] => {
   }
 
   if (state.completed) {
-    filters.push((task: Task) => task.checked);
+    filters.push((task: Task) => task.completed);
   } else if (state.completed === false) {
-    filters.push((task: Task) => !task.checked);
+    filters.push((task: Task) => !task.completed);
   }
 
   // More expensive, targeted comparisons last

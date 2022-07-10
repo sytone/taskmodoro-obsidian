@@ -72,10 +72,11 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
   let showExpansionBtn = true
   let expanded = true
 </script>
+<div class='subtask-section'>
 
-<div class="subtask-section-title-wrapper">
-  <SubtasksExpansionBtn {showExpansionBtn} bind:expanded></SubtasksExpansionBtn>
-  <span class="subtask-section-title">Subtasks</span>
+  <div class="subtask-section-title-wrapper">
+    <SubtasksExpansionBtn {showExpansionBtn} bind:expanded></SubtasksExpansionBtn>
+    <span class="subtask-section-title">Subtasks</span>
 </div>
 {#if expanded}
 <div class="subtask-section-body">
@@ -101,35 +102,19 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
   </div>
 </div>
 {/if}
+</div>
 
 <style>
+  .subtask-section{
+    margin-left: 12px;
+  }
+
   [contenteditable='true']:empty:before {
     content: attr(prefix);
     font-size: 1.5rem;
     color: var(--dark-blue-gray);
   }
 
-  :global(.subtask-section-title-wrapper .chevron-down-icon, .subtasks-list
-      .chevron-down-icon) {
-    width: 12px;
-  }
-
-  :global(.subtask-section-title-wrapper .chevron-wrapper, .subtasks-list .chevron-wrapper) {
-    margin-top: 8px;
-    margin-right: 12px;
-    margin-left: 12px;
-    width: 12px;
-  }
-
-  :global(.subtask-section-title-wrapper .chevron-wrapper) {
-    margin-top: 2px;
-  }
-
-  :global(.subtask-section-title-wrapper .chevron-down-icon path, .subtasks-list
-      .chevron-down-icon
-      path) {
-    fill: var(--mid3-blue-gray);
-  }
 
   .subtask-section-title {
     /* margin-left: 16px; */
@@ -144,7 +129,7 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
   .subtask-name-input {
     border: none;
     border-bottom: 1px solid var(--dark2-blue-gray);
-    margin: 0 16px;
+    margin: 0px 16px -8px 20px;
     padding: 12px 0;
     font-size: 1.25rem;
     font-weight: 700;
@@ -152,8 +137,6 @@ import SubtasksExpansionBtn from '../SubtasksExpansionBtn.svelte';
     max-width: 100%;
     overflow: hidden;
     background-color: transparent;
-    margin-left: 36px;
-    margin-bottom: -12px;
   }
 
   :global(.subtask-input-wrapper .plus-icon) {

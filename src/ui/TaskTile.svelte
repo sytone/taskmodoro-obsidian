@@ -23,7 +23,7 @@
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
 
-  let expanded:boolean
+  let expanded: boolean;
   let tasksNav = td.plugin.taskNav.tasksNavigation;
   let taskCache = td.plugin.taskCache.tasks;
   let expState = td.plugin.expState.expandedState;
@@ -32,10 +32,10 @@
   let showExpansionBtn = false;
 
   onMount(() => {
-    if(td.file && $expState[td.file.path]!==undefined){
-      expanded=$expState[td.file.path]
-    }else{
-      expanded=false
+    if (td.file && $expState[td.file.path] !== undefined) {
+      expanded = $expState[td.file.path];
+    } else {
+      expanded = false;
     }
     Render.renderMD(td.taskName, taskNameEl);
   });
@@ -45,11 +45,10 @@
   });
 
   const toggleChecked = () => {
+    td.completed = !td.completed;
+    td = td;
     if (td.file) {
       td.plugin.taskCache.toggleChecked(td);
-    } else {
-      td.completed = !td.completed;
-      td = td;
     }
   };
 
@@ -95,58 +94,54 @@
   };
 
   const cacheExpandedState = (expanded: boolean) => {
-    if(td.file && expanded !== undefined){
+    if (td.file && expanded !== undefined) {
       $expState[td.file.path] = expanded;
     }
   };
 
   $: {
-    showExpansionBtn =
-      td.subtasks.length > 0 &&
-      parentComponent === TaskTileParent.TaskDetailsMainPanel;
+    showExpansionBtn = td.subtasks.length > 0;
     cacheExpandedState(expanded);
   }
 </script>
 
 <div class="task-tile-wrapper">
-  <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
   <div class="task-tile">
     <div
-      class="header"
-      on:mouseover={headerMouseOver}
+    class="header"
+    on:mouseover={headerMouseOver}
       on:focus={headerMouseOver}
       on:mouseleave={headerMouseLeave}
-    >
+      >
       <span class="leading">
+        <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
         <Checkbox
           context="listTile"
           on:toggle={toggleChecked}
           checked={td.completed}
-        />
-      </span>
-      <div class="header-content">
+          />
+        </span>
+        <div class="header-content">
         <div
-          on:click={openTaskDetails}
-          class="task-title"
-          bind:this={taskNameEl}
+        on:click={openTaskDetails}
+        class="task-title"
+        bind:this={taskNameEl}
         />
-        {#if parentComponent !=
-          TaskListTileParent.TimerTaskView}
-        <TaskTileProps bind:td />
+        {#if parentComponent != TaskListTileParent.TimerTaskView}
+          <TaskTileProps bind:td />
         {/if}
       </div>
       <TrailingMenu
         {showTrailingMenu}
         {td}
-        showTimerOpenBtn={parentComponent !=
-          TaskListTileParent.TimerTaskView}
+        showTimerOpenBtn={parentComponent != TaskListTileParent.TimerTaskView}
       />
     </div>
     <div class="nested-subtasks-list {!expanded ? 'show-transition' : ''}">
-      {#if parentComponent === TaskTileParent.TaskDetailsMainPanel && expanded}
-        {#each td.subtasks as subtask (subtask.taskName)}
-          <svelte:self
-            parentComponent={TaskTileParent.TaskDetailsMainPanel}
+      {#if expanded && parentComponent!== TaskTileParent.TimerTaskView}
+      {#each td.subtasks as subtask (subtask.taskName)}
+      <svelte:self
+      parentComponent={TaskTileParent.TaskDetailsMainPanel}
             bind:td={subtask}
             view={null}
           />
@@ -155,35 +150,28 @@
     </div>
   </div>
 </div>
-
+  
 <style>
+  .task-tile-wrapper{
+    position:relative
+  }
   .show-transition {
     transform: translateY(-100px);
     opacity: 0;
   }
 
   .nested-subtasks-list {
-    margin-left: 36px;
-    transition: all 0.1s cubic-bezier(0.02,0.01,0.47,1);
+    transition: all 0.1s cubic-bezier(0.02, 0.01, 0.47, 1);
     transform: translateY(0);
     opacity: 1;
-  }
-
-  :global(.nested-subtasks-list div.chevron-wrapper) {
-    margin-left: -24px;
   }
 
   .task-tile {
     width: 100%;
     display: flex;
     flex-direction: column;
-    overflow:hidden
-  }
-
-  .task-tile-wrapper {
-    display: flex;
-    flex-direction: row;
-    position:relative
+    overflow: hidden;
+    /* position:relative */
   }
 
   :global(.subtasks-list .task-tile) {
@@ -192,29 +180,31 @@
     font-size: 1.25rem;
     font-weight: 700;
   }
-
+  
   :global(.subtasks-list .task-title) {
     margin: 8px 0;
     padding-right: 16px;
     background-color: var(--background-nav);
   }
-
-  :global(.subtasks-list .header-content) {
-    margin-left: 8px;
-  }
-
+  
   :global(.subtasks-list .leading) {
     margin-top: 2px;
   }
-
-  :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
-    border-radius: 10px;
-    padding: 8px 8px;
-    margin: 4px 0;
+  
+  :global(.main-task-panel .subtasks-list .header-content) {
+    margin-left: 4px;
   }
 
-  :global(.query-tasks-list .leading) {
-    margin-top: 8px;
+  :global(.main-task-panel .nested-subtasks-list) {
+    margin-left: 32px;
+  }
+
+  :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
+    padding: 8px 8px;
+  }
+
+  :global(.timer-task-container .task-title) {
+    padding-right: 16px;
   }
 
   :global(.timer-task-container .leading) {
@@ -226,24 +216,35 @@
     border: thin solid #343941;
   }
 
+  :global(.query-tasks-list .leading) {
+    margin-top: 8px;
+  }
+
   :global(.query-tasks-list .task-tile) {
+    margin: 4px 0;
+    border-radius: 10px;
     background-color: var(--background-secondary);
     border: thin solid var(--background-secondary);
+  }
+
+  :global(.query-tasks-list .task-tile .nested-subtasks-list .task-tile) {
+    
+    padding: 0px 0px 0px 8px;
+    margin: 0px 0;
+  }
+
+  :global(.query-tasks-list .task-tile .nested-subtasks-list) {
+    margin-left: 16px;
   }
 
   :global(.query-tasks-list .task-title) {
     padding-right: 24px;
   }
 
-  :global(.timer-task-container .task-title) {
-    padding-right: 16px;
+  .header-content {
+    overflow: hidden;
   }
 
-
-  .header-content{
-    overflow:hidden
-  }
-  
   .leading {
     display: flex;
     flex-direction: row;

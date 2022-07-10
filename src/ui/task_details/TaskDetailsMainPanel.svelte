@@ -167,7 +167,7 @@
   }
 
   .task-input-container {
-    margin: 0 16px;
+    margin: 0 12px;
     margin-bottom: 24px;
     display: flex;
     flex-direction: column;
@@ -185,5 +185,6 @@
     background-color: var(--background-nav);
     width: 70%;
     padding: 24px 24px;
+    overflow-y: scroll;
   }
 </style>

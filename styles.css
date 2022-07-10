@@ -51,6 +51,7 @@ Settings Page
   margin-top: 0px;
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 .tq-modal>.modal-close-button{
   top: 24px;

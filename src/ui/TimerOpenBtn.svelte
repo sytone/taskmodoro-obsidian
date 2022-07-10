@@ -36,6 +36,7 @@
    fill: transparent;
 
   }
+  
   :global(.trailing-menu circle,.timer-open-btn circle){
    stroke: var(--mid2-blue-gray);
    fill: transparent;
@@ -46,7 +47,7 @@
     padding-top: 8px;
   }
   :global(.query-tasks-list .trailing-menu .timer-open-btn){
-    margin-top: 11px;
+    margin-top: 12px;
   }
 
 </style>
