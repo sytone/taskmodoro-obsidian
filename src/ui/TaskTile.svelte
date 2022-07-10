@@ -130,7 +130,10 @@
           class="task-title"
           bind:this={taskNameEl}
         />
+        {#if parentComponent !=
+          TaskListTileParent.TimerTaskView}
         <TaskTileProps bind:td />
+        {/if}
       </div>
       <TrailingMenu
         {showTrailingMenu}
@@ -174,11 +177,13 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    overflow:hidden
   }
 
   .task-tile-wrapper {
     display: flex;
     flex-direction: row;
+    position:relative
   }
 
   :global(.subtasks-list .task-tile) {
@@ -190,6 +195,7 @@
 
   :global(.subtasks-list .task-title) {
     margin: 8px 0;
+    padding-right: 16px;
     background-color: var(--background-nav);
   }
 
@@ -204,11 +210,15 @@
   :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
     border-radius: 10px;
     padding: 8px 8px;
-    margin: 8px 0;
+    margin: 4px 0;
   }
 
-  :global(.timer-task-container .leading, .query-tasks-list .leading) {
+  :global(.query-tasks-list .leading) {
     margin-top: 8px;
+  }
+
+  :global(.timer-task-container .leading) {
+    margin-top: 2px;
   }
 
   :global(.timer-task-container .task-tile) {
@@ -221,10 +231,19 @@
     border: thin solid var(--background-secondary);
   }
 
-  .header {
-    position: relative;
+  :global(.query-tasks-list .task-title) {
+    padding-right: 24px;
   }
 
+  :global(.timer-task-container .task-title) {
+    padding-right: 16px;
+  }
+
+
+  .header-content{
+    overflow:hidden
+  }
+  
   .leading {
     display: flex;
     flex-direction: row;

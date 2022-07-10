@@ -12,9 +12,11 @@
   .timer-open-btn:hover{
     cursor:pointer
   }
+  
   :global(.sidebar-refs-container .timer-open-btn  svg){
     width: 28px;
   }
+
   :global(.trailing-menu .timer-open-btn  svg){
     width: 26px;
   }
@@ -40,8 +42,11 @@
     stroke-width: 3.5px;
   }
 
-  :global(.trailing-menu .timer-open-btn){
-    padding-top: 6px;
+  :global(.main-task-panel .trailing-menu .timer-open-btn){
+    padding-top: 8px;
+  }
+  :global(.query-tasks-list .trailing-menu .timer-open-btn){
+    margin-top: 11px;
   }
 
 </style>

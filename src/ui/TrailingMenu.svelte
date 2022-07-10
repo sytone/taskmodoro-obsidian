@@ -25,7 +25,9 @@
 {#if showTrailingMenu}
   <span class="trailing-menu">
     {#if showTimerOpenBtn}
+    <span class="trailing-menu-item">
       <TimerOpenBtn on:click={showPomodoroTaskView} />
+  </span>
     {/if}
     <span class="trailing-menu-item" on:click={viewSource}>
       {@html externalLink}
@@ -36,20 +38,30 @@
 <style>
   .trailing-menu {
     position: absolute;
-    right: 0px;
-    top: 0px;
-    padding: 4px 12px;
-    height: 2rem;
+    right: 4px;
+    top: 8px;
+    padding-right: 4px;
+    padding-left: 4px;
+    height: 2.5rem;
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+
+  :global(.timer-task-container .trailing-menu){
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      #202327 20%,
+      #202327
+    );
   }
 
   :global(.main-task-panel .trailing-menu){
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-nav) 10%,
+      var(--background-nav) 20%,
       var(--background-nav)
     );
   }
@@ -58,7 +70,7 @@
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-secondary) 10%,
+      var(--background-secondary) 20%,
       var(--background-secondary)
     );
   }
