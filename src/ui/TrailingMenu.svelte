@@ -7,7 +7,8 @@
   export let showTimerOpenBtn: boolean;
   export let td: TaskDetails;
   const showPomodoroTaskView = async () => {
-    await td.plugin.activatePomodoroTaskView(td, td.pomoDuration);
+    await td.plugin.activatePomodoroTaskView(td);
+    td.close()
   };
 
   const viewSource = () => {
@@ -38,16 +39,28 @@
     right: 0px;
     top: 0px;
     padding: 4px 12px;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      var(--taskTileBg) 10%,
-      var(--taskTileBg)
-    );
     height: 2rem;
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+
+  :global(.main-task-panel .trailing-menu){
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--background-nav) 10%,
+      var(--background-nav)
+    );
+  }
+
+  :global(.query-tasks-list .trailing-menu){
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--background-secondary) 10%,
+      var(--background-secondary)
+    );
   }
 
   .trailing-menu-item {
@@ -62,19 +75,12 @@
   }
 
   :global(.trailing-menu-item > .external-link-icon) {
-    width: 24px;
-    height: auto;
+    height: 24px;
+    width: auto;
   }
 
   :global(.trailing-menu-item > .external-link-icon path) {
-    fill: var(--mid-blue-gray);
+    fill: var(--mid2-blue-gray);
   }
 
-  /* TimerOpenBtn */
-  :global(.trailing-menu .play-circle) {
-    margin-top: 3px;
-    margin-left: 7px;
-    width: 22px;
-    height: 22px;
-  }
 </style>

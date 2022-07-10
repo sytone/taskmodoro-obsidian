@@ -26,6 +26,8 @@ export class TaskDetails {
   public spentWorktime: Duration
   public subtasks: TaskDetails[] = []
   public parents: FileName[]=[]
+
+  // Callback for closing TaskDetailsModal
   public close: () => void
 
   public get cleanedTags (): string[] {
@@ -45,10 +47,13 @@ export class TaskDetails {
   constructor (
     plugin: TQPlugin,
     task: Task = undefined,
+    close: ()=>void = undefined
   ) {
     this.plugin = plugin
     this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags())
-
+    if(close){
+      this.close=close
+    }
     if (task) {
       let fm = task.frontmatter
       this.due = formatDate(task.due)
@@ -84,7 +89,7 @@ export class TaskDetails {
       const subtasks: Task[] = task.subtasks
 
       for (let subtask of subtasks) {
-        let subtd = new TaskDetails(this.plugin, subtask)
+        let subtd = new TaskDetails(this.plugin, subtask,close)
         this.subtasks.push(subtd)
       }
 

@@ -23,11 +23,10 @@
     let currTask: FilePath = tasksNav.last();
 
     if (currTask) {
-      td = new TaskDetails(plugin, tasks[currTask]);
+      td = new TaskDetails(plugin, tasks[currTask],close);
     } else {
-      td = new TaskDetails(plugin);
+      td = new TaskDetails(plugin,undefined,close);
     }
-    td.close = close;
   };
 
 </script>

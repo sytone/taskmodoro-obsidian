@@ -1,24 +1,47 @@
 <script lang="ts">
-  import { play } from '../graphics';
+  import { circledPlay, play } from '../graphics';
 
 </script>
 
-<div on:click  class="tq-circle play-circle">
-    {@html play}
+<div on:click  class="timer-open-btn">
+    {@html circledPlay}
 </div>
 
 <style>
 
-  :global(.play-circle > svg){
-    width: 7px;
-    width: 8px;
+  .timer-open-btn:hover{
+    cursor:pointer
+  }
+  :global(.sidebar-refs-container .timer-open-btn  svg){
+    width: 28px;
+  }
+  :global(.trailing-menu .timer-open-btn  svg){
+    width: 26px;
+  }
+
+  :global(.timer-open-btn  svg){
+    
+    max-width: 100%;
+    max-height: 100%;
     margin-left: 1.5px;
     height: auto;
   
   }
-  :global(.play-circle > svg>path){
-    stroke-width: 1.5;
-    stroke: var(--mid-blue-gray)
-  
+
+  :global(.timer-open-btn  path,.timer-open-btn  path){
+   stroke: var(--mid2-blue-gray);
+   stroke-width: 2.5px;
+   fill: transparent;
+
   }
+  :global(.trailing-menu circle,.timer-open-btn circle){
+   stroke: var(--mid2-blue-gray);
+   fill: transparent;
+    stroke-width: 3.5px;
+  }
+
+  :global(.trailing-menu .timer-open-btn){
+    padding-top: 6px;
+  }
+
 </style>

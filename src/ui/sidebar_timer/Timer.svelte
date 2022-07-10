@@ -80,7 +80,6 @@
     let endedAt = startedAt.clone().add(activityDur);
     plugin.fileInterface.setTimerActivity(
       file,
-      plugin.app.vault,
       startedAt,
       endedAt,
     );
@@ -106,7 +105,7 @@
     <div class="timer-runtime">{duration.format()}</div>
   </div>
 </div>
-<div class="timer-actions">
+<div class="timer-actions-container">
   {#if state == TimerState.INITIALIZED}
     <div class="timer-action" on:click={start}>{@html circledPlay}</div>
   {/if}
@@ -120,20 +119,17 @@
 </div>
 
 <style>
-  :global(.circledPlay) {
-    width: 48px;
-  }
   .timer-action {
     margin: 0 8px;
   }
 
-  .timer-actions {
+  .timer-actions-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin-top: -3rem;
   }
-
+  
   .timer-runtime {
     position: absolute;
     top: 50%;
@@ -142,11 +138,17 @@
     color: #efe8e8;
     font-size: 3rem;
   }
+
+  :global(.timer-action .circle-play) {
+    width: 48px;
+  }
+
   :global(.dashed-timer-leaf > svg) {
     width: 16px;
     stroke-width: 8;
     stroke: #efe8e8;
   }
+
   :global(.dashed-timer-leaf > path) {
     stroke-dasharray: 16;
   }
@@ -157,6 +159,7 @@
     stroke: none;
     fill: #efe8e8;
   }
+
   :global(.filled-timer-leaf > path) {
     stroke-dasharray: none;
   }

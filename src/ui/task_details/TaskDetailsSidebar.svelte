@@ -12,6 +12,7 @@
   import { externalLink } from '../../graphics';
   import { DurationPickerType } from './../../enums/duration-picker-type';
   import TextSuggest from '../TextSuggest.svelte';
+import TimerOpenBtn from '../TimerOpenBtn.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -137,12 +138,16 @@
       td.plugin.fileInterface.updateFMProp(td.file, td.cleanedTags, 'tags');
     }
   };
-
+  const showPomodoroTaskView = async () => {
+    await td.plugin.activatePomodoroTaskView(td);
+    td.close()
+  };
 </script>
 
 <div class="task-details-sidebar">
-  <span class="external-link-wrapper">
-    <span class="external-link-icon">{@html externalLink}</span>
+  <span class="sidebar-refs-container">
+    <TimerOpenBtn on:click={showPomodoroTaskView} />
+    <span class="external-link-wrapper">{@html externalLink}</span>
   </span>
   <div class="sidebar-container">
     <div class="group">
@@ -201,6 +206,9 @@
 </div>
 
 <style>
+  :global(.timer-open-btn-wrapper){
+
+  }
   :global(.task-details-sidebar .tag-input) {
     padding-bottom: 8px;
     border-bottom: 1px solid #2a2d30;
@@ -215,18 +223,24 @@
     justify-content: end;
   }
 
-  .external-link-wrapper {
+  .sidebar-refs-container {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
   }
 
-  .external-link-icon {
-    /* position: absolute; */
-    /* align-self: flex-end; */
+  .external-link-wrapper {
     padding-right: 44px;
   }
 
+  :global(.external-link-icon){
+    stroke-width: 0px;
+  }
+
+  :global(.external-link-icon path){
+    stroke: var(--mid2-blue-gray)
+  }
+  
   .task-details-sidebar {
     background-color: #151719;
 

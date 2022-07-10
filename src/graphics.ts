@@ -35,18 +35,18 @@ export const repeat = `<svg class="repeat-icon" width="150" height="150" viewBox
 </svg>
 `
 
-export const circledPlay = `<svg class="circledPlay" width="49" height="48" viewBox="0 0 49 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const circledPlay = `<svg class="circle-play" width="50" height="50" viewBox="-2.5 -2.5 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="24.75" cy="24" r="23.375" fill="#1E2021" stroke="#D8D1D1" stroke-width="1.25"/>
 <path d="M32.2076 23.6918C32.4229 23.8409 32.4229 24.1591 32.2076 24.3082L19.9636 32.7912C19.7149 32.9635 19.375 32.7855 19.375 32.4829L19.375 15.5171C19.375 15.2145 19.7149 15.0365 19.9636 15.2088L32.2076 23.6918Z" fill="#202223" stroke="#D8D1D1" stroke-width="1.25"/>
 </svg>
 `
 
-export const circledStop = `<svg class="circledStop" width="49" height="48" viewBox="0 0 49 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const circledStop = `<svg class="circle-stop" width="50" height="50" viewBox="-2.5 -2.5 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="24.75" cy="24" r="23.375" fill="#1E2021" stroke="#D8D1D1" stroke-width="1.25"/>
 <rect x="17.375" y="16.625" width="14.75" height="14.75" rx="2.375" stroke="#D8D1D1" stroke-width="1.25"/>
 </svg>
 `
-export const circledPause = `<svg class="circledPause" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const circledPause = `<svg class="circle-pause" width="50" height="50" viewBox="-2.5 -2.5 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="24" cy="24" r="23.375" fill="#1E2021" stroke="#D8D1D1" stroke-width="1.25"/>
 <rect x="17" y="14" width="1.25" height="20" fill="#D9D9D9"/>
 <rect x="30" y="14" width="1.25" height="20" fill="#D9D9D9"/>

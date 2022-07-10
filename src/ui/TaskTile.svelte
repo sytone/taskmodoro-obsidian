@@ -134,9 +134,9 @@
       </div>
       <TrailingMenu
         {showTrailingMenu}
-        bind:td
+        {td}
         showTimerOpenBtn={parentComponent !=
-          TaskListTileParent.TaskDetailsMainPanel}
+          TaskListTileParent.TimerTaskView}
       />
     </div>
     <div class="nested-subtasks-list {!expanded ? 'show-transition' : ''}">
@@ -239,12 +239,14 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    flex: 1;
   }
 
   .task-title {
     display: inline-block;
+    max-width: 100%;
+    width: 100%;
     margin: 0 8px;
     font-size: 1.25rem;
+    word-wrap: break-word;
   }
 </style>

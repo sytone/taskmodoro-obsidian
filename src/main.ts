@@ -155,7 +155,7 @@ export default class TQPlugin extends Plugin {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
 
-  async activatePomodoroTaskView (td: TaskDetails, duration: Duration) {
+  async activatePomodoroTaskView (td: TaskDetails) {
 
     if (
       this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK).length === 0
