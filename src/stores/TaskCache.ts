@@ -70,8 +70,8 @@ export class TaskCache {
         console.log(
           'task-loaded:',
           newTask.taskName,
-          'subtasks:',
-          newTask.subtasks,
+          'scheduled:',
+          newTask.scheduled,
         )
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
@@ -86,43 +86,28 @@ export class TaskCache {
     )
   }
 
-  // We reload parent data in svelte store to represent change in subtask
+  // We reload parents data in svelte store to represent change in subtask
   public reloadParent = (file: TFile) => {
-    let tasksNav = get(this.plugin.taskNav.tasksNavigation)
-    let currTask = get(this.tasks)[file.path]
+    
+
+      let currTask = get(this.tasks)[file.path]
     if (!currTask.parents) return
 
-    const doesCurrTaskHasTaskNavAsParent = (parentPath: FilePath) => {
-      const dir = this.plugin.fileInterface.tasksDir
-      const parentIndex = currTask.parents.findIndex(
-        (name: FileName) => `${dir}/${name}` === parentPath,
-      )
-      return parentIndex >= 0
-    }
+    for (let parentName of currTask.parents) {
 
-    let idx = tasksNav.findIndex(path => {
-      return doesCurrTaskHasTaskNavAsParent(path)
-    })
-
-    while (idx >= 0) {
-      idx = idx == 0 ? idx : idx - 1
-      let parentPath = tasksNav[idx]
-      idx = idx == 0 ? idx - 1 : idx
-      let parentFile = this.plugin.app.metadataCache.getFirstLinkpathDest(
-        parentPath,
-        '/',
-      )
-
-      if (parentFile) {
-        const now = moment(new Date()).toISOString()
-        this.plugin.fileInterface.updateFMProp(
-          parentFile,
-          now,
-          'updated_at',
-          false,
-          false,
+      const now = moment(new Date()).toISOString()
+      
+      let dir = this.plugin.fileInterface.tasksDir
+      let path = `${dir}/${parentName}`
+      let parentTask = get(this.tasks)[path]
+      this.plugin.fileInterface.updateFMProp(
+        parentTask.file,
+        now,
+        'updated_at',
+        false,
+        false,
         )
-      }
+      this.reloadParent(parentTask.file)
     }
   }
 
@@ -171,9 +156,7 @@ export class TaskCache {
     file: TFile,
   ): Promise<Result<Task, string>> => {
     const metadata = this.app.metadataCache.getFileCache(file)
-    if (
-      this.isTaskAbsent(metadata)
-    ) {
+    if (this.isTaskAbsent(metadata)) {
       return err('tq: No task found in task file ' + file.path)
     }
 

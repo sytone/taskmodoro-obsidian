@@ -29,7 +29,7 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
     const onSet = (newDueDate: Moment) => {
       td.due = formatDate(newDueDate);
       td = td;
-      if (TaskDetailsMode.Update) {
+      if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
       }
     };
@@ -48,12 +48,13 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
     const onSet = (newScheduledDate: Moment) => {
       td.scheduled = formatDate(newScheduledDate);
       td = td;
-      if (TaskDetailsMode.Update) {
+      if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           newScheduledDate,
           'scheduled',
         );
+        console.log('schedule_fm_update:',newScheduledDate)
       }
     };
 
@@ -71,7 +72,7 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
     const onSet = (newRepeatConfig: string) => {
       td.repeatConfig = newRepeatConfig;
       td = td;
-      if (TaskDetailsMode.Update) {
+      if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           newRepeatConfig,
@@ -88,7 +89,7 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
       td.estWorktime = estWorktime;
 
       td = td;
-      if (TaskDetailsMode.Update) {
+      if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           {
@@ -113,7 +114,7 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
       td.pomoDuration = newPomoDuration;
 
       td = td;
-      if (TaskDetailsMode.Update) {
+      if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
           td.file,
           {

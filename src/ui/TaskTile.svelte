@@ -200,6 +200,7 @@
   }
 
   :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
+    border-radius: 10px;
     padding: 8px 8px;
   }
 

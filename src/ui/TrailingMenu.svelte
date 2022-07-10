@@ -83,6 +83,7 @@
   }
 
   :global(.query-tasks-list .nested-subtasks-list .trailing-menu){
+    top:0px;
     right:0px;
   }
 

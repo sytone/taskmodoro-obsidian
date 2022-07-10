@@ -1,15 +1,17 @@
+
 <script lang="ts">
 import type { TaskDetails } from '../task-details';
 import { durationFormat_hm } from '../helpers/util';
-import { RepeatPickerModal, DatePickerModal } from '../modals';
+import { RepeatPickerModal, DatePickerModal, DurationPickerModal } from '../modals';
 import type { Moment} from 'moment';
+import type { Duration }from 'moment';
 import {
     calendar,
     hourglass,
     repeat,
     timer,
   } from '../graphics';
-
+import {DurationPickerType} from '../enums/duration-picker-type'
 export let td: TaskDetails
 
 let showWorktimeGroup: boolean;
@@ -72,11 +74,33 @@ let showWorktimeGroup: boolean;
     ).open();
   };
 
+  const showEstWorktimePicker = () => {
+    const onSet = (estWorktime: Duration) => {
+      if (td.file) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          {
+            minutes: estWorktime.asMinutes(),
+          },
+          'estimated_worktime',
+        );
+      }
+    };
+
+    new DurationPickerModal(
+      td.plugin.app,
+      'Estimated worktime',
+      td.estWorktime,
+      DurationPickerType.EstimatedWorktime,
+      onSet,
+    ).open();
+  };
+
 </script>
 <div class="props">
     {#if showWorktimeGroup}
       <span class="group">
-        <span id="spent-worktime-container" class="group">
+        <span  id="spent-worktime-container" class="group">
           {@html timer}
           <span class="prop-text" id="spent-worktime"
             >{durationFormat_hm(td.spentWorktime)}</span
@@ -84,7 +108,7 @@ let showWorktimeGroup: boolean;
         </span>
         {#if showEstWorktimeGroup}
           <span id="worktime-seperator"> / </span>
-          <span id="est-worktime-container" class="group">
+          <span on:click={showEstWorktimePicker} id="est-worktime-container" class="group">
             {@html timer}
             <span class="prop-text" id="est-worktime"
               >{durationFormat_hm(td.estWorktime)}</span
@@ -165,6 +189,7 @@ let showWorktimeGroup: boolean;
 
   #spent-worktime-container {
     margin-right: 0px;
+    cursor: default
   }
 
   #worktime-seperator {

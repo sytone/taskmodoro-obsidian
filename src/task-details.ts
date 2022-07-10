@@ -7,6 +7,7 @@ import MomentDurationSetup from 'moment-duration-format'
 import { toInteger } from 'lodash'
 import type { Duration } from 'moment'
 import type { FileName } from './file-interface';
+import { FilePath as FileName } from './file-interface';
 MomentDurationSetup(moment)
 
 export class TaskDetails {

@@ -21,6 +21,10 @@
   let hSwitcherData: number[], mSwitcherData: number[];
   let hSwitcherSelectedPos: number, mSwitcherSelectedPos: number;
 
+  if (!duration) {
+    duration = moment.duration(0, 'minutes');
+  }
+
   $: {
     if (type === DurationPickerType.PomodoroLength) {
       mSwitcherType = SwitcherType.PomoLengthMin;
@@ -49,7 +53,10 @@
       duration = moment.duration(duration.minutes(), 'minutes');
       duration = duration.add(durInputArg, 'hours');
     } else if (switcherType === SwitcherType.WorktimeMin) {
-      duration = moment.duration(duration.days() * 24 + duration.hours(), 'hours');
+      duration = moment.duration(
+        duration.days() * 24 + duration.hours(),
+        'hours',
+      );
       duration = duration.add(durInputArg, 'minutes');
     } else if (switcherType === SwitcherType.PomoLengthMin) {
       duration = moment.duration(durInputArg, 'minutes');
@@ -98,6 +105,7 @@
     justify-content: center;
     margin: 0px 20px;
   }
+
   .duration-picker > .actions {
     margin-top: 2rem;
   }

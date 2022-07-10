@@ -22,7 +22,7 @@
       case 'due':
         return (t) => t.due?.format('YYYY-MM-DD') || 'No Due Date';
       case 'completed':
-        return (t) => (t.checked ? 'Complete' : 'Incomplete');
+        return (t) => (t.completed ? 'Complete' : 'Incomplete');
       default:
         return (_) => undefined;
     }
