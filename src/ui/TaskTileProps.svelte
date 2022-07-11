@@ -1,28 +1,42 @@
-
 <script lang="ts">
-import type { TaskDetails } from '../task-details';
-import { durationFormat_hm } from '../helpers/util';
-import { RepeatPickerModal, DatePickerModal, DurationPickerModal } from '../modals';
-import type { Moment} from 'moment';
-import type { Duration }from 'moment';
-import {
-    calendar,
-    hourglass,
-    repeat,
-    timer,
-  } from '../graphics';
-import {DurationPickerType} from '../enums/duration-picker-type'
-export let td: TaskDetails
+  import type { TaskDetails } from '../task-details';
+  import { durationFormat_hm } from '../helpers/util';
+  import {
+    RepeatPickerModal,
+    DatePickerModal,
+    DurationPickerModal,
+  } from '../modals';
+  import type { Moment } from 'moment';
+  import type { Duration } from 'moment';
+  import { calendar, hourglass, repeat, timer } from '../graphics';
+  import { DurationPickerType } from '../enums/duration-picker-type';
+  import { onMount } from 'svelte';
+  import { Render } from '../helpers/render';
+  export let td: TaskDetails;
 
-let showWorktimeGroup: boolean;
+  let showWorktimeGroup: boolean;
   let showEstWorktimeGroup: boolean;
+  let tagsEl: HTMLElement[] = [];
+  let cleanedTags = td.cleanTags(td.tags)
 
   $: {
     showEstWorktimeGroup = td.estWorktime && td.estWorktime.asMinutes() !== 0;
     let showSpentWorktimeGroup =
       td.spentWorktime && td.spentWorktime.asMinutes() !== 0;
     showWorktimeGroup = showSpentWorktimeGroup || showEstWorktimeGroup;
+    cleanedTags = td.cleanTags(td.tags)
+    renderTags(cleanedTags);
   }
+
+  onMount(() => {
+    renderTags(cleanedTags);
+  });
+
+  const renderTags = (tags: string[]) => {
+    for (let i = 0; i < tagsEl.length; i++) {
+      Render.renderMD(tags[i], tagsEl[i], td.file);
+    }
+  };
 
   const showDuePicker = () => {
     new DatePickerModal(
@@ -31,11 +45,7 @@ let showWorktimeGroup: boolean;
       'Due date',
       (newDueDate: Moment) => {
         if (td.file) {
-          td.plugin.fileInterface.updateFMProp(
-            td.file,
-            newDueDate,
-            'due',
-          );
+          td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
         }
       },
     ).open();
@@ -95,74 +105,94 @@ let showWorktimeGroup: boolean;
       onSet,
     ).open();
   };
-
 </script>
-<div class="props">
-    {#if showWorktimeGroup}
-      <span class="group">
-        <span  id="spent-worktime-container" class="group">
+
+<div class="props-container">
+  {#if showWorktimeGroup}
+    <span class="prop">
+      <span id="spent-worktime-container" class="prop">
+        {@html timer}
+        <span class="prop-text" id="spent-worktime"
+          >{durationFormat_hm(td.spentWorktime)}</span
+        >
+      </span>
+      {#if showEstWorktimeGroup}
+        <span id="worktime-seperator"> / </span>
+        <span
+          on:click={showEstWorktimePicker}
+          id="est-worktime-container"
+          class="prop"
+        >
           {@html timer}
-          <span class="prop-text" id="spent-worktime"
-            >{durationFormat_hm(td.spentWorktime)}</span
+          <span class="prop-text" id="est-worktime"
+            >{durationFormat_hm(td.estWorktime)}</span
           >
         </span>
-        {#if showEstWorktimeGroup}
-          <span id="worktime-seperator"> / </span>
-          <span on:click={showEstWorktimePicker} id="est-worktime-container" class="group">
-            {@html timer}
-            <span class="prop-text" id="est-worktime"
-              >{durationFormat_hm(td.estWorktime)}</span
-            >
-          </span>
-        {/if}
-      </span>
-    {/if}
-    {#if td.due && td.due !== '' }
-      <span class="group" on:click={showDuePicker}>
-        {@html calendar}
-        <span class="prop-text" id="due">{td.due?.format('YYYY-MM-DD')}</span
-        >
-      </span>
-    {/if}
-    {#if td.scheduled && td.scheduled !== ''}
-      <span class="group" on:click={showSchedulePicker}>
-        {@html hourglass}
-        <span class="prop-text" id="scheduled"
-          >{td.scheduled?.format('YYYY-MM-DD')}</span
-        >
-      </span>
-    {/if}
-    {#if td.repeatConfig  &&  td.repeatConfig !== ''}
-      <span class="group" on:click={showRepeatPicker}>
-        {@html repeat}
-        <span class="prop-text" id="repeat"
-          >{td.repeatConfig?.toLowerCase()}</span
-        >
-      </span>
-    {/if}
-  </div>
+      {/if}
+    </span>
+  {/if}
+  {#if td.due && td.due !== ''}
+    <span class="prop" on:click={showDuePicker}>
+      {@html calendar}
+      <span class="prop-text" id="due">{td.due?.format('YYYY-MM-DD')}</span>
+    </span>
+  {/if}
+  {#if td.scheduled && td.scheduled !== ''}
+    <span class="prop" on:click={showSchedulePicker}>
+      {@html hourglass}
+      <span class="prop-text" id="scheduled"
+        >{td.scheduled?.format('YYYY-MM-DD')}</span
+      >
+    </span>
+  {/if}
+  {#if td.repeatConfig && td.repeatConfig !== ''}
+    <span class="prop" on:click={showRepeatPicker}>
+      {@html repeat}
+      <span class="prop-text" id="repeat">{td.repeatConfig?.toLowerCase()}</span
+      >
+    </span>
+  {/if}
+  {#if cleanedTags.length !== 0}
+    {#each cleanedTags as tag, i (tag)}
+      <span id="task-tag" bind:this={tagsEl[i]} class="prop" />
+    {/each}
+  {/if}
+</div>
+
 <style>
-    .props {
+  .props-container {
     font-size: 1rem;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+   
+  }
+  
+  .props-container:has(.prop){
+    margin-top: -8px;
   }
 
-  .group > .group:first-child {
-    margin-left: 0px;
-  }
-
-  .group {
+  
+  .prop {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 8px;
+    margin: 8px 8px 0px 8px;
   }
 
-  .group:hover {
-    cursor: pointer;
+  .prop > .prop{
+    margin: 0px 8px;
+  }
+
+  .prop > span.prop:first-child {
+    margin-left: 0px;
   }
   
+  .prop:hover {
+    cursor: pointer;
+  }
+
   .prop-text {
     padding-left: 4px;
   }
@@ -189,7 +219,7 @@ let showWorktimeGroup: boolean;
 
   #spent-worktime-container {
     margin-right: 0px;
-    cursor: default
+    cursor: default;
   }
 
   #worktime-seperator {
@@ -217,5 +247,4 @@ let showWorktimeGroup: boolean;
   #scheduled {
     color: #54a8b4;
   }
-
 </style>

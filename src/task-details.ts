@@ -32,7 +32,12 @@ export class TaskDetails {
   public close: () => void
 
   public get cleanedTags (): string[] {
-    return this.tags
+    return this.cleanTags(this.tags)
+  }
+
+  // Seperate method to leverage svelte reactivity
+  public cleanTags (tags:string): string[] {
+    return tags
       .split(/[ ]+/)
       .filter(x => x !== '')
   }
