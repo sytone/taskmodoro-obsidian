@@ -1,6 +1,7 @@
 /* eslint-disable simple-import-sort/sort */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable linebreak-style */
+
 // <!-- Reproduced from: https://github.com/mgmeyers/obsidian-kanban -->
 // <!-- Author: Matthew Meyers -->
 

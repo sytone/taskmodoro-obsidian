@@ -12,7 +12,8 @@
   import { externalLink } from '../../graphics';
   import { DurationPickerType } from './../../enums/duration-picker-type';
   import TextSuggest from '../TextSuggest.svelte';
-import TimerOpenBtn from '../TimerOpenBtn.svelte';
+  import TimerOpenBtn from '../TimerOpenBtn.svelte';
+  import ViewSourceBtn from './../ViewSourceBtn.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -54,7 +55,7 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
           newScheduledDate,
           'scheduled',
         );
-        console.log('schedule_fm_update:',newScheduledDate)
+        console.log('schedule_fm_update:', newScheduledDate);
       }
     };
 
@@ -141,14 +142,21 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
   };
   const showPomodoroTaskView = async () => {
     await td.plugin.activatePomodoroTaskView(td);
-    td.close()
+    td.close();
   };
 </script>
 
 <div class="task-details-sidebar">
   <span class="sidebar-refs-container">
     <TimerOpenBtn on:click={showPomodoroTaskView} />
-    <span class="external-link-wrapper">{@html externalLink}</span>
+    <ViewSourceBtn
+      file={td.file}
+      classes="external-link-wrapper"
+      plugin={td.plugin}
+      close={td.close}
+
+    />
+    <!-- <span class="external-link-wrapper">{@html externalLink}</span> -->
   </span>
   <div class="sidebar-container">
     <div class="group">
@@ -227,18 +235,6 @@ import TimerOpenBtn from '../TimerOpenBtn.svelte';
     justify-content: space-between;
   }
 
-  .external-link-wrapper {
-    padding-right: 44px;
-  }
-
-  :global(.external-link-icon){
-    stroke-width: 0px;
-  }
-
-  :global(.external-link-icon path){
-    stroke: var(--mid2-blue-gray)
-  }
-  
   .task-details-sidebar {
     background-color: #151719;
 

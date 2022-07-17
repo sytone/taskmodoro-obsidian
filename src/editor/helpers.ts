@@ -2,6 +2,9 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable simple-import-sort/sort */
 
+// <!-- Reproduced from: https://github.com/mgmeyers/obsidian-kanban -->
+// <!-- Author: Matthew Meyers -->
+
 import { Platform } from 'obsidian';
 import insertText from 'insert-text-at-cursor';
 
