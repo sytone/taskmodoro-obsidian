@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { TaskDetailsModal } from '../modals';
+  import { TaskDetailsModal } from '../../modals';
   import type { Component } from 'obsidian';
   import { MarkdownRenderer } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
-  import Checkbox from './Checkbox.svelte';
+  import Checkbox from '../Checkbox.svelte';
   import type moment from 'moment';
   import {
     TaskDetailsMode,
     TaskListTileParent,
-  } from '../enums/component-context';
+  } from '../../enums/component-context';
   import type { TaskDetails } from 'src/task-details';
   import TaskTileProps from './TaskTileProps.svelte';
   import TrailingMenu from './TrailingMenu.svelte';
-  import { TaskListTileParent as TaskTileParent } from './../enums/component-context';
-  import type { Task } from '../file-interface';
+  import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
+  import type { Task } from '../../file-interface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
-  import { Render } from '../helpers/render';
+  import { Render } from '../../helpers/render';
 
   type Moment = moment.Moment;
 

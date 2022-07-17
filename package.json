@@ -20,11 +20,13 @@
     "@rollup/plugin-typescript": "^8.1.0",
     "@testing-library/svelte": "3.0.2",
     "@tsconfig/svelte": "1.0.10",
+    "@types/insert-text-at-cursor": "^0.3.0",
     "@types/jest": "26.0.18",
     "@types/js-yaml": "4.0.1",
     "@types/lodash": "4.14.170",
     "@types/moment-duration-format": "^2.2.3",
     "@types/node": "^14.14.2",
+    "@types/textarea-caret": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "4.6.0",
     "@typescript-eslint/parser": "4.6.0",
     "eslint": "^7.32.0",
@@ -48,11 +50,17 @@
   },
   "dependencies": {
     "@popperjs/core": "2.9.2",
+    "eventemitter3": "^4.0.7",
+    "fuse": "^0.4.0",
+    "fuse.js": "^6.6.2",
+    "insert-text-at-cursor": "^0.3.0",
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "moment-duration-format": "^2.3.2",
     "neverthrow": "4.2.1",
     "obsidian-calendar-ui": "0.3.12",
-    "rrule": "^2.6.8"
+    "rrule": "^2.6.8",
+    "textarea-caret": "^3.1.0",
+    "undate": "^0.3.0"
   }
 }

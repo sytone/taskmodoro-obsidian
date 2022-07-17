@@ -58,7 +58,7 @@
   }
 
   :global(.check-mark-icon) {
-    stroke: var(--mid-blue-gray);
+    stroke: #a92727;
     fill: var(--mid-blue-gray);
   }
 

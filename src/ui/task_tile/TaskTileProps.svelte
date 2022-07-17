@@ -1,17 +1,17 @@
 <script lang="ts">
-  import type { TaskDetails } from '../task-details';
-  import { durationFormat_hm } from '../helpers/util';
+  import type { TaskDetails } from '../../task-details';
+  import { durationFormat_hm } from '../../helpers/util';
   import {
     RepeatPickerModal,
     DatePickerModal,
     DurationPickerModal,
-  } from '../modals';
+  } from '../../modals';
   import type { Moment } from 'moment';
   import type { Duration } from 'moment';
-  import { calendar, hourglass, repeat, timer } from '../graphics';
-  import { DurationPickerType } from '../enums/duration-picker-type';
+  import { calendar, hourglass, repeat, timer } from '../../graphics';
+  import { DurationPickerType } from '../../enums/duration-picker-type';
   import { onMount } from 'svelte';
-  import { Render } from '../helpers/render';
+  import { Render } from '../../helpers/render';
   export let td: TaskDetails;
 
   let showWorktimeGroup: boolean;
@@ -152,11 +152,11 @@
       >
     </span>
   {/if}
-  {#if cleanedTags.length !== 0}
+  <!-- {#if cleanedTags.length !== 0}
     {#each cleanedTags as tag, i (tag)}
       <span id="task-tag" bind:this={tagsEl[i]} class="prop" />
     {/each}
-  {/if}
+  {/if} -->
 </div>
 
 <style>
@@ -168,7 +168,7 @@
     align-items: flex-start;
    
   }
-  
+
   .props-container:has(.prop){
     margin-top: -8px;
   }

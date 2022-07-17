@@ -2,7 +2,7 @@
   import { SharedState, filtersFromState } from '../state';
   import type TQPlugin from '../main';
   import { CalcTaskScore, Task } from '../file-interface';
-  import TaskTile from './TaskTile.svelte';
+  import TaskTile from './task_tile/TaskTile.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';

@@ -3,7 +3,7 @@
   import type TQPlugin from '../../main';
   import type { Duration } from 'moment';
   import { TaskListTileParent } from '../../enums/component-context';
-  import TaskListTile from '../TaskTile.svelte';
+  import TaskListTile from '../task_tile/TaskTile.svelte';
   import Timer from './Timer.svelte';
   import moment from 'moment';
   import type { TaskDetails } from 'src/task-details';

@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { App } from 'obsidian';
   import { afterUpdate, onMount } from 'svelte';
+  import { get_current_component } from 'svelte/internal';
+
   import { StaticSuggest } from '../suggest';
   import { textareaResize } from '../helpers/textarea-resize';
   import { Render } from '../helpers/render';
+  import { log } from 'console';
 
   export let app: App;
   export let suggestions: string[];
@@ -14,7 +17,7 @@
   let inputEl: HTMLElement;
   let draftValue = value;
   $: {
-    draftValue=value
+    draftValue = value;
     handleDisplay(value);
   }
 
@@ -35,10 +38,20 @@
   const onInput = (event: any) => {
     draftValue = event.target.innerText;
   };
+
   const onEnter = (event: KeyboardEvent) => {
+    // event.preventDefault();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
+  const onKeyup = (event: any) => {
+    console.log(event);
     if (event.key === 'Enter') {
-      event.preventDefault();
-      window.getSelection().removeAllRanges();
+      draftValue = Render.removeNewline(event.target.innerText)
+      onEnter(event);
+    }else{
+      draftValue = event.target.innerText;
     }
   };
 </script>
@@ -49,10 +62,10 @@
   type="text"
   {placeholder}
   bind:this={inputEl}
-  on:input={onInput}
-  on:keypress={onEnter}
+  on:keyup={onKeyup}
   on:focusout={() => {
-    if(value !== draftValue){
+    console.log('focusout');
+    if (value !== draftValue) {
       value = draftValue;
       onFocusout();
     }

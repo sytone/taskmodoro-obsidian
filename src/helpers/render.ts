@@ -3,6 +3,7 @@ import Cursor from './cursor'
 export class Render {
 
   static displayMD = (md: string, el: HTMLElement) => {
+    md=this.mdPostprocessing(md)
     let offset = Cursor.getCurrentCursorOffset(el)
     let text = el.innerText.substring(0, offset)
     let mdOffset = Cursor.getMDCursorOffset(md, text, offset)
@@ -12,6 +13,7 @@ export class Render {
 
   static renderMD (md: string, el: HTMLElement, file: TFile=undefined) {
     if (!el) return
+    md=this.mdPostprocessing(md)
     const tempEl = createDiv()
     MarkdownRenderer.renderMarkdown(md, tempEl, file ? file.path : './', null)
 
@@ -21,7 +23,14 @@ export class Render {
         : tempEl.innerHTML
   }
 
+  static mdPostprocessing(md:string){
+    return md.replace(/[ ]{2}/,'\n')
+  }
   static removeLeadingWhitespace(md:string){
     return md.replace(/^([ ]+)/,'')
+  }
+
+  static removeNewline(md:string){
+    return md.replace(/([\n]+)/,'')
   }
 }

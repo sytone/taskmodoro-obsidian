@@ -1,17 +1,17 @@
+import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
+import type { Duration, Moment } from 'moment'
 import {
   Frontmatter,
+  Parser,
   setCompletedDate,
   setDueDateToNext,
-  Parser,
 } from './parser'
+
 import type TQPlugin from './main'
-import type { Moment } from 'moment'
-import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
-import type { Duration } from 'moment'
 import type { TaskDetails } from './task-details'
-import moment from 'moment'
-import { isArrayLike } from 'lodash'
 import { getTextAbv } from './helpers/util';
+import { isArrayLike } from 'lodash'
+import moment from 'moment'
 
 export interface Task {
   file: TFile
@@ -153,7 +153,7 @@ export class FileInterface {
     })
 
   private readonly appendValue = (propName: string,value: any,frontmatter:Frontmatter)=> {
-    let fmArr = frontmatter.get(propName)
+    const fmArr = frontmatter.get(propName)
     if (!fmArr) {
       value = [value]
     }
@@ -167,7 +167,7 @@ export class FileInterface {
     const metadata = this.app.metadataCache.getFileCache(file)
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
-    let taskNameLines = taskName.split('\n')
+    const taskNameLines = taskName.split('\n')
     contentLines = Parser.replaceTaskName(contentLines, taskNameLines, metadata)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
@@ -180,7 +180,7 @@ export class FileInterface {
   ) => {
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
-    let descLines = description.split('\n')
+    const descLines = description.split('\n')
     contentLines = Parser.replaceDescription(contentLines, descLines)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
@@ -234,13 +234,13 @@ export class FileInterface {
   public readonly storeNestedTasks = async (
     td: TaskDetails,
   ): Promise<string> => {
-    let subtasksFileNames: string[] = []
-    for (let subtask of td.subtasks) {
-      let fileName = await this.storeNestedTasks(subtask)
+    const subtasksFileNames: string[] = []
+    for (const subtask of td.subtasks) {
+      const fileName = await this.storeNestedTasks(subtask)
       subtasksFileNames.push(fileName)
     }
 
-    let currTaskPath = await this.storeNewTask(
+    const currTaskPath = await this.storeNewTask(
       td.taskName,
       td.description,
       td.pomoDuration,
@@ -252,10 +252,10 @@ export class FileInterface {
       subtasksFileNames,
     )
 
-    for (let fileName of subtasksFileNames) {
-      let subtaskFile = this.app.metadataCache.getFirstLinkpathDest(
+    for (const fileName of subtasksFileNames) {
+      const subtaskFile = this.app.metadataCache.getFirstLinkpathDest(
         `${this.tasksDir}/${fileName}`,
-        `/`,
+        '/',
       )
       this.updateFMProp(subtaskFile, currTaskPath, 'parents', true,false)
     }
@@ -318,16 +318,16 @@ export class FileInterface {
 
 
 
-    let createdAt = moment(new Date()).toISOString()
+    const createdAt = moment(new Date()).toISOString()
     frontMatter.push(`created_at: ${createdAt}`)
 
     if (pomoDuration) {
-      let pomoLen = `  minutes: ${pomoDuration.asMinutes()}`
+      const pomoLen = `  minutes: ${pomoDuration.asMinutes()}`
       frontMatter.push(`pomodoro_length:\n${pomoLen}`)
     }
 
     if (estWorktime) {
-      let fmM = `  minutes: ${estWorktime.asMinutes()}`
+      const fmM = `  minutes: ${estWorktime.asMinutes()}`
       frontMatter.push(`estimated_worktime:\n${fmM}`)
     }
 
@@ -344,16 +344,16 @@ export class FileInterface {
     }
 
     if (tags && tags.length > 0 && tags[0].length > 0) {
-      let tagsFm = ``
-      for (let tag of tags) {
+      let tagsFm = ''
+      for (const tag of tags) {
         tagsFm += `\n  - '${tag}'`
       }
       frontMatter.push(`tags:${tagsFm}`)
     }
 
     if (subtasksNames.length !== 0) {
-      let subtasks = ``
-      for (let name of subtasksNames) {
+      let subtasks = ''
+      for (const name of subtasksNames) {
         subtasks += `\n  - ${name}`
       }
       frontMatter.push(`subtasks:${subtasks}`)

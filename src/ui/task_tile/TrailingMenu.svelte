@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { externalLink } from '../graphics';
-  import type { TaskDetails } from '../task-details';
-  import TimerOpenBtn from './TimerOpenBtn.svelte';
+  import { externalLink } from '../../graphics';
+  import type { TaskDetails } from '../../task-details';
+  import TimerOpenBtn from '../TimerOpenBtn.svelte';
 
   export let showTrailingMenu: boolean;
   export let showTimerOpenBtn: boolean;

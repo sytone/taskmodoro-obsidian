@@ -32,6 +32,7 @@
       switcherType,
       durInputArg,
     });
+
   }
 
   function applyCurrPosOffset() {

@@ -1,136 +1,121 @@
 <script lang="ts">
   import TaskDetailsNavigation from './TaskDetailsNavigation.svelte';
-
   import TaskDetailsSubtaskSection from './TaskDetailsSubtaskSection.svelte';
-  import { htmlToMarkdown } from 'obsidian';
-
   import type { TaskDetails } from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
   import Checkbox from './../Checkbox.svelte';
-  import { onMount } from 'svelte';
-  import Cursor from '../../helpers/cursor';
-  import { Render } from '../../helpers/render';
+  import { onMount, afterUpdate } from 'svelte';
+  import { renderMarkdown } from '../../editor/renderMarkdown';
+  import Editor from '../Editor.svelte';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
+  let taskNameDraft = td.taskName;
+  let descriptionDraft = td.description;
 
   let taskNameEl: HTMLElement;
   let descriptionEl: HTMLElement;
-  let temp = { taskName: td.taskName, description: td.description };
-  let isInputEnabled = { taskName: false, description: false };
+  // let draft = { taskName: td.taskName, description: td.description };
+  let isEditMode = { description: false, taskName: false };
 
-  onMount(() => {
-    renderTaskInput(isInputEnabled, td.taskName, td.description);
-    Cursor.setCurrentCursorPosition(td.taskName.length, taskNameEl);
+  type isEditModeKey = keyof typeof isEditMode;
+  const renderDescMD = () =>
+    renderMD(descriptionEl, descriptionDraft, 'description' as isEditModeKey);
+  const renderTaskNameMD = () =>
+    renderMD(taskNameEl, taskNameDraft, 'taskName' as isEditModeKey);
+
+  onMount(async () => {
+    renderDescMD();
+    renderTaskNameMD();
   });
 
-  $: {
-    renderTaskInput(isInputEnabled, td.taskName, td.description);
-    temp.taskName=td.taskName
-    temp.description=td.description
-  }
+  afterUpdate(() => {
+      if (!isEditMode.description) {
+        renderDescMD();
+      }
+      if (!isEditMode.taskName) {
+        renderTaskNameMD();
+      }
+    })
 
-  const removeLeadingWhitespace = (input: any) => {
-    input.taskName = Render.removeLeadingWhitespace(input.taskName);
-    input.description = Render.removeLeadingWhitespace(input.description);
-  };
 
-  const renderTaskInput = (
-    _isInputEnabled: { taskName: boolean; description: boolean },
-    taskName: string,
-    description: string,
-  ) => {
-    if (!_isInputEnabled.taskName) {
-      Render.renderMD(taskName, taskNameEl, td.file);
-    } else {
-      Render.displayMD(taskName, taskNameEl);
+
+  const renderMD = (el: HTMLElement, MD: string, prop: isEditModeKey) => {
+    if (!el) {
+      return;
     }
-
-    if (!_isInputEnabled.description) {
-      Render.renderMD(description, descriptionEl, td.file);
-    } else {
-      Render.displayMD(description, descriptionEl);
-    }
-  };
-
-  const onEnter = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      window.getSelection().removeAllRanges();
-    }
+    const path = td.file ? td.file.path : '/';
+    renderMarkdown(td.plugin, path, MD).then((temp) => {
+      el.innerHTML = temp.innerHTML;
+    });
   };
 
   const submitInput = () => {
-    removeLeadingWhitespace(temp)
-    // console.log('td:',td.taskName,' temp:',temp.taskName,'name=? ',td.taskName==temp.taskName)
-    // console.log('td:',td.description,' temp:',temp.description,'des=? ',td.description==temp.description)
-    if (td.taskName !== temp.taskName) {
-      td.taskName = temp.taskName;
-      if(mode === TaskDetailsMode.Update){
+    if (td.taskName !== taskNameDraft) {
+      td.taskName = taskNameDraft;
+      if (mode === TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateTaskName(td.file, td.taskName);
       }
     }
-    if (td.description !== temp.description) {
-      td.description = temp.description;
-      if(mode === TaskDetailsMode.Update){
-      td.plugin.fileInterface.updateDescription(td.file, td.description);
+
+    if (td.description !== descriptionDraft) {
+      td.description = descriptionDraft;
+      if (mode === TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateDescription(td.file, td.description);
       }
     }
   };
 
-  const onTaskNameInput = (event: any) => {
-    temp.taskName = htmlToMarkdown(event.target.innerHTML);
+  const toogleDisplayMode = (prop: isEditModeKey) => {
+    if (isEditMode[prop]) {
+      isEditMode[prop] = false;
+      isEditMode = isEditMode;
+    }
+  };
+  const toogleEditMode = (prop: isEditModeKey) => {
+    if (!isEditMode[prop]) {
+      isEditMode[prop] = true;
+      isEditMode = isEditMode;
+    }
   };
 
-  const onDescriptionInput = (event: any) => {
-    temp.description = htmlToMarkdown(event.target.innerHTML);
+  const onSubmitInput = (prop: isEditModeKey) => {
+    submitInput();
+    toogleDisplayMode(prop);
   };
 </script>
 
 <div class="main-task-panel">
   <TaskDetailsNavigation plugin={td.plugin} />
   <div class="task-container">
-    <div class="tq-checkbox-wrapper">
+    <div class="tq__checkbox-wrapper">
       <Checkbox bind:checked={td.completed} disabled={false} />
     </div>
-    <div class="task-input-container ">
-      <div
-        class="task-input-name"
+    <div class="task-input__container ">
+      <Editor
+        onEnter={() => onSubmitInput('taskName')}
+        onFocusout={() => onSubmitInput('taskName')}
+        onClick={() => {
+          toogleEditMode('taskName');
+        }}
         placeholder="Task name"
-        autocorrect="false"
-        contenteditable="true"
-        bind:this={taskNameEl}
-        on:input={onTaskNameInput}
-        on:keypress={onEnter}
-        on:focusin={() => {
-          submitInput();
-          isInputEnabled.taskName = true;
-          isInputEnabled = isInputEnabled;
-        }}
-        on:focusout={() => {
-          submitInput();
-          isInputEnabled.taskName = false;
-          isInputEnabled = isInputEnabled;
-        }}
+        showEditor={isEditMode.taskName}
+        bind:displayEl={taskNameEl}
+        bind:text={taskNameDraft}
+        displayContainerId="task-input__name"
+        editContainerId="task-input__name"
       />
-
-      <div
-        class="task-input-description"
+      <Editor
+        onEnter={() => onSubmitInput('description')}
+        onFocusout={() => onSubmitInput('description')}
+        onClick={() => {
+          toogleEditMode('description');
+        }}
         placeholder="Description"
-        autocorrect="false"
-        contenteditable="true"
-        bind:this={descriptionEl}
-        on:input={onDescriptionInput}
-        on:keypress={onEnter}
-        on:focusin={() => {
-          submitInput();
-          isInputEnabled.description = true;
-          isInputEnabled = isInputEnabled;
-        }}
-        on:focusout={() => {
-          submitInput();
-          isInputEnabled.description = false;
-          isInputEnabled = isInputEnabled;
-        }}
+        showEditor={isEditMode.description}
+        bind:displayEl={descriptionEl}
+        bind:text={descriptionDraft}
+        displayContainerId="task-input__description"
+        editContainerId="task-input__description"
       />
     </div>
   </div>
@@ -138,41 +123,17 @@
 </div>
 
 <style>
-  .tq-checkbox-wrapper {
+  .tq__checkbox-wrapper {
     margin-top: 10px;
   }
 
-  .task-input-name {
-    border: none;
-    border-bottom: 1px solid var(--dark2-blue-gray);
-    padding: 8px 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    width: 100%;
-    overflow: hidden;
-    background-color: transparent;
-  }
-
-  .task-input-name::placeholder {
-    border: none;
-    color: var(--dark-blue-gray);
-    font-size: 1rem;
-    font-weight: normal;
-  }
-
-  .task-input-description {
-    border: none;
-    padding: 8px 0;
-    background-color: transparent;
-  }
-
-  .task-input-container {
+  .task-input__container {
     margin: 0 12px;
     margin-bottom: 24px;
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow: hidden
+    overflow: hidden;
   }
 
   .task-container {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import exp from 'constants';
 
-  import { chevronDown } from '../graphics';
+  import { chevronDown } from '../../graphics';
 
   export let showExpansionBtn: boolean;
   export let expanded: boolean;

@@ -1,13 +1,12 @@
+import type { FileName,Task  } from './file-interface'
+import { FilePath as FileName } from './file-interface';
+import { durationFormat_hm,formatDate } from './helpers/util'
 import type TQPlugin from './main'
-import type { Task } from './file-interface'
-import type { TFile } from 'obsidian'
-import { formatDate, durationFormat_hm } from './helpers/util'
-import moment from 'moment'
-import MomentDurationSetup from 'moment-duration-format'
 import { toInteger } from 'lodash'
 import type { Duration } from 'moment'
-import type { FileName } from './file-interface';
-import { FilePath as FileName } from './file-interface';
+import moment from 'moment'
+import MomentDurationSetup from 'moment-duration-format'
+import type { TFile } from 'obsidian'
 MomentDurationSetup(moment)
 
 export class TaskDetails {
@@ -30,20 +29,9 @@ export class TaskDetails {
 
   // Callback for closing TaskDetailsModal
   public close: () => void
-
-  public get cleanedTags (): string[] {
-    return this.cleanTags(this.tags)
-  }
-
-  // Seperate method to leverage svelte reactivity
-  public cleanTags (tags:string): string[] {
-    return tags
-      .split(/[ ]+/)
-      .filter(x => x !== '')
-  }
-
+  
   public get estWorktimeStr (): string {
-    let estWorktimeStr =
+    const estWorktimeStr =
       !this.estWorktime || this.estWorktime.asMinutes() === 0
         ? 'None'
         : `${durationFormat_hm(this.estWorktime)}`
@@ -61,7 +49,7 @@ export class TaskDetails {
       this.close=close
     }
     if (task) {
-      let fm = task.frontmatter
+      const fm = task.frontmatter
       this.due = formatDate(task.due)
       this.repeatConfig = fm.get('repeat')
       this.scheduled = formatDate(task.scheduled)
@@ -72,44 +60,55 @@ export class TaskDetails {
       const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
       this.pomoDuration = moment.duration(pomoLen, 'minutes')
       
-      let estWorklength = fm.get('estimated_worktime')?.minutes
+      const estWorklength = fm.get('estimated_worktime')?.minutes
       
       if (estWorklength) {
         this.estWorktime = moment.duration(estWorklength, 'minutes')
       }
-      let tags:string[]=fm.get('tags')
+      const tags:string[]=fm.get('tags')
       
       if(tags){
         this.tags = tags.join(' ')
       }
 
-      let ta: [{ start: string; end: string }] = fm.get('timer_activity')
+      const ta: [{ start: string; end: string }] = fm.get('timer_activity')
 
       if (ta) {
         this.spentWorktime = moment.duration()
         ta.forEach(a => {
-          let diff = moment(a.end).diff(moment(a.start))
+          const diff = moment(a.end).diff(moment(a.start))
           this.spentWorktime.add(diff, 'milliseconds')
         })
       }
       const subtasks: Task[] = task.subtasks
 
-      for (let subtask of subtasks) {
-        let subtd = new TaskDetails(this.plugin, subtask,close)
+      for (const subtask of subtasks) {
+        const subtd = new TaskDetails(this.plugin, subtask,close)
         this.subtasks.push(subtd)
       }
-
+      
       this.parents = task.parents
       
     }
   }
+  
+  public get cleanedTags (): string[] {
+    return this.cleanTags(this.tags)
+  }
 
-  create = async (): Promise<string> => {
-    let fileName = this.plugin.fileInterface.storeNestedTasks(this)
+  // Seperate method to leverage svelte reactivity
+  public cleanTags (tags:string): string[] {
+    return tags
+      .split(/[ ]+/)
+      .filter(x => x !== '')
+  }
+
+  public create = async (): Promise<string> => {
+    const fileName = this.plugin.fileInterface.storeNestedTasks(this)
 
     if (this.close) {
       this.close()
     }
-    return await fileName
+    return fileName
   }
 }
