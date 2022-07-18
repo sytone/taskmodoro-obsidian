@@ -9,18 +9,12 @@
   export let td: TaskDetails;
   const showPomodoroTaskView = async () => {
     await td.plugin.activatePomodoroTaskView(td);
-    td.close();
-  };
-
-  const viewSource = () => {
-    if (td.file) {
-      let leaf = td.plugin.app.workspace.activeLeaf;
-      if (leaf.getViewState().pinned) {
-        leaf = td.plugin.app.workspace.createLeafBySplit(leaf);
-      }
-      leaf.openFile(td.file);
+    if(td.close){
+      td.close();
     }
   };
+
+
 </script>
 
 {#if showTrailingMenu}
@@ -36,9 +30,6 @@
       plugin={td.plugin}
       close={td.close}
     />
-    <!-- <span class="trailing-menu-item" on:click={viewSource}>
-      {@html externalLink}
-    </span> -->
   </span>
 {/if}
 

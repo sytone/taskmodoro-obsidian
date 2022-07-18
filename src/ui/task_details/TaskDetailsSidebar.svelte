@@ -137,6 +137,7 @@
 
   const updateTagsFm = () => {
     if (mode == TaskDetailsMode.Update) {
+      console.log('tags:',td.tags)
       td.plugin.fileInterface.updateFMProp(td.file, td.cleanedTags, 'tags');
     }
   };

@@ -17,7 +17,6 @@
   let inputEl: HTMLElement;
   let draftValue = value;
   $: {
-    draftValue = value;
     handleDisplay(value);
   }
 
@@ -36,6 +35,7 @@
   };
 
   const onInput = (event: any) => {
+    
     draftValue = event.target.innerText;
   };
 
@@ -48,9 +48,9 @@
   const onKeyup = (event: any) => {
     console.log(event);
     if (event.key === 'Enter') {
-      draftValue = Render.removeNewline(event.target.innerText)
+      draftValue = Render.removeNewline(event.target.innerText);
       onEnter(event);
-    }else{
+    } else {
       draftValue = event.target.innerText;
     }
   };
@@ -63,6 +63,7 @@
   {placeholder}
   bind:this={inputEl}
   on:keyup={onKeyup}
+  on:input={onInput}
   on:focusout={() => {
     console.log('focusout');
     if (value !== draftValue) {

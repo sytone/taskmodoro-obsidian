@@ -1,6 +1,6 @@
 import type { FileName,Task  } from './file-interface'
 import { FilePath as FileName } from './file-interface';
-import { durationFormat_hm,formatDate } from './helpers/util'
+import { durationFormat,formatDate } from './helpers/util'
 import type TQPlugin from './main'
 import { toInteger } from 'lodash'
 import type { Duration } from 'moment'
@@ -34,7 +34,7 @@ export class TaskDetails {
     const estWorktimeStr =
       !this.estWorktime || this.estWorktime.asMinutes() === 0
         ? 'None'
-        : `${durationFormat_hm(this.estWorktime)}`
+        : `${durationFormat(this.estWorktime)}`
     return estWorktimeStr
   }
 

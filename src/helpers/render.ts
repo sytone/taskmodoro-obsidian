@@ -1,21 +1,20 @@
 import { MarkdownRenderer, TFile } from 'obsidian'
+
 import Cursor from './cursor'
+
 export class Render {
 
-  static displayMD = (md: string, el: HTMLElement) => {
-    md=this.mdPostprocessing(md)
-    let offset = Cursor.getCurrentCursorOffset(el)
-    let text = el.innerText.substring(0, offset)
-    let mdOffset = Cursor.getMDCursorOffset(md, text, offset)
-    el.innerHTML = md
-    Cursor.setCurrentCursorPosition(mdOffset, el)
+  public static displayMD = (md: string, el: HTMLElement): void => {
+    const cleanedMD=this.mdPostprocessing(md)
+    el.innerText = cleanedMD
+    Cursor.setCurrentCursorPosition(cleanedMD.length, el)
   }
 
-  static renderMD (md: string, el: HTMLElement, file: TFile=undefined) {
+  public static renderMD (md: string, el: HTMLElement, file: TFile=undefined): void {
     if (!el) return
-    md=this.mdPostprocessing(md)
+    const cleanedMD=this.mdPostprocessing(md)
     const tempEl = createDiv()
-    MarkdownRenderer.renderMarkdown(md, tempEl, file ? file.path : './', null)
+    MarkdownRenderer.renderMarkdown(cleanedMD, tempEl, file ? file.path : './', null)
 
     el.innerHTML =
       tempEl.children.length !== 0
@@ -23,14 +22,15 @@ export class Render {
         : tempEl.innerHTML
   }
 
-  static mdPostprocessing(md:string){
+  public static mdPostprocessing(md:string): string{
     return md.replace(/[ ]{2}/,'\n')
   }
-  static removeLeadingWhitespace(md:string){
+  
+ public static removeLeadingWhitespace(md:string): string{
     return md.replace(/^([ ]+)/,'')
   }
 
-  static removeNewline(md:string){
+  public static removeNewline(md:string): string{
     return md.replace(/([\n]+)/,'')
   }
 }

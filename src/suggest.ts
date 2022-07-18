@@ -1,5 +1,7 @@
-import { createPopper, Instance as PopperInstance } from '@popperjs/core';
 import { App, ISuggestOwner, Scope } from 'obsidian';
+import { Instance as PopperInstance, createPopper } from '@popperjs/core';
+
+import Cursor from './helpers/cursor';
 
 export const wrapAround = (value: number, size: number): number =>
   ((value % size) + size) % size;
@@ -221,13 +223,15 @@ export class StaticSuggest extends TextInputSuggest<string> {
     el.setText(string);
   };
 
-  public selectSuggestion = (string: string): void => {
+  public selectSuggestion = (suggestion: string): void => {
     // Only replace the last word of the input with the selected suggestion
     const startingVal = this.inputEl.innerText;
     const existingValues = startingVal.split(/ +/).slice(0, -1);
-    existingValues.push(string);
-
+    existingValues.push(suggestion);
+    const currOffset = Cursor.getCurrentCursorOffset(this.inputEl)
     this.inputEl.innerText = existingValues.join(' ');
+    const newOffset  = currOffset + suggestion.length
+    Cursor.setCurrentCursorPosition(newOffset,this.inputEl) 
     this.inputEl.trigger('input');
     this.close();
   };

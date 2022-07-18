@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { TaskDetails } from '../../task-details';
-  import { durationFormat_hm } from '../../helpers/util';
+  import { durationFormat } from '../../helpers/util';
   import {
     RepeatPickerModal,
     DatePickerModal,
@@ -17,14 +17,14 @@
   let showWorktimeGroup: boolean;
   let showEstWorktimeGroup: boolean;
   let tagsEl: HTMLElement[] = [];
-  let cleanedTags = td.cleanTags(td.tags)
+  let cleanedTags = td.cleanTags(td.tags);
 
   $: {
     showEstWorktimeGroup = td.estWorktime && td.estWorktime.asMinutes() !== 0;
     let showSpentWorktimeGroup =
       td.spentWorktime && td.spentWorktime.asMinutes() !== 0;
     showWorktimeGroup = showSpentWorktimeGroup || showEstWorktimeGroup;
-    cleanedTags = td.cleanTags(td.tags)
+    cleanedTags = td.cleanTags(td.tags);
     renderTags(cleanedTags);
   }
 
@@ -113,7 +113,7 @@
       <span id="spent-worktime-container" class="prop">
         {@html timer}
         <span class="prop-text" id="spent-worktime"
-          >{durationFormat_hm(td.spentWorktime)}</span
+          >{durationFormat(td.spentWorktime)}</span
         >
       </span>
       {#if showEstWorktimeGroup}
@@ -125,7 +125,7 @@
         >
           {@html timer}
           <span class="prop-text" id="est-worktime"
-            >{durationFormat_hm(td.estWorktime)}</span
+            >{durationFormat(td.estWorktime)}</span
           >
         </span>
       {/if}
@@ -152,11 +152,11 @@
       >
     </span>
   {/if}
-  <!-- {#if cleanedTags.length !== 0}
-    {#each cleanedTags as tag, i (tag)}
+  {#if cleanedTags.length !== 0}
+    {#each cleanedTags as tag, i (tag+i)}
       <span id="task-tag" bind:this={tagsEl[i]} class="prop" />
     {/each}
-  {/if} -->
+  {/if}
 </div>
 
 <style>
@@ -166,29 +166,21 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-   
+    padding-top:2px;
+    row-gap: 8px;
   }
 
-  .props-container:has(.prop){
-    margin-top: -8px;
-  }
-
-  
   .prop {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 8px 8px 0px 8px;
-  }
-
-  .prop > .prop{
     margin: 0px 8px;
   }
 
   .prop > span.prop:first-child {
     margin-left: 0px;
   }
-  
+
   .prop:hover {
     cursor: pointer;
   }
