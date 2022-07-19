@@ -137,7 +137,7 @@
 
   const updateTagsFm = () => {
     if (mode == TaskDetailsMode.Update) {
-      console.log('tags:',td.tags)
+      console.log('tags:', td.tags);
       td.plugin.fileInterface.updateFMProp(td.file, td.cleanedTags, 'tags');
     }
   };
@@ -149,15 +149,15 @@
 
 <div class="task-details-sidebar">
   <span class="sidebar-refs-container">
-    <TimerOpenBtn on:click={showPomodoroTaskView} />
+    {#if mode !== TaskDetailsMode.Create}
+      <TimerOpenBtn on:click={showPomodoroTaskView} />
+    {/if}
     <ViewSourceBtn
       file={td.file}
       classes="external-link-wrapper"
       plugin={td.plugin}
       close={td.close}
-
     />
-    <!-- <span class="external-link-wrapper">{@html externalLink}</span> -->
   </span>
   <div class="sidebar-container">
     <div class="group">

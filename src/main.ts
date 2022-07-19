@@ -1,12 +1,6 @@
+/* eslint-disable simple-import-sort/sort */
 import { FileInterface, Task } from './file-interface'
-import { TaskCache } from "./stores/TaskCache"
-import { buyMeACoffee, paypal } from './graphics'
-import { convertLegacyTask } from './legacy-parser'
-import { TaskDetailsModal } from './modals'
 import { ISettings, settingsWithDefaults } from './settings'
-import { stateFromConfig } from './state'
-import TasksList from './ui/QueryTasksList.svelte'
-import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
 import {
   MarkdownPostProcessorContext,
   MarkdownView,
@@ -15,13 +9,21 @@ import {
   PluginSettingTab,
   Setting,
 } from 'obsidian'
-import { writable } from 'svelte/store'
-import { TimerTaskView } from './timer-task-view'
+import { buyMeACoffee, paypal } from './graphics'
+
 import type { Duration } from 'moment'
-import { TaskDetailsMode } from './enums/component-context'
-import type { TaskDetails } from './task-details';
-import { TaskDetailsNavigation } from './stores/TaskNavigationRecord';
 import SubtasksExpandedState  from './stores/SubtasksExpansionRecord';
+import { TaskCache } from './stores/TaskCache'
+import type { TaskDetails } from './task-details';
+import { TaskDetailsModal } from './modals'
+import { TaskDetailsMode } from './enums/component-context'
+import { TaskDetailsNavigation } from './stores/TaskNavigationRecord';
+import TasksList from './ui/QueryTasksList.svelte'
+import { TimerTaskView } from './timer-task-view'
+import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
+import { convertLegacyTask } from './legacy-parser'
+import { stateFromConfig } from './query-state'
+import { writable } from 'svelte/store'
 
 export default class TQPlugin extends Plugin {
   public settings: ISettings
@@ -104,6 +106,7 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('changed', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
+          console.log('metadata cache changed',file.name)
         }
       }),
     )
@@ -128,34 +131,34 @@ export default class TQPlugin extends Plugin {
       this.markdownCodeBlockProcessor,
     )
 
-    this.registerObsidianProtocolHandler('tq', async params => {
-      if (!params.create) {
-        console.debug('tq: Unknown URL request')
-        console.debug(params)
-        return
-      }
+    // this.registerObsidianProtocolHandler('tq', async params => {
+    //   if (!params.create) {
+    //     console.debug('tq: Unknown URL request')
+    //     console.debug(params)
+    //     return
+    //   }
 
-      if (!params.task) {
-        new Notice('Cannot create a task with no "task" property')
-        return
-      }
-      await this.fileInterface.storeNestedTasks(
-        params.taskName,
-        params.description,
-        params.due,
-        params.scheduled,
-        params.repeat,
-        params.tags ? params.tags.split(',') : [],
-      )
+    //   if (!params.task) {
+    //     new Notice('Cannot create a task with no "task" property')
+    //     return
+    //   }
+    //   await this.fileInterface.storeNestedTasks(
+    //     params.taskName,
+    //     params.description,
+    //     params.due,
+    //     params.scheduled,
+    //     params.repeat,
+    //     params.tags ? params.tags.split(',') : [],
+    //   )
 
-      new Notice('Task created')
-    })
+    //   new Notice('Task created')
+    // })
   }
-  onunload () {
+  public onunload (): void {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
 
-  async activatePomodoroTaskView (td: TaskDetails) {
+  public async activatePomodoroTaskView (td: TaskDetails): Promise<void> {
 
     if (
       this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK).length === 0
@@ -166,10 +169,10 @@ export default class TQPlugin extends Plugin {
       })
     }
 
-    let timerTaskLeaf = this.app.workspace.getLeavesOfType(
+    const timerTaskLeaf = this.app.workspace.getLeavesOfType(
       VIEW_TYPE_TIMER_TASK,
     )[0]
-    let timerTaskView = timerTaskLeaf.view as TimerTaskView
+    const timerTaskView = timerTaskLeaf.view as TimerTaskView
     timerTaskView.td = td
     await timerTaskView.onOpen()
     
@@ -212,53 +215,31 @@ class SettingsTab extends PluginSettingTab {
 
     containerEl.createEl('h2', { text: 'tq Plugin - Settings' })
 
-    new Setting(containerEl)
-      .setName('Tasks Directory')
-      .setDesc('The vault directory in which to store task files')
-      .addText(text => {
-        text.setPlaceholder('$').setValue(this.plugin.settings.TasksDir)
-        text.inputEl.onblur = (e: FocusEvent) => {
-          this.plugin.settings.TasksDir = (e.target as HTMLInputElement).value
-          this.plugin.saveData(this.plugin.settings)
-        }
-      })
+    const setting = new Setting(containerEl)
+    this.addDefaultTaskDir(setting)
 
-    const div = containerEl.createEl('div', {
-      cls: 'tq-donation',
-    })
 
-    const donateText = document.createElement('p')
-    donateText.appendText(
-      'If this plugin adds value for you and you would like to help support ' +
-        'continued development, please use the buttons below:',
-    )
-    div.appendChild(donateText)
-
-    const parser = new DOMParser()
-
-    div.appendChild(
-      createDonateButton(
-        'https://paypal.me/tgrosinger',
-        parser.parseFromString(paypal, 'text/xml').documentElement,
-      ),
-    )
-
-    div.appendChild(
-      createDonateButton(
-        'https://www.buymeacoffee.com/tgrosinger',
-        parser.parseFromString(buyMeACoffee, 'text/xml').documentElement,
-      ),
-    )
   }
-  onunload () {
+  public onunload (): void {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
+  private readonly addDefaultTaskDir = (setting: Setting):void=>{
+    setting.setName('Tasks Directory')
+    .setDesc('The vault directory in which to store task files')
+    .addText(text => {
+      text.setPlaceholder('$').setValue(this.plugin.settings.TasksDir)
+      text.inputEl.onblur = (e: FocusEvent) => {
+        this.plugin.settings.TasksDir = (e.target as HTMLInputElement).value
+        this.plugin.saveData(this.plugin.settings)
+      }
+    })
+  } 
 }
 
-const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {
-  const a = document.createElement('a')
-  a.setAttribute('href', link)
-  a.addClass('tq-donate-button')
-  a.appendChild(img)
-  return a
-}
+// const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {
+//   const a = document.createElement('a')
+//   a.setAttribute('href', link)
+//   a.addClass('tq-donate-button')
+//   a.appendChild(img)
+//   return a
+// }

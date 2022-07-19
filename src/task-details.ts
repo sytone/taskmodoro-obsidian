@@ -22,8 +22,8 @@ export class TaskDetails {
   public scheduled = ''
   public tags = ''
   public pomoDuration = moment.duration(30, 'minutes')
+  public spentWorktime= moment.duration(0,'seconds')
   public estWorktime: Duration
-  public spentWorktime: Duration
   public subtasks: TaskDetails[] = []
   public parents: FileName[]=[]
 

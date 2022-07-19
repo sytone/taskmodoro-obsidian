@@ -1,13 +1,13 @@
-import { Frontmatter } from '../parser'
+import { App, CachedMetadata, TFile } from 'obsidian'
+import { FileName, FilePath, Task, modifyFileContents } from '../file-interface'
+import { Frontmatter, Parser } from '../parser'
+import { Result, err, ok } from 'neverthrow'
+import { Writable, get, writable } from 'svelte/store'
+
 import TQPlugin from '../main'
-import { err, ok, Result } from 'neverthrow'
-import { App, TFile } from 'obsidian'
-import { Writable, writable, get } from 'svelte/store'
 import { TaskDetails } from '../task-details'
-import { FilePath, Task, modifyFileContents, FileName } from '../file-interface'
-import { Parser } from '../parser'
+import { match } from 'assert'
 import moment from 'moment'
-import { CachedMetadata } from 'obsidian'
 
 /**
  * TaskCache is the main interface for querying and modifying tasks. It
@@ -67,18 +67,14 @@ export class TaskCache {
   public readonly handleTaskModified = async (file: TFile): Promise<void> => {
     ;(await this.loadTask(file)).match(
       newTask => {
-        // console.log(
-        //   'task-loaded:',
-        //   newTask.taskName,
-        //   'scheduled:',
-        //   newTask.scheduled,
-        // )
+        console.log('task-loaded:', newTask.taskName)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
             return tasks
           },
         )
+        this.updateParentsCache(newTask)
       },
       e => {
         console.error(e)
@@ -86,28 +82,25 @@ export class TaskCache {
     )
   }
 
-  // We reload parents data in svelte store to represent change in subtask
-  public reloadParent = (file: TFile) => {
-    
-
-      let currTask = get(this.tasks)[file.path]
-    if (!currTask.parents) return
-
-    for (let parentName of currTask.parents) {
-
-      const now = moment(new Date()).toISOString()
-      
-      let dir = this.plugin.fileInterface.tasksDir
-      let path = `${dir}/${parentName}`
-      let parentTask = get(this.tasks)[path]
-      this.plugin.fileInterface.updateFMProp(
-        parentTask.file,
-        now,
-        'updated_at',
-        false,
-        false,
-        )
-      this.reloadParent(parentTask.file)
+  public updateParentsCache = (task: Task): void => {
+    if (!task || !task.parents) return
+    for (const parentName of task.parents) {
+      const dir = this.plugin.fileInterface.tasksDir
+      const parentPath = `${dir}/${parentName}`
+      this.tasks.update(
+        (tasks): Record<FilePath, Task> => {
+          const parentTask = tasks[parentPath]
+          if(!parentTask) return tasks
+          const subtaskIndex = parentTask.subtasks.findIndex(
+            subtask => task.file.name === subtask.file.name,
+          )
+          parentTask.subtasks[subtaskIndex] = task
+          tasks[parentPath]=parentTask
+          
+          return tasks
+        },
+      )
+      this.updateParentsCache(get(this.tasks)[parentPath])
     }
   }
 
@@ -126,12 +119,12 @@ export class TaskCache {
     if (!fileNames) return []
     const tasksDir = this.plugin.fileInterface.tasksDir
     const subtasks: Task[] = []
-    for (let fileName of fileNames) {
+    for (const fileName of fileNames) {
       const path = `${tasksDir}/${fileName}`
 
       const file = this.app.metadataCache.getFirstLinkpathDest(path, '/')
       if (file) {
-        let task = await this.loadTask(file)
+        const task = await this.loadTask(file)
         task.match(
           t => {
             subtasks.push(t)
@@ -145,13 +138,11 @@ export class TaskCache {
     return subtasks
   }
 
-  public isTaskAbsent = (metadata: CachedMetadata) => {
-    return (
-      !metadata.listItems ||
-      metadata.listItems.length < 1 ||
-      metadata.listItems[0].task === undefined
-    )
-  }
+  public isTaskAbsent = (metadata: CachedMetadata): boolean =>
+    !metadata.listItems ||
+    metadata.listItems.length < 1 ||
+    metadata.listItems[0].task === undefined
+
   private readonly loadTask = async (
     file: TFile,
   ): Promise<Result<Task, string>> => {
@@ -169,13 +160,14 @@ export class TaskCache {
       frontmatter.get('subtasks'),
     )
     const parents = frontmatter.get('parents')
+    const taskData = Parser.getTaskData(lines)
     return ok({
       file,
       md: contents,
       frontmatter,
-      taskName: Parser.getTaskName(lines, metadata),
+      taskName: taskData.taskName,
       description: Parser.getDescription(lines),
-      completed: Parser.isTaskCompleted(metadata),
+      completed: taskData.isTaskCompleted,
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
       subtasks,

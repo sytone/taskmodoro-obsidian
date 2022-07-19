@@ -1,43 +1,52 @@
 import { dump, load } from 'js-yaml'
-import RRule from 'rrule'
-import { FileInterface } from './file-interface'
 
-import moment from 'moment'
-import { formatDate } from './helpers/util'
 import { CachedMetadata } from 'obsidian'
+import { FileInterface } from './file-interface'
+import RRule from 'rrule'
+import { formatDate } from './helpers/util'
+import moment from 'moment'
 
 type Moment = moment.Moment
 
 export class Parser {
-  public static readonly getTaskName = (
+  public static readonly taskRegex = /- \[[xX ]\] /
+  
+  public static readonly getTaskData = (
     content: string[],
-    metadata: CachedMetadata,
-  ): string => {
-    const start = metadata.listItems[0].position.start.line
-    return content[start].replace(/- \[[xX ]\] /, '')
+  ): { isTaskCompleted: boolean; taskName: string } => {
+    // We do it manually rather than using CachedMetadata because of the edge cases
+    // where cache is not updating in time and causing bugs in task name fetch
+    for(const line of content){
+      const taskMatch = line.match(this.taskRegex)
+      if(taskMatch && taskMatch[0]){
+        const isTaskCompleted= ['x', 'X'].contains(line)
+        const taskName= line.replace(this.taskRegex,'')
+        return {isTaskCompleted, taskName}
+      }
+    }
+
+    return {isTaskCompleted: false,taskName: 'undefined'}
   }
 
-  public static readonly isTaskCompleted = (
-    metadata: CachedMetadata,
-  ): boolean => {
-    return ['x', 'X'].contains(metadata.listItems[0].task)
-  }
+  // public static readonly isTaskCompleted = (
+  //   metadata: CachedMetadata,
+  // ): boolean => ['x', 'X'].contains(metadata.listItems[0].task)
 
   public static readonly replaceTaskName = (
     content: string[],
     taskName: string[],
     metadata: CachedMetadata,
-  ) => {
+  ): string[] => {
     const start = metadata.listItems[0].position.start.line
     const end = metadata.listItems[0].position.end.line
     let prefix = ''
-    if(this.isTaskCompleted(metadata)){
-      prefix='- [x] '
-    }else{
-      prefix='- [ ] '
+    if (this.isTaskCompleted(metadata)) {
+      prefix = '- [x] '
+    } else {
+      prefix = '- [ ] '
     }
-    taskName[0]=prefix+taskName[0]
-    const deleteCount = end+1 - start
+    taskName[0] = prefix + taskName[0]
+    const deleteCount = end + 1 - start
     content.splice(start, deleteCount, ...taskName)
     return content
   }
@@ -52,8 +61,8 @@ export class Parser {
     const descEnd = content.findIndex(line =>
       line.includes(FileInterface.descEndToken),
     )
-    const deleteCount = descEnd-1 - descStart
-    if (descStart == -1 || descEnd == -1) return
+    const deleteCount = descEnd - 1 - descStart
+    if (descStart === -1 || descEnd === -1) return
 
     content.splice(descStart + 1, deleteCount, ...description)
     return content
@@ -66,7 +75,7 @@ export class Parser {
     const descEnd = content.findIndex(line =>
       line.includes(FileInterface.descEndToken),
     )
-    if (descStart == -1 || descEnd == -1) return ''
+    if (descStart === -1 || descEnd === -1) return ''
     const descLines = content.slice(descStart + 1, descEnd)
     const description = descLines.join('\n')
     return description
@@ -109,11 +118,8 @@ export class Frontmatter {
     (this.contents[key] = value)
 
   public readonly overwrite = (): void => {
-    const replacer = (k: string, v: any): any => {
-      return moment.isMoment(v)
-        ? (v as Moment).endOf('day').format('YYYY-MM-DD')
-        : v
-    }
+    const replacer = (k: string, v: any): any =>
+      moment.isMoment(v) ? v.endOf('day').format('YYYY-MM-DD') : v
 
     const fmLines = dump(this.contents, { replacer }).trim()
 

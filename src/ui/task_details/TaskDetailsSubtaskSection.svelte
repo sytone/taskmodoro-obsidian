@@ -1,13 +1,10 @@
 <script lang="ts">
-  import ChevronBtn from '../task_tile/SubtasksExpansionBtn.svelte';
-
   import { TaskDetails } from '../../task-details';
   import { TaskDetailsMode } from '../../enums/component-context';
-  import { chevronDown, plus } from '../../graphics';
   import TaskTile from '../task_tile/TaskTile.svelte';
   import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
-  import { TFile } from 'obsidian';
-import SubtasksExpansionBtn from '../task_tile/SubtasksExpansionBtn.svelte';
+  import type { TFile } from 'obsidian';
+  import SubtasksExpansionBtn from '../task_tile/SubtasksExpansionBtn.svelte';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 

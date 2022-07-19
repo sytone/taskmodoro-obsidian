@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SharedState, filtersFromState } from '../state';
+  import { SharedState, filtersFromState } from '../query-state';
   import type TQPlugin from '../main';
   import { CalcTaskScore, Task } from '../file-interface';
   import TaskTile from './task_tile/TaskTile.svelte';
@@ -86,12 +86,13 @@
   let tasks = plugin.taskCache.tasks;
   $: tasksGrouped = getTasks($state, $tasks);
   $: sortedKeys = getSortedKeys($state, tasksGrouped);
+  $: console.log('tasksGrouped:',tasksGrouped)
 </script>
 
 <div class="tq">
   <div class='query-tasks-list'>
     {#each sortedKeys as key (key)}
-      {#each tasksGrouped[key] as task (task.taskName)}
+      {#each tasksGrouped[key] as task (task.file.path)}
         <TaskTile {view} td={new TaskDetails(plugin,task)} parentComponent={TaskListTileParent.TasksList} />
       {/each}
     {/each}

@@ -1,7 +1,8 @@
-import type { Task } from '../src/file-interface';
-import { Frontmatter } from '../src/parser';
-import { filtersFromState, stateFromConfig } from '../src/state';
 import { every, filter } from 'lodash';
+import { filtersFromState, stateFromConfig } from '../src/query-state';
+
+import { Frontmatter } from '../src/parser';
+import type { Task } from '../src/file-interface';
 import moment from 'moment';
 
 const makeTask = (lineIdx: number, md: string[]): Task => {

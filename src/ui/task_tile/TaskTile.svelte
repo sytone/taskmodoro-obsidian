@@ -108,24 +108,24 @@
 <div class="task-tile-wrapper">
   <div class="task-tile">
     <div
-    class="header"
-    on:mouseover={headerMouseOver}
+      class="header"
+      on:mouseover={headerMouseOver}
       on:focus={headerMouseOver}
       on:mouseleave={headerMouseLeave}
-      >
+    >
       <span class="leading">
         <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
         <Checkbox
           context="listTile"
           on:toggle={toggleChecked}
           checked={td.completed}
-          />
-        </span>
-        <div class="header-content">
+        />
+      </span>
+      <div class="header-content">
         <div
-        on:click={openTaskDetails}
-        class="task-title"
-        bind:this={taskNameEl}
+          on:click={openTaskDetails}
+          class="task-title"
+          bind:this={taskNameEl}
         />
         {#if parentComponent != TaskListTileParent.TimerTaskView}
           <TaskTileProps bind:td />
@@ -138,10 +138,10 @@
       />
     </div>
     <div class="nested-subtasks-list {!expanded ? 'show-transition' : ''}">
-      {#if expanded && parentComponent!== TaskTileParent.TimerTaskView}
-      {#each td.subtasks as subtask (subtask.taskName)}
-      <svelte:self
-      parentComponent={TaskTileParent.TaskDetailsMainPanel}
+      {#if expanded && parentComponent !== TaskTileParent.TimerTaskView}
+        {#each td.subtasks as subtask (subtask.taskName)}
+          <svelte:self
+            parentComponent={TaskTileParent.TaskDetailsMainPanel}
             bind:td={subtask}
             view={null}
           />
@@ -150,29 +150,8 @@
     </div>
   </div>
 </div>
-  
+
 <style>
-  .task-tile-wrapper{
-    position:relative
-  }
-  .show-transition {
-    transform: translateY(-100px);
-    opacity: 0;
-  }
-
-  .nested-subtasks-list {
-    transition: all 0.1s cubic-bezier(0.02, 0.01, 0.47, 1);
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .task-tile {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    /* position:relative */
-  }
 
   :global(.subtasks-list .task-tile) {
     margin: 8px 0;
@@ -180,17 +159,17 @@
     font-size: 1.25rem;
     font-weight: 700;
   }
-  
+
   :global(.subtasks-list .task-title) {
     margin: 8px 0;
     padding-right: 16px;
     background-color: var(--background-nav);
   }
-  
+
   :global(.subtasks-list .leading) {
     margin-top: 2px;
   }
-  
+
   :global(.main-task-panel .subtasks-list .header-content) {
     margin-left: 4px;
   }
@@ -229,7 +208,6 @@
   }
 
   :global(.query-tasks-list .task-tile .nested-subtasks-list .task-tile) {
-    
     padding: 0px 0px 0px 8px;
     margin: 0px 0;
   }
@@ -242,8 +220,21 @@
     padding-right: 24px;
   }
 
+
+  .show-transition {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+  .nested-subtasks-list {
+    transition: all 0.1s cubic-bezier(0.02, 0.01, 0.47, 1);
+    transform: translateY(0);
+    opacity: 1;
+  }
+
   .header-content {
     overflow: hidden;
+    width: 100%;
   }
 
   .leading {
@@ -252,8 +243,16 @@
     align-items: flex-start;
   }
 
-  .task-title:hover {
-    cursor: pointer;
+  .task-tile-wrapper {
+    position: relative;
+  }
+  
+  .task-tile {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* position:relative */
   }
 
   .task-tile > .header {
@@ -261,10 +260,15 @@
     flex-direction: row;
     align-items: flex-start;
   }
+  
+  .task-title:hover {
+    cursor: pointer;
+  }
 
   .task-title {
     display: inline-block;
     max-width: 100%;
+    min-height: 1rem;
     width: 100%;
     margin: 0 8px;
     font-size: 1.25rem;

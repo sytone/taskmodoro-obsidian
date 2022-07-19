@@ -14,16 +14,16 @@
   import { Render } from '../../helpers/render';
   export let td: TaskDetails;
 
-  let showWorktimeGroup: boolean;
-  let showEstWorktimeGroup: boolean;
+  let showWorktimeProp: boolean;
+  let showEstWorktimeProp: boolean;
   let tagsEl: HTMLElement[] = [];
   let cleanedTags = td.cleanTags(td.tags);
 
   $: {
-    showEstWorktimeGroup = td.estWorktime && td.estWorktime.asMinutes() !== 0;
-    let showSpentWorktimeGroup =
+    showEstWorktimeProp = td.estWorktime && td.estWorktime.asMinutes() !== 0;
+    let showSpentWorktimeProp =
       td.spentWorktime && td.spentWorktime.asMinutes() !== 0;
-    showWorktimeGroup = showSpentWorktimeGroup || showEstWorktimeGroup;
+    showWorktimeProp = showSpentWorktimeProp || showEstWorktimeProp;
     cleanedTags = td.cleanTags(td.tags);
     renderTags(cleanedTags);
   }
@@ -108,7 +108,7 @@
 </script>
 
 <div class="props-container">
-  {#if showWorktimeGroup}
+  {#if showWorktimeProp}
     <span class="prop">
       <span id="spent-worktime-container" class="prop">
         {@html timer}
@@ -116,7 +116,7 @@
           >{durationFormat(td.spentWorktime)}</span
         >
       </span>
-      {#if showEstWorktimeGroup}
+      {#if showEstWorktimeProp}
         <span id="worktime-seperator"> / </span>
         <span
           on:click={showEstWorktimePicker}
@@ -167,6 +167,7 @@
     flex-wrap: wrap;
     align-items: flex-start;
     padding-top:2px;
+    padding-bottom:4px;
     row-gap: 8px;
   }
 

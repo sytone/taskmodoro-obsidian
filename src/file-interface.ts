@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { App, Notice, TAbstractFile, TFile, Vault } from 'obsidian'
 import type { Duration, Moment } from 'moment'
 import {
@@ -64,11 +65,11 @@ export const CalcTaskScore = (task: Task): number => {
 export type FilePath = string
 export type FileName = string
 export class FileInterface {
-  private readonly plugin: TQPlugin
-  private readonly app: App
-  public readonly tasksDir: string
   public static readonly descStartToken = '<!---DESC_START--->'
   public static readonly descEndToken = '<!---DESC_END--->'
+  public readonly tasksDir: string
+  private readonly plugin: TQPlugin
+  private readonly app: App
 
   public constructor (plugin: TQPlugin, app: App) {
     this.plugin = plugin
@@ -96,7 +97,7 @@ export class FileInterface {
     file: TFile,
     start: Moment,
     end: Moment,
-  ) => {
+  ): void => {
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
 
@@ -146,24 +147,11 @@ export class FileInterface {
 
       frontmatter.set(propName, value)
       frontmatter.overwrite()
-      if(reloadParent){
-        this.plugin.taskCache.reloadParent(file)
-      }
       return true
     })
 
-  private readonly appendValue = (propName: string,value: any,frontmatter:Frontmatter)=> {
-    const fmArr = frontmatter.get(propName)
-    if (!fmArr) {
-      value = [value]
-    }
-    if (fmArr && isArrayLike(fmArr)) {
-      value = [...fmArr, value]
-    }
-    return value
-  }
 
-  public readonly updateTaskName = async (file: TFile, taskName: string) => {
+  public readonly updateTaskName = async (file: TFile, taskName: string): Promise<void> => {
     const metadata = this.app.metadataCache.getFileCache(file)
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
@@ -171,20 +159,18 @@ export class FileInterface {
     contentLines = Parser.replaceTaskName(contentLines, taskNameLines, metadata)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
-    this.plugin.taskCache.reloadParent(file)
   }
 
   public readonly updateDescription = async (
     file: TFile,
     description: string,
-  ) => {
+  ): Promise<void> => {
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
     const descLines = description.split('\n')
     contentLines = Parser.replaceDescription(contentLines, descLines)
     content = contentLines.join('\n')
     this.app.vault.modify(file, content)
-    this.plugin.taskCache.reloadParent(file)
   }
 
   /**
@@ -235,11 +221,14 @@ export class FileInterface {
     td: TaskDetails,
   ): Promise<string> => {
     const subtasksFileNames: string[] = []
+    
+    // First we store subtasks recursively and get their file names 
     for (const subtask of td.subtasks) {
       const fileName = await this.storeNestedTasks(subtask)
       subtasksFileNames.push(fileName)
     }
 
+    // Then we store current task
     const currTaskPath = await this.storeNewTask(
       td.taskName,
       td.description,
@@ -252,6 +241,7 @@ export class FileInterface {
       subtasksFileNames,
     )
 
+    // Update all subtasks frontmatter `parents` property to current task
     for (const fileName of subtasksFileNames) {
       const subtaskFile = this.app.metadataCache.getFirstLinkpathDest(
         `${this.tasksDir}/${fileName}`,
@@ -300,6 +290,17 @@ export class FileInterface {
     return fileName
   }
 
+  private readonly appendValue = (propName: string,value: any,frontmatter:Frontmatter): any=> {
+    const fmArr = frontmatter.get(propName)
+    if (!fmArr) {
+      value = [value]
+    }
+    if (fmArr && isArrayLike(fmArr)) {
+      value = [...fmArr, value]
+    }
+    return value
+  }
+  
   /**
    * @return YAML frontmatter
    */
