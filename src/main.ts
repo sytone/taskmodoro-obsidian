@@ -11,13 +11,13 @@ import {
 } from 'obsidian'
 import { buyMeACoffee, paypal } from './graphics'
 
-import type { Duration } from 'moment'
-import SubtasksExpandedState  from './stores/SubtasksExpansionRecord';
+import { Duration } from 'moment'
+import SubtasksExpandedState from './stores/SubtasksExpansionRecord'
 import { TaskCache } from './stores/TaskCache'
-import type { TaskDetails } from './task-details';
+import { TaskDetails } from './task-details'
 import { TaskDetailsModal } from './modals'
 import { TaskDetailsMode } from './enums/component-context'
-import { TaskDetailsNavigation } from './stores/TaskNavigationRecord';
+import { TaskDetailsNavigation } from './stores/TaskNavigationRecord'
 import TasksList from './ui/QueryTasksList.svelte'
 import { TimerTaskView } from './timer-task-view'
 import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
@@ -47,7 +47,7 @@ export default class TQPlugin extends Plugin {
     )
 
     this.addRibbonIcon('checkbox-glyph', 'tq', () => {
-      new TaskDetailsModal(this,TaskDetailsMode.Create).open()
+      new TaskDetailsModal(this, TaskDetailsMode.Create).open()
     })
 
     // TODO: If triggered from a daily note, use that as the due date default
@@ -55,7 +55,7 @@ export default class TQPlugin extends Plugin {
       id: 'create-task-modal',
       name: 'Create Task',
       callback: () => {
-        new TaskDetailsModal(this,TaskDetailsMode.Create).open()
+        new TaskDetailsModal(this, TaskDetailsMode.Create).open()
       },
     })
 
@@ -106,7 +106,7 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('changed', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
-          console.log('metadata cache changed',file.name)
+          console.log('metadata cache changed', file.name)
         }
       }),
     )
@@ -159,10 +159,7 @@ export default class TQPlugin extends Plugin {
   }
 
   public async activatePomodoroTaskView (td: TaskDetails): Promise<void> {
-
-    if (
-      this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK).length === 0
-    ) {
+    if (this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK).length === 0) {
       await this.app.workspace.getRightLeaf(false).setViewState({
         type: VIEW_TYPE_TIMER_TASK,
         active: true,
@@ -175,7 +172,7 @@ export default class TQPlugin extends Plugin {
     const timerTaskView = timerTaskLeaf.view as TimerTaskView
     timerTaskView.td = td
     await timerTaskView.onOpen()
-    
+
     this.app.workspace.revealLeaf(
       this.app.workspace.getLeavesOfType(VIEW_TYPE_TIMER_TASK)[0],
     )
@@ -215,25 +212,41 @@ class SettingsTab extends PluginSettingTab {
 
     containerEl.createEl('h2', { text: 'tq Plugin - Settings' })
 
-    const setting = new Setting(containerEl)
-    this.addDefaultTaskDir(setting)
-
-
+    this.addDefaultTaskDir(new Setting(containerEl))
+    this.addRootTaskDefaultTag(new Setting(containerEl))
   }
+
   public onunload (): void {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMER_TASK)
   }
-  private readonly addDefaultTaskDir = (setting: Setting):void=>{
-    setting.setName('Tasks Directory')
-    .setDesc('The vault directory in which to store task files')
-    .addText(text => {
-      text.setPlaceholder('$').setValue(this.plugin.settings.TasksDir)
-      text.inputEl.onblur = (e: FocusEvent) => {
-        this.plugin.settings.TasksDir = (e.target as HTMLInputElement).value
-        this.plugin.saveData(this.plugin.settings)
-      }
-    })
-  } 
+
+  private readonly addRootTaskDefaultTag = (setting: Setting): void => {
+    setting
+      .setName('Root tasks tags')
+      .setDesc('Tags that will be included in all root (without parent) tasks')
+      .addText(text => {
+        text
+          .setPlaceholder('#tag1 #tag2')
+          .setValue(this.plugin.settings.RootTasksTags)
+        text.inputEl.onblur = (e: FocusEvent) => {
+          this.plugin.settings.RootTasksTags = (e.target as HTMLInputElement).value
+          this.plugin.saveData(this.plugin.settings)
+        }
+      })
+  }
+  
+  private readonly addDefaultTaskDir = (setting: Setting): void => {
+    setting
+      .setName('Tasks Directory')
+      .setDesc('The vault directory in which to store task files')
+      .addText(text => {
+        text.setPlaceholder('$').setValue(this.plugin.settings.TasksDir)
+        text.inputEl.onblur = (e: FocusEvent) => {
+          this.plugin.settings.TasksDir = (e.target as HTMLInputElement).value
+          this.plugin.saveData(this.plugin.settings)
+        }
+      })
+  }
 }
 
 // const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {

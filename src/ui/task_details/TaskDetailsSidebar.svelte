@@ -14,6 +14,7 @@
   import TextSuggest from '../TextSuggest.svelte';
   import TimerOpenBtn from '../TimerOpenBtn.svelte';
   import ViewSourceBtn from './../ViewSourceBtn.svelte';
+import { onMount } from 'svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -22,6 +23,18 @@
   let isCreateBtnEnabled = true;
   $: {
     isCreateBtnEnabled = td.taskName != '';
+  }
+
+  onMount(()=>{
+    if(mode===TaskDetailsMode.Create){
+      if(td.parents.length === 0){
+          td.tags = td.plugin.settings.RootTasksTags + td.tags
+        }
+    }
+  })
+
+  const addDefaultRootTaskTags = ()=>{
+
   }
 
   const showDueDatePicker = () => {

@@ -68,7 +68,7 @@ export class TaskDetails {
       const tags:string[]=fm.get('tags')
       
       if(tags){
-        this.tags = tags.join(' ')
+        this.tags += tags.join(' ')
       }
 
       const ta: [{ start: string; end: string }] = fm.get('timer_activity')
