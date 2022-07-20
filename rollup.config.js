@@ -1,8 +1,9 @@
-import svelte from 'rollup-plugin-svelte';
 import autoPreprocess from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import svelte from 'rollup-plugin-svelte';
+import typescript from '@rollup/plugin-typescript';
+import url from '@rollup/plugin-url'
 
 const isProd = process.env.BUILD === 'production';
 
@@ -25,6 +26,11 @@ export default {
     nodeResolve({
       browser: true,
       dedupe: ['svelte'],
+    }),
+    url({
+      fileName: '[name][extname]',
+      include: ['**/*.mp3'],
+      limit: 100000
     }),
     commonjs({
       include: 'node_modules/**',

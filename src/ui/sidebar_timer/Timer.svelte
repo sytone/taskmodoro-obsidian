@@ -7,9 +7,8 @@
   import type { TFile } from 'obsidian';
   import type TQPlugin from '../../main';
   MomentDurationSetup(moment);
-  import { init } from 'svelte/internal';
   import type { Duration } from 'moment';
-
+  import PomodoroCompletionSound from '../../../resources/sfx/pomodoro-completion.mp3'
   import {
     timerMarker,
     circledPause,
@@ -31,6 +30,11 @@
   let startedAt: Moment;
   let timer: NodeJS.Timer;
 
+  const playPomodoroCompetionSound = ()=>{
+    const audio = new Audio(PomodoroCompletionSound)
+    audio.play()
+  }
+
   const start = (): void => {
     state = TimerState.ONGOING;
     startedAt = moment(new Date());
@@ -38,11 +42,13 @@
     
     timer = setInterval(() => {
       if (duration.asSeconds() == 0) {
+        playPomodoroCompetionSound()
         stop();
+      }else {
+        duration = duration.subtract(1, 'second');
+        activityDur = activityDur.add(1, 'second');
+        markers = markers;
       }
-      duration = duration.subtract(1, 'second');
-      activityDur = activityDur.add(1, 'second');
-      markers = markers;
     }, 1000);
   };
 
@@ -72,8 +78,9 @@
     
     state = TimerState.INITIALIZED;
 
-    duration = initialDuration.clone();
     clearInterval(timer);
+    duration = initialDuration.clone();
+    // console.log(duration.asSeconds())
   };
 
   const setTimerActivity = () => {
@@ -86,6 +93,7 @@
   };
 
 $:  durationStr = duration.asSeconds() === 0 ? '0:00' : duration.format()
+$: console.log(duration.asSeconds())
 </script>
 
 

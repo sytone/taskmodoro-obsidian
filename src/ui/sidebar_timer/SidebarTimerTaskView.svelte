@@ -19,7 +19,7 @@
       parentComponent={TaskListTileParent.TimerTaskView}
     />
   </div>
-  <Timer file={td.file} {plugin} initialDuration={td.pomoDuration} />
+  <Timer file={td.file} {plugin} initialDuration={moment.duration(5,'seconds')} />
 </div>
 
 <style>

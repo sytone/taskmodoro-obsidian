@@ -16,7 +16,7 @@
   import type { Task } from '../../file-interface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
   import { Render } from '../../helpers/render';
-
+  import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3'
   type Moment = moment.Moment;
 
   export let view: Component;
@@ -45,6 +45,10 @@
   });
 
   const toggleChecked = () => {
+    if(!td.completed){
+      const audio = new Audio(TaskCompletionSound)
+      audio.play()
+    }
     td.completed = !td.completed;
     if (td.file) {
       td.plugin.taskCache.toggleChecked(td);
