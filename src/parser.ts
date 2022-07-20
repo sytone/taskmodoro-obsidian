@@ -28,10 +28,6 @@ export class Parser {
     return {isTaskCompleted: false,taskName: 'undefined'}
   }
 
-  // public static readonly isTaskCompleted = (
-  //   metadata: CachedMetadata,
-  // ): boolean => ['x', 'X'].contains(metadata.listItems[0].task)
-
   public static readonly replaceTaskName = (
     content: string[],
     taskName: string[],
@@ -40,7 +36,8 @@ export class Parser {
     const start = metadata.listItems[0].position.start.line
     const end = metadata.listItems[0].position.end.line
     let prefix = ''
-    if (this.isTaskCompleted(metadata)) {
+    const isTaskCompleted = ['x', 'X'].contains(metadata.listItems[0].task)
+    if (isTaskCompleted) {
       prefix = '- [x] '
     } else {
       prefix = '- [ ] '

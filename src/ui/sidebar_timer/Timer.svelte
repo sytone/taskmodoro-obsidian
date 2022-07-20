@@ -11,7 +11,7 @@
   import type { Duration } from 'moment';
 
   import {
-    timerLeaf,
+    timerMarker,
     circledPause,
     circledPlay,
     circledStop,
@@ -21,9 +21,9 @@
   export let plugin: TQPlugin;
   export let file: TFile;
 
-  let leavesCnt = 16;
-  let leaves = Array(leavesCnt);
-  const rotateVar = (i: number) => `--rotate: ${(i * 360) / leavesCnt}deg;`;
+  let markerCnt = 16;
+  let markers = Array(markerCnt);
+  const rotateVar = (i: number) => `--rotate: ${(i * 360) / markerCnt}deg;`;
 
   let duration = initialDuration.clone();
   let activityDur: Duration;
@@ -42,18 +42,18 @@
       }
       duration = duration.subtract(1, 'second');
       activityDur = activityDur.add(1, 'second');
-      leaves = leaves;
+      markers = markers;
     }, 1000);
   };
 
-  const isLeafFilled = (leafIndex: number): boolean => {
-    let leafDuration = initialDuration.asSeconds() / leavesCnt;
+  const isMarkerFilled = (markerIndex: number): boolean => {
+    let markerDuration = initialDuration.asSeconds() / markerCnt;
     let durFromInitial = initialDuration
       .clone()
       .subtract(duration.asSeconds(), 'seconds')
       .asSeconds();
-    let currLeafUpperBound = (leafIndex + 1) * leafDuration;
-    if (currLeafUpperBound <= durFromInitial) {
+    let currMarkerUpperBound = (markerIndex + 1) * markerDuration;
+    if (currMarkerUpperBound <= durFromInitial) {
       return true;
     }
     return false;
@@ -85,24 +85,26 @@
     );
   };
 
+$:  durationStr = duration.asSeconds() === 0 ? '0:00' : duration.format()
 </script>
+
 
 <div class="timer">
   <div class="timer-container">
-    {#each leaves as _, i (i)}
-      <span style="{rotateVar(i)} " class="timer-leaf">
-        {#if isLeafFilled(i)}
-          <span class="filled-timer-leaf">
-            {@html timerLeaf}
+    {#each markers as _, i (i)}
+      <span style="{rotateVar(i)} " class="timer-marker">
+        {#if isMarkerFilled(i)}
+          <span class="filled-timer-marker">
+            {@html timerMarker}
           </span>
         {:else}
-          <span class="dashed-timer-leaf">
-            {@html timerLeaf}
+          <span class="dashed-timer-marker">
+            {@html timerMarker}
           </span>
         {/if}
       </span>
     {/each}
-    <div class="timer-runtime">{duration.format()}</div>
+    <div class="timer-runtime">{durationStr}</div>
   </div>
 </div>
 <div class="timer-actions-container">
@@ -143,28 +145,28 @@
     width: 48px;
   }
 
-  :global(.dashed-timer-leaf > svg) {
+  :global(.dashed-timer-marker > svg) {
     width: 16px;
     stroke-width: 8;
     stroke: #efe8e8;
   }
 
-  :global(.dashed-timer-leaf > path) {
+  :global(.dashed-timer-marker > path) {
     stroke-dasharray: 16;
   }
 
-  :global(.filled-timer-leaf > svg) {
+  :global(.filled-timer-marker > svg) {
     width: 16px;
     stroke-width: none;
     stroke: none;
     fill: #efe8e8;
   }
 
-  :global(.filled-timer-leaf > path) {
+  :global(.filled-timer-marker > path) {
     stroke-dasharray: none;
   }
 
-  .timer-leaf {
+  .timer-marker {
     display: flex;
     flex-direction: row;
     justify-content: center;

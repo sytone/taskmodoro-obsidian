@@ -46,7 +46,6 @@
 
   const toggleChecked = () => {
     td.completed = !td.completed;
-    td = td;
     if (td.file) {
       td.plugin.taskCache.toggleChecked(td);
     }
