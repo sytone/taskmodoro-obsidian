@@ -4,7 +4,7 @@
   import type { Duration } from 'moment';
   import { TaskListTileParent } from '../../enums/component-context';
   import TaskListTile from '../task_tile/TaskTile.svelte';
-  import Timer from './Timer.svelte';
+  import TimerView from './TimerView.svelte';
   import moment from 'moment';
   import type { TaskDetails } from 'src/task-details';
   export let td: TaskDetails;
@@ -19,7 +19,7 @@
       parentComponent={TaskListTileParent.TimerTaskView}
     />
   </div>
-  <Timer file={td.file} {plugin} initialDuration={moment.duration(5,'seconds')} />
+  <TimerView file={td.file} {plugin} initialDuration={td.pomoDuration} />
 </div>
 
 <style>

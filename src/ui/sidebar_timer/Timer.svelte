@@ -1,62 +1,18 @@
 <script lang="ts">
-  import moment from 'moment';
-  import type { Moment } from 'moment';
-  import MomentDurationSetup from 'moment-duration-format';
-  import { TimerState } from '../../enums/timer-state';
-  // import type { Duration } from 'moment';
-  import type { TFile } from 'obsidian';
-  import type TQPlugin from '../../main';
-  MomentDurationSetup(moment);
   import type { Duration } from 'moment';
-  import PomodoroCompletionSound from '../../../resources/sfx/pomodoro-completion.mp3'
-  import {
-    timerMarker,
-    circledPause,
-    circledPlay,
-    circledStop,
-  } from '../../graphics';
-
+  import { timerMarker } from '../../graphics';
   export let initialDuration: Duration;
-  export let plugin: TQPlugin;
-  export let file: TFile;
+  export let currDuration: Duration;
+  export let markers: any[]
 
-  let markerCnt = 16;
-  let markers = Array(markerCnt);
+  const markerCnt = markers.length
+  
   const rotateVar = (i: number) => `--rotate: ${(i * 360) / markerCnt}deg;`;
-
-  let duration = initialDuration.clone();
-  let activityDur: Duration;
-  let state = TimerState.INITIALIZED;
-  let startedAt: Moment;
-  let timer: NodeJS.Timer;
-
-  const playPomodoroCompetionSound = ()=>{
-    const audio = new Audio(PomodoroCompletionSound)
-    audio.play()
-  }
-
-  const start = (): void => {
-    state = TimerState.ONGOING;
-    startedAt = moment(new Date());
-    activityDur = moment.duration();
-    
-    timer = setInterval(() => {
-      if (duration.asSeconds() == 0) {
-        playPomodoroCompetionSound()
-        stop();
-      }else {
-        duration = duration.subtract(1, 'second');
-        activityDur = activityDur.add(1, 'second');
-        markers = markers;
-      }
-    }, 1000);
-  };
-
   const isMarkerFilled = (markerIndex: number): boolean => {
     let markerDuration = initialDuration.asSeconds() / markerCnt;
     let durFromInitial = initialDuration
       .clone()
-      .subtract(duration.asSeconds(), 'seconds')
+      .subtract(currDuration.asSeconds(), 'seconds')
       .asSeconds();
     let currMarkerUpperBound = (markerIndex + 1) * markerDuration;
     if (currMarkerUpperBound <= durFromInitial) {
@@ -65,37 +21,9 @@
     return false;
   };
 
-  const pause = (): void => {
-    state = TimerState.PAUSED;
-    setTimerActivity()
-    clearInterval(timer);
-  };
-
-  const stop = (): void => {
-    if (TimerState.ONGOING) {
-        setTimerActivity()
-    }
-    
-    state = TimerState.INITIALIZED;
-
-    clearInterval(timer);
-    duration = initialDuration.clone();
-    // console.log(duration.asSeconds())
-  };
-
-  const setTimerActivity = () => {
-    let endedAt = startedAt.clone().add(activityDur);
-    plugin.fileInterface.setTimerActivity(
-      file,
-      startedAt,
-      endedAt,
-    );
-  };
-
-$:  durationStr = duration.asSeconds() === 0 ? '0:00' : duration.format()
-$: console.log(duration.asSeconds())
+  $: durationStr =
+    currDuration.asSeconds() === 0 ? '0:00' : currDuration.format();
 </script>
-
 
 <div class="timer">
   <div class="timer-container">
@@ -115,31 +43,8 @@ $: console.log(duration.asSeconds())
     <div class="timer-runtime">{durationStr}</div>
   </div>
 </div>
-<div class="timer-actions-container">
-  {#if state == TimerState.INITIALIZED}
-    <div class="timer-action" on:click={start}>{@html circledPlay}</div>
-  {/if}
-  {#if state == TimerState.ONGOING}
-    <div class="timer-action" on:click={pause}>{@html circledPause}</div>
-  {/if}
-  {#if state == TimerState.PAUSED}
-    <div class="timer-action" on:click={start}>{@html circledPlay}</div>
-    <div class="timer-action" on:click={stop}>{@html circledStop}</div>
-  {/if}
-</div>
 
 <style>
-  .timer-action {
-    margin: 0 8px;
-  }
-
-  .timer-actions-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: -3rem;
-  }
-  
   .timer-runtime {
     position: absolute;
     top: 50%;
