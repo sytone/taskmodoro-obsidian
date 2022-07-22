@@ -41,6 +41,9 @@
     margin-right: 8px;
     width: 12px;
   }
+  :global(.timer-task-container .chevron-wrapper) {
+    width: 4px;
+  }
   :global(.query-tasks-list .chevron-wrapper) {
     margin-top: -6px;
   }

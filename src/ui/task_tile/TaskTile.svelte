@@ -103,7 +103,7 @@
   };
 
   $: {
-    showExpansionBtn = td.subtasks.length > 0;
+    showExpansionBtn = td.subtasks.length > 0 && parentComponent!==TaskTileParent.TimerTaskView;
     cacheExpandedState(expanded);
   }
 </script>
@@ -118,6 +118,7 @@
     >
       <span class="leading">
         <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
+
         <Checkbox
           context="listTile"
           on:toggle={toggleChecked}
@@ -180,14 +181,20 @@
   :global(.main-task-panel .nested-subtasks-list) {
     margin-left: 32px;
   }
-
-  :global(.timer-task-container .task-tile, .query-tasks-list .task-tile) {
+  
+  :global(.query-tasks-list .task-tile) {
     border-radius: 10px;
     padding: 8px 8px;
   }
 
+  :global(.timer-task-container .task-tile) {
+    border-radius: 10px;
+    padding: 12px 8px;
+  }
+
   :global(.timer-task-container .task-title) {
     padding-right: 16px;
+
   }
 
   :global(.timer-task-container .leading) {

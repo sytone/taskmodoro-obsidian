@@ -9,21 +9,22 @@
   MomentDurationSetup(moment);
   import type { Duration } from 'moment';
   import PomodoroCompletionSound from '../../../resources/sfx/pomodoro-completion.mp3';
-  import {
-    circledPause,
-    circledPlay,
-    circledStop,
-  } from '../../graphics';
+  import { circledPause, circledPlay, circledStop } from '../../graphics';
   import Timer from './Timer.svelte';
+  import type PomodoroSessionStore from '../../stores/PomodoroSessionStore';
   const electron = require('electron');
 
-
-  export let initialDuration: Duration;
+  export let sessionLength: Duration;
   export let plugin: TQPlugin;
   export let file: TFile;
+  export let pomodoroSessionStore: PomodoroSessionStore;
+  const sessionLeftStore = pomodoroSessionStore.sessionLeft;
 
-  let duration = initialDuration.clone();
-  let activityDur: Duration;
+  let sessionLeft = sessionLength.clone();
+  $: {
+    $sessionLeftStore = sessionLeft;
+  }
+  let sessionProgress: Duration;
   let state = TimerState.INITIALIZED;
   let startedAt: Moment;
   let timer: NodeJS.Timer;
@@ -36,31 +37,30 @@
     audio.play();
   };
 
-  const showNotification = ()=> {
+  const showNotification = () => {
     const Notification = (electron as any).remote.Notification;
     const n = new Notification({
-    title: 'Pomodoro session has been completed!',
-    silent: false,
-    timeoutType: 'never', 
-
+      title: 'Pomodoro session has been completed!',
+      silent: false,
+      timeoutType: 'never',
     });
     n.on('click', () => {
       n.close();
     });
-    n.show()
+    n.show();
+  };
 
-  }
   const start = (): void => {
     state = TimerState.ONGOING;
     startedAt = moment(new Date());
-    activityDur = moment.duration();
+    sessionProgress = moment.duration();
     timer = setInterval(() => {
-      if (duration.asSeconds() == 0) {
+      if (sessionLeft.asSeconds() == 0) {
         playPomodoroCompetionSound();
         stop();
       } else {
-        duration = duration.subtract(1, 'second');
-        activityDur = activityDur.add(1, 'second');
+        sessionLeft = sessionLeft.subtract(1, 'second');
+        sessionProgress = sessionProgress.add(1, 'second');
         markers = markers;
       }
     }, 1000);
@@ -76,22 +76,22 @@
     if (TimerState.ONGOING) {
       setTimerActivity();
     }
-    showNotification()
+    showNotification();
     state = TimerState.INITIALIZED;
 
     clearInterval(timer);
-    duration = initialDuration.clone();
+    sessionLeft = sessionLength.clone();
     markers = markers;
     // console.log(duration.asSeconds())
   };
 
   const setTimerActivity = () => {
-    let endedAt = startedAt.clone().add(activityDur);
+    let endedAt = startedAt.clone().add(sessionProgress);
     plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
   };
 </script>
 
-<Timer bind:currDuration={duration} {initialDuration} {markers} />
+<Timer bind:sessionLeft {sessionLength} {markers} />
 
 <div class="timer-actions-container">
   {#if state == TimerState.INITIALIZED}

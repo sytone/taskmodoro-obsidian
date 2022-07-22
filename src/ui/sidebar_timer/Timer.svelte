@@ -1,18 +1,18 @@
 <script lang="ts">
   import type { Duration } from 'moment';
   import { timerMarker } from '../../graphics';
-  export let initialDuration: Duration;
-  export let currDuration: Duration;
+  export let sessionLength: Duration;
+  export let sessionLeft: Duration;
   export let markers: any[]
 
   const markerCnt = markers.length
   
   const rotateVar = (i: number) => `--rotate: ${(i * 360) / markerCnt}deg;`;
   const isMarkerFilled = (markerIndex: number): boolean => {
-    let markerDuration = initialDuration.asSeconds() / markerCnt;
-    let durFromInitial = initialDuration
+    let markerDuration = sessionLength.asSeconds() / markerCnt;
+    let durFromInitial = sessionLength
       .clone()
-      .subtract(currDuration.asSeconds(), 'seconds')
+      .subtract(sessionLeft.asSeconds(), 'seconds')
       .asSeconds();
     let currMarkerUpperBound = (markerIndex + 1) * markerDuration;
     if (currMarkerUpperBound <= durFromInitial) {
@@ -22,7 +22,7 @@
   };
 
   $: durationStr =
-    currDuration.asSeconds() === 0 ? '0:00' : currDuration.format();
+    sessionLeft.asSeconds() === 0 ? '0:00' : sessionLeft.format();
 </script>
 
 <div class="timer">
