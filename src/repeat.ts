@@ -1,4 +1,4 @@
-import RRule, { ByWeekday, Frequency, Weekday } from 'rrule';
+import  {ByWeekday, Frequency, RRule, Weekday} from 'rrule';
 
 export class RepeatAdapter {
   private readonly rrule: RRule;

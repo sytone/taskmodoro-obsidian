@@ -32,6 +32,7 @@ export default {
       include: ['**/*.mp3'],
       limit: 100000
     }),
+
     commonjs({
       include: 'node_modules/**',
     }),

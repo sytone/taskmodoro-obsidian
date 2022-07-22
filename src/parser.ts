@@ -2,7 +2,7 @@ import { dump, load } from 'js-yaml'
 
 import { CachedMetadata } from 'obsidian'
 import { FileInterface } from './file-interface'
-import RRule from 'rrule'
+import {RRule} from 'rrule'
 import { formatDate } from './helpers/util'
 import moment from 'moment'
 

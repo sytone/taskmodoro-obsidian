@@ -10,17 +10,17 @@
   import type { Duration } from 'moment';
   import PomodoroCompletionSound from '../../../resources/sfx/pomodoro-completion.mp3';
   import {
-    timerMarker,
     circledPause,
     circledPlay,
     circledStop,
   } from '../../graphics';
-import Timer from './Timer.svelte'
+  import Timer from './Timer.svelte';
+  const electron = require('electron');
+
+
   export let initialDuration: Duration;
   export let plugin: TQPlugin;
   export let file: TFile;
-
-
 
   let duration = initialDuration.clone();
   let activityDur: Duration;
@@ -36,11 +36,24 @@ import Timer from './Timer.svelte'
     audio.play();
   };
 
+  const showNotification = ()=> {
+    const Notification = (electron as any).remote.Notification;
+    const n = new Notification({
+    title: 'Pomodoro session has been completed!',
+    silent: false,
+    timeoutType: 'never', 
+
+    });
+    n.on('click', () => {
+      n.close();
+    });
+    n.show()
+
+  }
   const start = (): void => {
     state = TimerState.ONGOING;
     startedAt = moment(new Date());
     activityDur = moment.duration();
-
     timer = setInterval(() => {
       if (duration.asSeconds() == 0) {
         playPomodoroCompetionSound();
@@ -53,8 +66,6 @@ import Timer from './Timer.svelte'
     }, 1000);
   };
 
-
-
   const pause = (): void => {
     state = TimerState.PAUSED;
     setTimerActivity();
@@ -65,12 +76,12 @@ import Timer from './Timer.svelte'
     if (TimerState.ONGOING) {
       setTimerActivity();
     }
-
+    showNotification()
     state = TimerState.INITIALIZED;
 
     clearInterval(timer);
     duration = initialDuration.clone();
-    markers=markers
+    markers = markers;
     // console.log(duration.asSeconds())
   };
 
@@ -78,9 +89,9 @@ import Timer from './Timer.svelte'
     let endedAt = startedAt.clone().add(activityDur);
     plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
   };
-
 </script>
-<Timer bind:currDuration={duration} {initialDuration} {markers}></Timer>
+
+<Timer bind:currDuration={duration} {initialDuration} {markers} />
 
 <div class="timer-actions-container">
   {#if state == TimerState.INITIALIZED}
@@ -106,6 +117,4 @@ import Timer from './Timer.svelte'
     justify-content: center;
     margin-top: -3rem;
   }
-
-
 </style>
