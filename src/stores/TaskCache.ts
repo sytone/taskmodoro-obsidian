@@ -159,7 +159,6 @@ export class TaskCache {
     )
     const parents = frontmatter.get('parents')
     const taskData = Parser.getTaskData(lines)
-    console.log('taskData',taskData)
     return ok({
       file,
       md: contents,

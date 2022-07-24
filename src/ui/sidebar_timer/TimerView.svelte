@@ -24,8 +24,8 @@
   export let pomodoroSession: PomodoroSession;
   const sessionLeftStore = pomodoroSession.sessionLeft;
   const sessionLengthStore = pomodoroSession.sessionLength
-  // const restSessionsLenghts = [0.1, 0.1, 0.1, 0.3];
-  const restSessionsLenghts = [3, 9, 3, 15];
+  
+  const restSessionsLenghts = [5, 5, 5, 15];
   let sessionIndex = 0;
   let sessionLeft = workSessionLength.clone();
   $: {
@@ -56,7 +56,7 @@
       title: title,
       body: body,
       silent: true,
-      timeoutType: 'never',
+      timeoutType: 'default',
     });
     n.on('click', () => {
       n.close();
@@ -78,7 +78,7 @@
     playPomodoroCompetionSound();
     setTimerActivity();
     const newSessionLength = restSessionsLenghts[sessionIndex];
-    sessionLeft = moment.duration(newSessionLength, 'seconds');
+    sessionLeft = moment.duration(newSessionLength, 'minutes');
     
     sessionIndex = (sessionIndex + 1) % 4;
     $type=PomodoroSessionType.REST
