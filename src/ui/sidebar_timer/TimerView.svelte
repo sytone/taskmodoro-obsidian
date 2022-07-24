@@ -2,30 +2,38 @@
   import moment from 'moment';
   import type { Moment } from 'moment';
   import MomentDurationSetup from 'moment-duration-format';
-  import { TimerState } from '../../enums/timer-state';
-  // import type { Duration } from 'moment';
+  import { PomodoroSessionType, TimerState } from '../../enums/timer-state';
   import type { TFile } from 'obsidian';
   import type TQPlugin from '../../main';
   MomentDurationSetup(moment);
   import type { Duration } from 'moment';
   import PomodoroCompletionSound from '../../../resources/sfx/pomodoro-completion.mp3';
-  import { circledPause, circledPlay, circledStop } from '../../graphics';
+  import {
+    circledDone,
+    circledPause,
+    circledPlay,
+    circledStop,
+  } from '../../graphics';
   import Timer from './Timer.svelte';
-  import type PomodoroSessionStore from '../../stores/PomodoroSessionStore';
+  import type PomodoroSession from '../../stores/PomodoroSession';
   const electron = require('electron');
 
-  export let sessionLength: Duration;
+  export let workSessionLength: Duration;
   export let plugin: TQPlugin;
   export let file: TFile;
-  export let pomodoroSessionStore: PomodoroSessionStore;
-  const sessionLeftStore = pomodoroSessionStore.sessionLeft;
-
-  let sessionLeft = sessionLength.clone();
+  export let pomodoroSession: PomodoroSession;
+  const sessionLeftStore = pomodoroSession.sessionLeft;
+  const sessionLengthStore = pomodoroSession.sessionLength
+  // const restSessionsLenghts = [0.1, 0.1, 0.1, 0.3];
+  const restSessionsLenghts = [3, 9, 3, 15];
+  let sessionIndex = 0;
+  let sessionLeft = workSessionLength.clone();
   $: {
     $sessionLeftStore = sessionLeft;
   }
   let sessionProgress: Duration;
-  let state = TimerState.INITIALIZED;
+  let state = pomodoroSession.state;
+  let type = pomodoroSession.type;
   let startedAt: Moment;
   let timer: NodeJS.Timer;
 
@@ -37,11 +45,17 @@
     audio.play();
   };
 
-  const showNotification = () => {
+  const playBreakCompetionSound = () => {
+    const audio = new Audio(PomodoroCompletionSound);
+    audio.play();
+  };
+
+  const showNotification = (title: string, body: string) => {
     const Notification = (electron as any).remote.Notification;
     const n = new Notification({
-      title: 'Pomodoro session has been completed!',
-      silent: false,
+      title: title,
+      body: body,
+      silent: true,
       timeoutType: 'never',
     });
     n.on('click', () => {
@@ -50,14 +64,42 @@
     n.show();
   };
 
+  const setTimerActivity = () => {
+    if ($type === PomodoroSessionType.WORK) {
+      let endedAt = startedAt.clone().add(sessionProgress);
+      plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
+    }
+  };
+
+  const handleWorkSessionDone = () => {
+    const title = 'Pomodoro has been completed!';
+    const body = "Pomodoro has been completed, it's time to rest!";
+    showNotification(title, body);
+    playPomodoroCompetionSound();
+    setTimerActivity();
+    const newSessionLength = restSessionsLenghts[sessionIndex];
+    sessionLeft = moment.duration(newSessionLength, 'seconds');
+    
+    sessionIndex = (sessionIndex + 1) % 4;
+    $type=PomodoroSessionType.REST
+  };
+
+  const handleRestSessionDone = () => {
+    const title = 'Break has been ended!';
+    const body = "Break has been ended, it's time to get back to work!";
+    showNotification(title, body);
+    playBreakCompetionSound();
+    sessionLeft = workSessionLength.clone();
+    $type=PomodoroSessionType.WORK
+  };
+
   const start = (): void => {
-    state = TimerState.ONGOING;
+    $state = TimerState.ONGOING;
     startedAt = moment(new Date());
     sessionProgress = moment.duration();
     timer = setInterval(() => {
       if (sessionLeft.asSeconds() == 0) {
-        playPomodoroCompetionSound();
-        stop();
+        done();
       } else {
         sessionLeft = sessionLeft.subtract(1, 'second');
         sessionProgress = sessionProgress.add(1, 'second');
@@ -67,40 +109,51 @@
   };
 
   const pause = (): void => {
-    state = TimerState.PAUSED;
+    $state = TimerState.PAUSED;
     setTimerActivity();
     clearInterval(timer);
   };
 
-  const stop = (): void => {
-    if (TimerState.ONGOING) {
-      setTimerActivity();
-    }
-    showNotification();
-    state = TimerState.INITIALIZED;
 
+  const done = (): void => {
+    $state = TimerState.DONE;
     clearInterval(timer);
-    sessionLeft = sessionLength.clone();
+    if ($type === PomodoroSessionType.WORK) {
+      handleWorkSessionDone();
+    } else {
+      handleRestSessionDone();
+    }
     markers = markers;
-    // console.log(duration.asSeconds())
+    $sessionLengthStore = sessionLeft.clone()
   };
 
-  const setTimerActivity = () => {
-    let endedAt = startedAt.clone().add(sessionProgress);
-    plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
+  const stop = (): void => {
+    setTimerActivity();
+
+    clearInterval(timer);
+    if ($type === PomodoroSessionType.REST) {
+      $type = PomodoroSessionType.WORK;
+    }
+    $state = TimerState.INITIALIZED;
+    sessionLeft = workSessionLength.clone();
+    $sessionLengthStore = sessionLeft.clone()
+    markers = markers;
   };
 </script>
 
-<Timer bind:sessionLeft {sessionLength} {markers} />
+<Timer bind:sessionLeft sessionLength={$sessionLengthStore} {markers} />
 
 <div class="timer-actions-container">
-  {#if state == TimerState.INITIALIZED}
+  {#if $state == TimerState.INITIALIZED || $state == TimerState.DONE}
     <div class="timer-action" on:click={start}>{@html circledPlay}</div>
   {/if}
-  {#if state == TimerState.ONGOING}
+  {#if $state == TimerState.ONGOING && $type === PomodoroSessionType.WORK}
     <div class="timer-action" on:click={pause}>{@html circledPause}</div>
   {/if}
-  {#if state == TimerState.PAUSED}
+  {#if $state == TimerState.ONGOING && $type === PomodoroSessionType.REST}
+    <div class="timer-action" on:click={stop}>{@html circledDone}</div>
+  {/if}
+  {#if $state == TimerState.PAUSED}
     <div class="timer-action" on:click={start}>{@html circledPlay}</div>
     <div class="timer-action" on:click={stop}>{@html circledStop}</div>
   {/if}

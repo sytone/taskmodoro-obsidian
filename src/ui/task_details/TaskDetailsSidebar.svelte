@@ -125,7 +125,7 @@ import { onMount } from 'svelte';
 
   const showPomoLengthPicker = () => {
     const onSet = (newPomoDuration: Duration) => {
-      td.pomoDuration = newPomoDuration;
+      td.pomodoroLengh = newPomoDuration;
 
       td = td;
       if (mode == TaskDetailsMode.Update) {
@@ -142,7 +142,7 @@ import { onMount } from 'svelte';
     new DurationPickerModal(
       td.plugin.app,
       'Pomodoro length',
-      td.pomoDuration,
+      td.pomodoroLengh,
       DurationPickerType.PomodoroLength,
       onSet,
     ).open();
@@ -194,7 +194,7 @@ import { onMount } from 'svelte';
     <div class="group">
       <div class="label">Pomodoro length</div>
       <div class="sidebar-input" on:click={showPomoLengthPicker}>
-        {`${td.pomoDuration.asMinutes()}min`}
+        {`${td.pomodoroLengh.asMinutes()}min`}
       </div>
     </div>
     <div class="group">

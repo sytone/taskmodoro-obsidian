@@ -21,7 +21,7 @@ export class TaskDetails {
   public due = ''
   public scheduled = ''
   public tags = ''
-  public pomoDuration = moment.duration(30, 'minutes')
+  public pomodoroLenght = moment.duration(30, 'minutes')
   public spentWorktime= moment.duration(0,'seconds')
   public estWorktime: Duration
   public subtasks: TaskDetails[] = []
@@ -58,7 +58,7 @@ export class TaskDetails {
       this.completed = task.completed
       this.file = task.file
       const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
-      this.pomoDuration = moment.duration(pomoLen, 'minutes')
+      this.pomodoroLenght = moment.duration(pomoLen, 'minutes')
       
       const estWorklength = fm.get('estimated_worktime')?.minutes
       

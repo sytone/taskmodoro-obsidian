@@ -1,7 +1,11 @@
-export const enum TimerState{
-    INITIALIZED,
-    ONGOING,
-    
-    PAUSED,
-  }
-  
+export  enum TimerState {
+  INITIALIZED,
+  ONGOING,
+  PAUSED,
+  DONE
+}
+
+export enum PomodoroSessionType {
+  WORK,
+  REST,
+}

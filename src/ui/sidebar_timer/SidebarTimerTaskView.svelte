@@ -8,18 +8,17 @@
   import moment from 'moment';
   import type { TaskDetails } from 'src/task-details';
   import PomodoroSessionProgress from './PomodoroSessionProgress.svelte';
-  import PomodoroSessionStore from '../../stores/PomodoroSessionStore';
+  import PomodoroSession from '../../stores/PomodoroSession';
   export let td: TaskDetails;
   export let plugin: TQPlugin;
 
-  const pomodoroSessionStore = new PomodoroSessionStore();
+  const pomodoroSession = new PomodoroSession(td.pomodoroLenght);
 </script>
 
 <div class="tq">
   <div class="timer-task-container">
     <PomodoroSessionProgress
-      sessionLength={td.pomoDuration}
-      {pomodoroSessionStore}
+     {pomodoroSession}
     >
       <TaskListTile
         view={null}
@@ -28,7 +27,7 @@
       />
     </PomodoroSessionProgress>
   </div>
-  <TimerView file={td.file} {plugin} {pomodoroSessionStore} sessionLength={td.pomoDuration} />
+  <TimerView file={td.file} {plugin} {pomodoroSession} workSessionLength={td.pomodoroLenght} />
 </div>
 
 <style>

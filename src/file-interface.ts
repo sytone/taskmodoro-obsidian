@@ -232,7 +232,7 @@ export class FileInterface {
     const currTaskPath = await this.storeNewTask(
       td.taskName,
       td.description,
-      td.pomoDuration,
+      td.pomodoroLenght,
       td.estWorktime,
       td.due,
       td.scheduled,
