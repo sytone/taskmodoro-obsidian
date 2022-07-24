@@ -1,8 +1,7 @@
 <script lang="ts">
   import { TaskDetailsModal } from '../../modals';
   import type { Component } from 'obsidian';
-  import { MarkdownRenderer } from 'obsidian';
-  import { afterUpdate, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import Checkbox from '../Checkbox.svelte';
   import type moment from 'moment';
   import {
@@ -19,6 +18,8 @@
   import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3';
   type Moment = moment.Moment;
   import { renderMarkdown } from '../../editor/renderMarkdown';
+  import { preventModalOpenOnInternalLinksClick } from '../../editor/internal-link';
+
   export let view: Component;
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
@@ -30,6 +31,7 @@
   let taskNameEl: HTMLElement;
   let showTrailingMenu = false;
   let showExpansionBtn = false;
+  let canOpenModal = true;
 
   onMount(() => {
     if (td.file && $expState[td.file.path] !== undefined) {
@@ -40,17 +42,21 @@
     renderTaskName(td.taskName);
   });
 
-
   $: {
-    renderTaskName(td.taskName)
+    renderTaskName(td.taskName);
   }
-  
-  const renderTaskName = async (taskName:string) => {
+
+  const renderTaskName = async (taskName: string) => {
     const tempEl = await renderMarkdown(td.plugin, td.file.path, taskName);
     taskNameEl.innerHTML =
       tempEl.children.length !== 0
         ? tempEl.children[0].innerHTML
         : tempEl.innerHTML;
+    canOpenModal = true;
+    preventModalOpenOnInternalLinksClick(taskNameEl, () => {
+      canOpenModal = false;
+      td.close;
+    });
   };
 
   const toggleChecked = () => {
@@ -91,6 +97,7 @@
   };
 
   const openTaskDetails = () => {
+    if(!canOpenModal) return
     let lastTaskNavTask = $taskCache[$tasksNav.last()];
     if (lastTaskNavTask) {
       findTaskNavPath(lastTaskNavTask, $tasksNav.length);

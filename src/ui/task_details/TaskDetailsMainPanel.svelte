@@ -7,9 +7,8 @@
   import { onMount, afterUpdate } from 'svelte';
   import { renderMarkdown } from '../../editor/renderMarkdown';
   import Editor from '../Editor.svelte';
-  import type { TFile } from 'obsidian';
-  import { viewSource, walkNodeTree } from '../../editor/helpers';
-import InternalLink from '../../editor/internal-link';
+  import { allowOpenInternalLinks } from '../../editor/internal-link';
+  
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
   let taskNameDraft = td.taskName;
@@ -19,8 +18,6 @@ import InternalLink from '../../editor/internal-link';
   let descriptionEl: HTMLElement;
 
   let isEditMode = { description: false, taskName: false };
-
-  const internalLink = new InternalLink(td.plugin,td.close)
 
   type isEditModeKey = keyof typeof isEditMode;
   const renderDescMD = () =>
@@ -47,12 +44,10 @@ import InternalLink from '../../editor/internal-link';
       return;
     }
 
-
-
     const path = td.file ? td.file.path : '/';
     renderMarkdown(td.plugin, path, MD).then((temp) => {
       el.innerHTML = temp.innerHTML;
-      internalLink.allowOpenInternalLinks(el);
+      allowOpenInternalLinks(el, td.plugin, td.close);
     });
   };
 
