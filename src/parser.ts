@@ -16,16 +16,15 @@ export class Parser {
   ): { isTaskCompleted: boolean; taskName: string } => {
     // We do it manually rather than using CachedMetadata because of the edge cases
     // where cache is not updating in time and causing bugs in task name fetch
-    for(const line of content){
-      const taskMatch = line.match(this.taskRegex)
-      if(taskMatch && taskMatch[0]){
-        const isTaskCompleted= ['x', 'X'].contains(line)
-        const taskName= line.replace(this.taskRegex,'')
-        return {isTaskCompleted, taskName}
-      }
+    const taskIndex = content.findIndex((line)=> this.taskRegex.test(line))
+    if(taskIndex >= 0) {
+      const completed = /^- \[[xX]\] /
+      const isTaskCompleted= completed.test(content[taskIndex])
+      const taskName= content[taskIndex].replace(this.taskRegex,'')
+      return {isTaskCompleted, taskName}
     }
 
-    return {isTaskCompleted: false,taskName: 'undefined'}
+    return {isTaskCompleted: false,taskName: 'Task name not found'}
   }
 
   public static readonly replaceTaskName = (

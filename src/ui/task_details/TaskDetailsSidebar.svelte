@@ -33,10 +33,6 @@ import { onMount } from 'svelte';
     }
   })
 
-  const addDefaultRootTaskTags = ()=>{
-
-  }
-
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
 
@@ -125,7 +121,7 @@ import { onMount } from 'svelte';
 
   const showPomoLengthPicker = () => {
     const onSet = (newPomoDuration: Duration) => {
-      td.pomodoroLengh = newPomoDuration;
+      td.pomodoroLenght = newPomoDuration;
 
       td = td;
       if (mode == TaskDetailsMode.Update) {
@@ -142,7 +138,7 @@ import { onMount } from 'svelte';
     new DurationPickerModal(
       td.plugin.app,
       'Pomodoro length',
-      td.pomodoroLengh,
+      td.pomodoroLenght,
       DurationPickerType.PomodoroLength,
       onSet,
     ).open();
@@ -150,7 +146,6 @@ import { onMount } from 'svelte';
 
   const updateTagsFm = () => {
     if (mode == TaskDetailsMode.Update) {
-      console.log('tags:', td.tags);
       td.plugin.fileInterface.updateFMProp(td.file, td.cleanedTags, 'tags');
     }
   };
@@ -194,7 +189,7 @@ import { onMount } from 'svelte';
     <div class="group">
       <div class="label">Pomodoro length</div>
       <div class="sidebar-input" on:click={showPomoLengthPicker}>
-        {`${td.pomodoroLengh.asMinutes()}min`}
+        {`${td.pomodoroLenght.asMinutes()}min`}
       </div>
     </div>
     <div class="group">

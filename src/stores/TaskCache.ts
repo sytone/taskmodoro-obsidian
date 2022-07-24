@@ -36,8 +36,6 @@ export class TaskCache {
    */
   public readonly toggleChecked = async (td: TaskDetails): Promise<void> =>
     modifyFileContents(td.file, this.app.vault, (lines): boolean => {
-      const metadata = this.app.metadataCache.getFileCache(td.file)
-
       const replacer = td.completed ? /^- \[[ ]\]/ : /^- \[[xX]\]/
       const newValue = td.completed ? '- [x]' : '- [ ]'
 
@@ -161,6 +159,7 @@ export class TaskCache {
     )
     const parents = frontmatter.get('parents')
     const taskData = Parser.getTaskData(lines)
+    console.log('taskData',taskData)
     return ok({
       file,
       md: contents,
