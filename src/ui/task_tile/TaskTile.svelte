@@ -16,9 +16,9 @@
   import type { Task } from '../../file-interface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
   import { Render } from '../../helpers/render';
-  import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3'
+  import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3';
   type Moment = moment.Moment;
-
+  import { renderMarkdown } from '../../editor/renderMarkdown';
   export let view: Component;
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
@@ -37,17 +37,26 @@
     } else {
       expanded = false;
     }
-    Render.renderMD(td.taskName, taskNameEl);
+    renderTaskName(td.taskName);
   });
 
-  afterUpdate(() => {
-    Render.renderMD(td.taskName, taskNameEl);
-  });
+
+  $: {
+    renderTaskName(td.taskName)
+  }
+  
+  const renderTaskName = async (taskName:string) => {
+    const tempEl = await renderMarkdown(td.plugin, td.file.path, taskName);
+    taskNameEl.innerHTML =
+      tempEl.children.length !== 0
+        ? tempEl.children[0].innerHTML
+        : tempEl.innerHTML;
+  };
 
   const toggleChecked = () => {
-    if(!td.completed){
-      const audio = new Audio(TaskCompletionSound)
-      audio.play()
+    if (!td.completed) {
+      const audio = new Audio(TaskCompletionSound);
+      audio.play();
     }
     td.completed = !td.completed;
     if (td.file) {
@@ -103,7 +112,9 @@
   };
 
   $: {
-    showExpansionBtn = td.subtasks.length > 0 && parentComponent!==TaskTileParent.TimerTaskView;
+    showExpansionBtn =
+      td.subtasks.length > 0 &&
+      parentComponent !== TaskTileParent.TimerTaskView;
     cacheExpandedState(expanded);
   }
 </script>
@@ -156,7 +167,6 @@
 </div>
 
 <style>
-
   :global(.subtasks-list .task-tile) {
     margin: 8px 0;
     background-color: var(--background-nav);
@@ -181,7 +191,7 @@
   :global(.main-task-panel .nested-subtasks-list) {
     margin-left: 32px;
   }
-  
+
   :global(.query-tasks-list .task-tile) {
     border-radius: 10px;
     padding: 8px 8px;
@@ -194,7 +204,6 @@
 
   :global(.timer-task-container .task-title) {
     padding-right: 16px;
-
   }
 
   :global(.timer-task-container .leading) {
@@ -230,7 +239,6 @@
     padding-right: 24px;
   }
 
-
   .show-transition {
     transform: translateY(-100px);
     opacity: 0;
@@ -256,7 +264,7 @@
   .task-tile-wrapper {
     position: relative;
   }
-  
+
   .task-tile {
     width: 100%;
     display: flex;
@@ -270,7 +278,7 @@
     flex-direction: row;
     align-items: flex-start;
   }
-  
+
   .task-title:hover {
     cursor: pointer;
   }

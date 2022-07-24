@@ -2,27 +2,18 @@
   import type { TFile } from 'obsidian';
   import type TQPlugin from '../main';
   import { externalLink } from '../graphics';
+import { viewSource } from '../editor/helpers';
+import { throwDeprecation } from 'process';
 
   export let classes = '';
   export let plugin: TQPlugin;
   export let file: TFile;
   export let close: ()=>void
-  const viewSource = () => {
-    if (file) {
-      let leaf = plugin.app.workspace.activeLeaf;
-      if (leaf.getViewState().pinned) {
-        leaf = plugin.app.workspace.createLeafBySplit(leaf);
-      }
-      leaf.openFile(file);
-    }
-    if(close){
-      close()
-    }
-  };
+
 </script>
 
 {#if file}
-  <span class={classes} on:click={viewSource}>
+  <span class={classes} on:click={()=>{viewSource(file,plugin,close)}}>
     {@html externalLink}
   </span>
 {/if}
