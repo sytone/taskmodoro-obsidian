@@ -170,4 +170,9 @@
     justify-content: center;
     margin-top: -3rem;
   }
+
+  :global(.timer-action circle){
+    fill: transparent
+  }
+  
 </style>

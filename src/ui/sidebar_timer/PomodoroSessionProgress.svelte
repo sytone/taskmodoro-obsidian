@@ -40,6 +40,12 @@
 
 <style>
   /* TODO: add transition */
+  
+  :global(.is-popout-window .pomodoro-session-duration-progress){
+    padding-bottom: 1px;
+    padding-right: 0.5px;
+  }
+
   .pomodoro-session-duration-progress {
     padding: 1px 1px;
     padding-bottom: 0.5px;

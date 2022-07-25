@@ -369,8 +369,9 @@ export class FileInterface {
     }
     contents.push('## Task')
     contents.push('- [ ] ' + taskName)
+    
     contents.push(
-      `\n ${FileInterface.descStartToken} \n ${description} \n ${FileInterface.descEndToken}`,
+      `\n ${FileInterface.descStartToken}\n${description}\n${FileInterface.descEndToken}`,
     )
 
     return contents.join('\n')
