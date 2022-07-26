@@ -106,14 +106,15 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('changed', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
-          console.log('metadata cache changed', file.name)
         }
       }),
     )
+    
     this.registerEvent(
       this.app.metadataCache.on('resolve', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
+
         }
       }),
     )

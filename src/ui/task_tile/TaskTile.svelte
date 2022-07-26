@@ -47,7 +47,8 @@
   }
 
   const renderTaskName = async (taskName: string) => {
-    const tempEl = await renderMarkdown(td.plugin, td.file.path, taskName);
+    const path = td.file ? td.file.path : td.plugin.fileInterface.tasksDir
+    const tempEl = await renderMarkdown(td.plugin, path, taskName);
     taskNameEl.innerHTML =
       tempEl.children.length !== 0
         ? tempEl.children[0].innerHTML

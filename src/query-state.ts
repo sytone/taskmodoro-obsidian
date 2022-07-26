@@ -42,7 +42,7 @@ export const stateWithDefaults = (
 });
 
 /**
- * Query state that is fetched from codeblock. Tasks matching this state will be listed.
+ * Query state that is fetched from codeblock. Tasks matching this state will be filtered, grouped and sorted.
  */
 export const stateFromConfig = (lines: string[]): SharedState => {
   const state = stateWithDefaults({});

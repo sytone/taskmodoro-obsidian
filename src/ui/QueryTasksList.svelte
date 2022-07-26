@@ -16,7 +16,7 @@
    * Config state that is parsed from query codeblock
    */
   export let state: Writable<SharedState>;
-    
+
   const getGrouper = (state: SharedState): ((t: Task) => string) => {
     switch (state.group) {
       case 'due':
@@ -81,12 +81,24 @@
     return sortBy(groupKeys, keySorter);
   };
 
-  // TODO: This is performed several times as the page loads. Find how to only run once.
-  // I think it might be run over and over as each task is loaded into the vault.
+  // As task is modified, this codeblock will rerun at least four times
+  // Modifying task will trigger at least two events - changed and resolved
+  // Each event will trigger this codeblock at least two times because
+  // In tasksCache store we trigger reactivity first by assigning new value to key
+  // And then by returning that modified object in update callback, hence two times.
+
+  // TODO: Find out where other reloads come from
+  
   let tasks = plugin.taskCache.tasks;
   $: tasksGrouped = getTasks($state, $tasks);
   $: sortedKeys = getSortedKeys($state, tasksGrouped);
-  $: console.log('tasksGrouped:',tasksGrouped)
+  $:{
+    const groupKeys = Object.keys(tasksGrouped);
+    groupKeys.forEach((key)=>{
+      const names = tasksGrouped[key].map((task)=>task.taskName)
+      console.log('tasks-grouped-names:',names)
+    })
+  } 
 </script>
 
 <div class="tq">

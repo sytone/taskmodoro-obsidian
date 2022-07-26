@@ -80,6 +80,7 @@ export class FileInterface {
   public readonly handleTaskModified = async (
     afile: TAbstractFile,
   ): Promise<void> => {
+    return
     const tfile = this.app.metadataCache.getFirstLinkpathDest(afile.path, '/')
     if (!tfile) {
       console.debug('tq: Unable to find TFile for TAFile: ' + afile.path)

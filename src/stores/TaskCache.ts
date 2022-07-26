@@ -26,6 +26,7 @@ export class TaskCache {
     this.app = app
 
     this.tasks = writable({})
+
   }
 
   /**
@@ -62,16 +63,19 @@ export class TaskCache {
   /**
    * Update svelte store of tasks by replacing stores` key: (newTask.file.path) with value: (newTask) parsed from modified task file.
    */
-  public readonly handleTaskModified = async (file: TFile): Promise<void> => {
-    ;(await this.loadTask(file)).match(
+  public readonly handleTaskModified = async (
+    file: TFile,
+  ): Promise<void> => {
+    (await this.loadTask(file)).match(
       newTask => {
-        console.log('task-loaded:', newTask.taskName)
+        console.log('event:', event, 'task-loaded:', newTask.taskName)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask
             return tasks
           },
         )
+
         this.updateParentsCache(newTask)
       },
       e => {
@@ -88,13 +92,13 @@ export class TaskCache {
       this.tasks.update(
         (tasks): Record<FilePath, Task> => {
           const parentTask = tasks[parentPath]
-          if(!parentTask) return tasks
+          if (!parentTask) return tasks
           const subtaskIndex = parentTask.subtasks.findIndex(
             subtask => task.file.name === subtask.file.name,
           )
           parentTask.subtasks[subtaskIndex] = task
-          tasks[parentPath]=parentTask
-          
+          tasks[parentPath] = parentTask
+
           return tasks
         },
       )
