@@ -9,20 +9,17 @@ import {
   PluginSettingTab,
   Setting,
 } from 'obsidian'
-import { buyMeACoffee, paypal } from './graphics'
 
-import { Duration } from 'moment'
+import { Query } from './Query';
+import QueryTasksList from './ui/QueryTasksList.svelte'
 import SubtasksExpandedState from './stores/SubtasksExpansionRecord'
 import { TaskCache } from './stores/TaskCache'
-import { TaskDetails } from './task-details'
+import type { TaskDetails } from './task-details'
 import { TaskDetailsModal } from './modals'
 import { TaskDetailsMode } from './enums/component-context'
 import { TaskDetailsNavigation } from './stores/TaskNavigationRecord'
-import TasksList from './ui/QueryTasksList.svelte'
 import { TimerTaskView } from './timer-task-view'
 import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
-import { convertLegacyTask } from './legacy-parser'
-import { stateFromConfig } from './query-state'
 import { writable } from 'svelte/store'
 
 export default class TQPlugin extends Plugin {
@@ -56,18 +53,6 @@ export default class TQPlugin extends Plugin {
       name: 'Create Task',
       callback: () => {
         new TaskDetailsModal(this, TaskDetailsMode.Create).open()
-      },
-    })
-
-    this.addCommand({
-      id: 'convert-task',
-      name: 'Convert Task',
-      checkCallback: (checking: boolean): boolean | void => {
-        const activeLeaf = this.app.workspace.getActiveViewOfType(MarkdownView)
-        if (!activeLeaf) {
-          return false
-        }
-        return convertLegacyTask(checking, activeLeaf, this.fileInterface)
       },
     })
 
@@ -188,12 +173,13 @@ export default class TQPlugin extends Plugin {
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext,
   ): void => {
-    new TasksList({
+    new QueryTasksList({
       target: el,
       props: {
         plugin: this,
         view: null,
-        state: writable(stateFromConfig(source.split('\n'))),
+        query: writable(new Query({source})),
+        // state: writable(stateFromConfig(source.split('\n'))),
       },
     })
   }

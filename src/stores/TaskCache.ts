@@ -163,13 +163,16 @@ export class TaskCache {
     )
     const parents = frontmatter.get('parents')
     const taskData = Parser.getTaskData(lines)
+    const tags = frontmatter.get('tags')
     return ok({
       file,
       md: contents,
       frontmatter,
       taskName: taskData.taskName,
+      repeats:frontmatter.get('repeat'),
       description: Parser.getDescription(lines),
       completed: taskData.isTaskCompleted,
+      tags:  tags ? tags : [],
       due: due ? window.moment(due).endOf('day') : undefined,
       scheduled: scheduled ? window.moment(scheduled).endOf('day') : undefined,
       subtasks,

@@ -77,10 +77,10 @@ import { onMount } from 'svelte';
   };
 
   const showRepeatPicker = () => {
-    let startRepeatPickerConfig = td.repeatConfig;
+    let startRepeatPickerConfig = td.recurringConfig;
 
     const onSet = (newRepeatConfig: string) => {
-      td.repeatConfig = newRepeatConfig;
+      td.recurringConfig = newRepeatConfig;
       td = td;
       if (mode == TaskDetailsMode.Update) {
         td.plugin.fileInterface.updateFMProp(
@@ -183,7 +183,7 @@ import { onMount } from 'svelte';
     <div class="group">
       <div class="label">Repeat</div>
       <div class="sidebar-input" on:click={showRepeatPicker}>
-        {td.repeatConfig == '' || !td.repeatConfig ? 'None' : td.repeatConfig}
+        {td.recurringConfig == '' || !td.recurringConfig ? 'None' : td.recurringConfig}
       </div>
     </div>
     <div class="group">

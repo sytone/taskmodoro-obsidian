@@ -71,7 +71,7 @@
   const showRepeatPicker = () => {
     new RepeatPickerModal(
       td.plugin.app,
-      td.repeatConfig,
+      td.recurringConfig,
       (newRepeatConfig: string) => {
         if (td.file) {
           td.plugin.fileInterface.updateFMProp(
@@ -145,10 +145,10 @@
       >
     </span>
   {/if}
-  {#if td.repeatConfig && td.repeatConfig !== ''}
+  {#if td.recurringConfig && td.recurringConfig !== ''}
     <span class="prop" on:click={showRepeatPicker}>
       {@html repeat}
-      <span class="prop-text" id="repeat">{td.repeatConfig?.toLowerCase()}</span
+      <span class="prop-text" id="repeat">{td.recurringConfig?.toLowerCase()}</span
       >
     </span>
   {/if}

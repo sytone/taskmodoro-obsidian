@@ -53,6 +53,8 @@
     "@popperjs/core": "2.9.2",
     "@rollup/plugin-url": "^7.0.0",
     "@types/axios": "^0.14.0",
+    "boon-js": "^2.0.3",
+    "chrono-node": "^2.3.9",
     "electron": "^19.0.9",
     "eventemitter3": "^4.0.7",
     "fuse": "^0.4.0",

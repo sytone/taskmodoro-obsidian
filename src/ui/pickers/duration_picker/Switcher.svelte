@@ -1,4 +1,4 @@
-<!-- Credits: https://github.com/SharifClick/svelte-touch-timepicker -->
+<!-- Reproduced from: https://github.com/SharifClick/svelte-touch-timepicker -->
 <script lang="ts">
   import type { SwitcherType } from './../../../enums/duration-picker-type';
 

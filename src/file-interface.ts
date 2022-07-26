@@ -20,6 +20,8 @@ export interface Task {
   frontmatter: Frontmatter
   taskName: string
   description: string
+  tags: string[]
+  recurring: string
   completed: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
@@ -237,7 +239,7 @@ export class FileInterface {
       td.estWorktime,
       td.due,
       td.scheduled,
-      td.repeatConfig,
+      td.recurringConfig,
       td.cleanedTags,
       subtasksFileNames,
     )

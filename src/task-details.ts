@@ -15,9 +15,8 @@ export class TaskDetails {
   public tagsCache: string[]
   public taskName = ''
   public description = ''
-  public repeats = false
   public completed = false
-  public repeatConfig = ''
+  public recurringConfig = ''
   public due = ''
   public scheduled = ''
   public tags = ''
@@ -51,7 +50,7 @@ export class TaskDetails {
     if (task) {
       const fm = task.frontmatter
       this.due = formatDate(task.due)
-      this.repeatConfig = fm.get('repeat')
+      this.recurringConfig = fm.get('repeat')
       this.scheduled = formatDate(task.scheduled)
       this.taskName = task.taskName
       this.description = task.description
