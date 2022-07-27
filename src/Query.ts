@@ -12,7 +12,7 @@ import { parseFilter } from './Query/FilterParser';
 
 export type SortingProperty =
     // | 'urgency'
-    // | 'status'
+    | 'completed'
     // | 'priority'
     // | 'start'
     | 'scheduled'
@@ -42,7 +42,7 @@ export type GroupingProperty =
     // | 'root'
     | 'scheduled'
     // | 'start'
-    // | 'status'
+    | 'completed'
     | 'tags';
 export interface Grouping { property: GroupingProperty }
 

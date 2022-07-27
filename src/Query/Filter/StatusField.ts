@@ -2,18 +2,18 @@
 import { FilterInstructionsBasedField } from './FilterInstructionsBasedField';
 import { Task } from '../../FileInterface';
 
-export class StatusField extends FilterInstructionsBasedField {
+export class CompletedField extends FilterInstructionsBasedField {
     constructor() {
         super();
 
-        this._filters.add('done', (task: Task) => task.status === Status.Done);
+        this._filters.add('completed', (task: Task) => task.completed);
         this._filters.add(
-            'not done',
-            (task: Task) => task.status !== Status.Done,
+            'not completed',
+            (task: Task) => !task.completed,
         );
     }
 
     protected fieldName(): string {
-        return 'status';
+        return 'completed';
     }
 }
