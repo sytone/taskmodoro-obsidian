@@ -1,6 +1,6 @@
 import { MarkdownRenderer, TFile } from 'obsidian'
 
-import Cursor from './cursor'
+import Cursor from './Cursor'
 
 export class Render {
 

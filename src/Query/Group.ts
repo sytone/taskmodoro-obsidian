@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import type { Grouping, GroupingProperty } from '../Query';
 
-import { Task } from '../file-interface';
+import { Task } from '../FileInterface';
 import { TaskGroups } from './TaskGroups';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks

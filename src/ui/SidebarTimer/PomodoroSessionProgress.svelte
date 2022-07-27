@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Duration } from 'moment';
-  import { PomodoroSessionType, TimerState } from '../../enums/timer-state';
-  import type PomodoroSession from '../../stores/PomodoroSession';
+  import { PomodoroSessionType, TimerState } from '../../Enums/timer-state';
+  import type PomodoroSession from '../../Stores/PomodoroSession';
   export let pomodoroSession: PomodoroSession;
 
   const sessionLeft = pomodoroSession.sessionLeft;

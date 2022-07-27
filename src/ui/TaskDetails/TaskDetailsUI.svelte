@@ -2,10 +2,10 @@
   import TaskDetailsMainPanel from './TaskDetailsMainPanel.svelte';
   import TaskDetailsSidebar from './TaskDetailsSidebar.svelte';
   import type TQPlugin from '../../main';
-  import type { FilePath, Task } from '../../file-interface';
-  import { TaskDetails } from '../../task-details';
+  import type { FilePath, Task } from '../../FileInterface';
+  import { TaskDetails } from '../../TaskDetails';
   import type { Writable } from 'svelte/store';
-  import { TaskDetailsMode } from '../../enums/component-context';
+  import { TaskDetailsMode } from '../../Enums/component-context';
 
   export let close: () => void;
   export let mode: TaskDetailsMode;

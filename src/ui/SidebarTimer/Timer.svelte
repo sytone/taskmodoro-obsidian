@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Duration } from 'moment';
-  import { timerMarker } from '../../graphics';
+  import { timerMarker } from '../../Graphics';
   export let sessionLength: Duration;
   export let sessionLeft: Duration;
   export let markers: any[]

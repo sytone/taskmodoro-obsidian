@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { Task } from '../../file-interface';
+  import type { Task } from '../../FileInterface';
   import type TQPlugin from '../../main';
   import type { Duration } from 'moment';
-  import { TaskListTileParent } from '../../enums/component-context';
-  import TaskListTile from '../task_tile/TaskTile.svelte';
+  import { TaskListTileParent } from '../../Enums/component-context';
+  import TaskListTile from '../TaskTile/TaskTile.svelte';
   import TimerView from './TimerView.svelte';
   import moment from 'moment';
-  import type { TaskDetails } from 'src/task-details';
+  import type { TaskDetails } from 'src/TaskDetails';
   import PomodoroSessionProgress from './PomodoroSessionProgress.svelte';
-  import PomodoroSession from '../../stores/PomodoroSession';
+  import PomodoroSession from '../../Stores/PomodoroSession';
   export let td: TaskDetails;
   export let plugin: TQPlugin;
 

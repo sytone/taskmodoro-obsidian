@@ -1,9 +1,9 @@
 import { dump, load } from 'js-yaml'
 
 import { CachedMetadata } from 'obsidian'
-import { FileInterface } from './file-interface'
+import { FileInterface } from './FileInterface'
 import {RRule} from 'rrule'
-import { formatDate } from './helpers/util'
+import { formatDate } from './Helpers/Helpers'
 import moment from 'moment'
 
 type Moment = moment.Moment

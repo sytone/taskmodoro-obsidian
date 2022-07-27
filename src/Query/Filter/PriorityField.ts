@@ -1,7 +1,7 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 
 export class PriorityField extends Field {
     private static readonly priorityRegexp =

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TaskDetailsModal } from '../../modals';
+  import { TaskDetailsModal } from '../../Modals';
   import type { Component } from 'obsidian';
   import { onMount } from 'svelte';
   import Checkbox from '../Checkbox.svelte';
@@ -7,18 +7,18 @@
   import {
     TaskDetailsMode,
     TaskListTileParent,
-  } from '../../enums/component-context';
-  import type { TaskDetails } from 'src/task-details';
+  } from '../../Enums/component-context';
+  import type { TaskDetails } from 'src/TaskDetails';
   import TaskTileProps from './TaskTileProps.svelte';
   import TrailingMenu from './TrailingMenu.svelte';
-  import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
-  import type { Task } from '../../file-interface';
+  import { TaskListTileParent as TaskTileParent } from '../../Enums/component-context';
+  import type { Task } from '../../FileInterface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
-  import { Render } from '../../helpers/render';
+  import { Render } from '../../Helpers/Render';
   import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3';
   type Moment = moment.Moment;
-  import { renderMarkdown } from '../../editor/renderMarkdown';
-  import { preventModalOpenOnInternalLinksClick } from '../../editor/internal-link';
+  import { renderMarkdown } from '../../Editor/RenderMarkdown';
+  import { preventModalOpenOnInternalLinksClick } from '../../Editor/InternalLink';
 
   export let view: Component;
   export let parentComponent: TaskListTileParent;

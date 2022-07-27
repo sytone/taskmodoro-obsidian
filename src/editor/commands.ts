@@ -13,7 +13,7 @@ import {
   setSelectionRange,
   toggleLineFormatting,
   toggleWrappingFormattingCommand,
-} from './helpers';
+} from './EditorHelpers';
 
 import insertTextAtCursor from 'insert-text-at-cursor';
 

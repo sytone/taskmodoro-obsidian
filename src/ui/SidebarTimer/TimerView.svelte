@@ -2,7 +2,7 @@
   import moment from 'moment';
   import type { Moment } from 'moment';
   import MomentDurationSetup from 'moment-duration-format';
-  import { PomodoroSessionType, TimerState } from '../../enums/timer-state';
+  import { PomodoroSessionType, TimerState } from '../../Enums/timer-state';
   import type { TFile } from 'obsidian';
   import type TQPlugin from '../../main';
   MomentDurationSetup(moment);
@@ -13,9 +13,9 @@
     circledPause,
     circledPlay,
     circledStop,
-  } from '../../graphics';
+  } from '../../Graphics';
   import Timer from './Timer.svelte';
-  import type PomodoroSession from '../../stores/PomodoroSession';
+  import type PomodoroSession from '../../Stores/PomodoroSession';
   const electron = require('electron');
 
   export let workSessionLength: Duration;

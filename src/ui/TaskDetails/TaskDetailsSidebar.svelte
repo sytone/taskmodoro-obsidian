@@ -1,19 +1,19 @@
 <script lang="ts">
   import moment, { Duration, duration, Moment } from 'moment';
 
-  import type { TaskDetails } from '../../task-details';
-  import { TaskDetailsMode } from '../../enums/component-context';
+  import type { TaskDetails } from '../../TaskDetails';
+  import { TaskDetailsMode } from '../../Enums/component-context';
   import {
     DatePickerModal,
     DurationPickerModal,
     RepeatPickerModal,
-  } from '../../modals';
-  import { formatDate, formatFMDate } from '../../helpers/util';
-  import { externalLink } from '../../graphics';
-  import { DurationPickerType } from './../../enums/duration-picker-type';
+  } from '../../Modals';
+  import { formatDate, formatFMDate } from '../../Helpers/Helpers';
+  import { externalLink } from '../../Graphics';
+  import { DurationPickerType } from '../../Enums/duration-picker-type';
   import TextSuggest from '../TextSuggest.svelte';
   import TimerOpenBtn from '../TimerOpenBtn.svelte';
-  import ViewSourceBtn from './../ViewSourceBtn.svelte';
+  import ViewSourceBtn from '../ViewSourceBtn.svelte';
 import { onMount } from 'svelte';
 
   export let td: TaskDetails;
@@ -155,7 +155,7 @@ import { onMount } from 'svelte';
   };
 </script>
 
-<div class="task-details-sidebar">
+<div class="TaskDetails-sidebar">
   <span class="sidebar-refs-container">
     {#if mode !== TaskDetailsMode.Create}
       <TimerOpenBtn on:click={showPomodoroTaskView} />
@@ -224,7 +224,7 @@ import { onMount } from 'svelte';
 </div>
 
 <style>
-  :global(.task-details-sidebar .tag-input) {
+  :global(.TaskDetails-sidebar .tag-input) {
     padding-bottom: 8px;
     border-bottom: 1px solid #2a2d30;
   }
@@ -244,7 +244,7 @@ import { onMount } from 'svelte';
     justify-content: space-between;
   }
 
-  .task-details-sidebar {
+  .TaskDetails-sidebar {
     background-color: #151719;
 
     width: 30%;

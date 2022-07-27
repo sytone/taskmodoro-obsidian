@@ -9,7 +9,7 @@
     handleTab,
     unpairBrackets,
     unpairMarkdown,
-  } from '../editor/commands';
+  } from '../Editor/Commands';
 
   import { Platform } from 'obsidian';
   import { onMount } from 'svelte';
@@ -106,7 +106,7 @@
     }
   }
 </script>
-<div class="tq__markdown-editor" id={id}>
+<div class="tq__markdown-Editor" id={id}>
   <div data-replicated-value={md} class="grow-wrap">
     <textarea
     bind:value={md}

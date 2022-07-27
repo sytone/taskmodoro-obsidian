@@ -1,6 +1,6 @@
-import type { FileName,Task  } from './file-interface'
-import { FilePath as FileName } from './file-interface';
-import { durationFormat,formatDate } from './helpers/util'
+import type { FileName,Task  } from './FileInterface'
+import { FilePath as FileName } from './FileInterface';
+import { durationFormat,formatDate } from './Helpers/Helpers'
 import type TQPlugin from './main'
 import { toInteger } from 'lodash'
 import type { Duration } from 'moment'

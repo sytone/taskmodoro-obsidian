@@ -5,7 +5,7 @@
   import {
     DurationPickerType,
     SwitcherType,
-  } from './../../../enums/duration-picker-type';
+  } from '../../../Enums/duration-picker-type';
 
   const worktimeHrs: number[] = new Array(101).fill(0).map((v, i) => i);
   const worktimeMin: number[] = new Array(61).fill(0).map((v, i) => i);

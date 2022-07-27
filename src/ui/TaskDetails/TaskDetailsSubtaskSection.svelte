@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { TaskDetails } from '../../task-details';
-  import { TaskDetailsMode } from '../../enums/component-context';
-  import TaskTile from '../task_tile/TaskTile.svelte';
-  import { TaskListTileParent as TaskTileParent } from '../../enums/component-context';
+  import { TaskDetails } from '../../TaskDetails';
+  import { TaskDetailsMode } from '../../Enums/component-context';
+  import TaskTile from '../TaskTile/TaskTile.svelte';
+  import { TaskListTileParent as TaskTileParent } from '../../Enums/component-context';
   import type { TFile } from 'obsidian';
-  import SubtasksExpansionBtn from '../task_tile/SubtasksExpansionBtn.svelte';
+  import SubtasksExpansionBtn from '../TaskTile/SubtasksExpansionBtn.svelte';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 

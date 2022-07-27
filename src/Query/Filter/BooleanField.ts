@@ -3,7 +3,7 @@ import { Field } from './Field';
 import type { Filter } from './Filter';
 import { FilterOrErrorMessage } from './Filter';
 import type { PostfixExpression } from 'boon-js';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 import { parse as boonParse } from 'boon-js';
 import { parseFilter } from '../FilterParser';
 

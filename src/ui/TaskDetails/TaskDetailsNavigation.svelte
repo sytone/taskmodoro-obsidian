@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { FilePath } from '../../file-interface';
+  import type { FilePath } from '../../FileInterface';
   import type { Writable } from 'svelte/store';
-  import type { Task } from '../../file-interface';
+  import type { Task } from '../../FileInterface';
   import type TQPlugin from '../../main';
-import { getTextAbv } from '../../helpers/util';
+import { getTextAbv } from '../../Helpers/Helpers';
 
   export let plugin: TQPlugin;
 

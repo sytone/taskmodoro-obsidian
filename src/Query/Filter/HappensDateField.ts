@@ -4,7 +4,7 @@ import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
 import type { Moment } from 'moment';
 import { Sort } from '../../Sort';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 
 /**
  * Support the 'happens' search instruction, which searches all of

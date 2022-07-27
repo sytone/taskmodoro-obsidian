@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { App } from 'obsidian';
   import {  onMount } from 'svelte';
-  import { StaticSuggest } from '../suggest';
-  import { Render } from '../helpers/render';
+  import { StaticSuggest } from '../Suggest';
+  import { Render } from '../Helpers/Render';
 
   export let app: App;
   export let suggestions: string[];

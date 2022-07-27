@@ -1,17 +1,17 @@
 <script lang="ts">
-  import type { TaskDetails } from '../../task-details';
-  import { durationFormat } from '../../helpers/util';
+  import type { TaskDetails } from '../../TaskDetails';
+  import { durationFormat } from '../../Helpers/Helpers';
   import {
     RepeatPickerModal,
     DatePickerModal,
     DurationPickerModal,
-  } from '../../modals';
+  } from '../../Modals';
   import type { Moment } from 'moment';
   import type { Duration } from 'moment';
-  import { calendar, hourglass, repeat, timer } from '../../graphics';
-  import { DurationPickerType } from '../../enums/duration-picker-type';
+  import { calendar, hourglass, repeat, timer } from '../../Graphics';
+  import { DurationPickerType } from '../../Enums/duration-picker-type';
   import { onMount } from 'svelte';
-  import { Render } from '../../helpers/render';
+  import { Render } from '../../Helpers/Render';
   export let td: TaskDetails;
 
   let showWorktimeProp: boolean;

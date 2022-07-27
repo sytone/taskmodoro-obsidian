@@ -1,6 +1,6 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 import { FilterInstructionsBasedField } from './FilterInstructionsBasedField';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 
 export class StatusField extends FilterInstructionsBasedField {
     constructor() {

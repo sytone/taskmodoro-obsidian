@@ -1,15 +1,16 @@
-import type TQPlugin from './main'
-import TaskDetailsUI from './ui/task_details/TaskDetailsUI.svelte'
-import DatePicker from './ui/pickers/DuePicker.svelte'
-import RepeatPicker from './ui/pickers/RepeatPicker.svelte'
-import type { Duration, Moment } from 'moment'
 import { App, Modal } from 'obsidian'
-import type { TaskDetailsMode } from './enums/component-context'
-import type { Task } from './file-interface'
-import DurationPicker from './ui/pickers/duration_picker/DurationPicker.svelte'
+import type { Duration, Moment } from 'moment'
+
+import DatePicker from './ui/pickers/DuePicker.svelte'
+import DurationPicker from './ui/pickers/DurationPicker/DurationPicker.svelte'
+import type { DurationPickerType } from './Enums/duration-picker-type'
+import RepeatPicker from './ui/pickers/RepeatPicker.svelte'
+import type TQPlugin from './main'
+import type { Task } from './FileInterface'
+import { TaskDetails } from './TaskDetails';
+import type { TaskDetailsMode } from './Enums/component-context'
+import TaskDetailsUI from './ui/TaskDetails/TaskDetailsUI.svelte'
 import { on } from 'events'
-import type { DurationPickerType } from './enums/duration-picker-type'
-import { TaskDetails } from './task-details';
 
 export class TaskDetailsModal extends Modal {
   private readonly mode: TaskDetailsMode

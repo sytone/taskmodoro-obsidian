@@ -4,7 +4,7 @@ import { Group } from './Query/Group';
 import type { IQuery } from './IQuery';
 // import type { LayoutOptions } from './LayoutOptions';
 import { Sort } from './Sort';
-import { Task } from './file-interface';
+import { Task } from './FileInterface';
 import type { TaskGroups } from './Query/TaskGroups';
 import { parseFilter } from './Query/FilterParser';
 

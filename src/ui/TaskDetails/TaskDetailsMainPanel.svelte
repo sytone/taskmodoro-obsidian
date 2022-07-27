@@ -1,13 +1,13 @@
 <script lang="ts">
   import TaskDetailsNavigation from './TaskDetailsNavigation.svelte';
   import TaskDetailsSubtaskSection from './TaskDetailsSubtaskSection.svelte';
-  import type { TaskDetails } from '../../task-details';
-  import { TaskDetailsMode } from '../../enums/component-context';
-  import Checkbox from './../Checkbox.svelte';
+  import type { TaskDetails } from '../../TaskDetails';
+  import { TaskDetailsMode } from '../../Enums/component-context';
+  import Checkbox from '../Checkbox.svelte';
   import { onMount, afterUpdate } from 'svelte';
-  import { renderMarkdown } from '../../editor/renderMarkdown';
+  import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import Editor from '../Editor.svelte';
-  import { allowOpenInternalLinks } from '../../editor/internal-link';
+  import { allowOpenInternalLinks } from '../../Editor/InternalLink';
   
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;

@@ -1,12 +1,12 @@
 <script lang="ts">
   import type TQPlugin from '../main';
-  import { CalcTaskScore, Task } from '../file-interface';
-  import TaskTile from './task_tile/TaskTile.svelte';
+  import { CalcTaskScore, Task } from '../FileInterface';
+  import TaskTile from './TaskTile/TaskTile.svelte';
   import type { Component } from 'obsidian';
   import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
   import type { Writable } from 'svelte/store';
-  import { TaskListTileParent } from '../enums/component-context';
-  import { TaskDetails } from '../task-details';
+  import { TaskListTileParent } from '../Enums/component-context';
+  import { TaskDetails } from '../TaskDetails';
   import type { Query } from '../Query';
 
   export let plugin: TQPlugin;

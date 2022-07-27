@@ -9,11 +9,11 @@
 
 import { CachedMetadata, MarkdownRenderer, TFile, View, setIcon } from 'obsidian'
 
-import type { FilePath } from '../file-interface';
+import type { FilePath } from '../FileInterface';
 import type TQPlugin from '../main';
-import { c } from './helpers';
+import { c } from './EditorHelpers';
 
-// import { t } from 'src/lang/helpers';
+// import { t } from 'src/lang/Helpers';
 
 // quick replacement
 const t = (str:string)=>{

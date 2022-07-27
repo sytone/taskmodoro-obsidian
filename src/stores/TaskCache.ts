@@ -1,11 +1,11 @@
 import { App, CachedMetadata, TFile } from 'obsidian'
-import { FileName, FilePath, Task, modifyFileContents } from '../file-interface'
-import { Frontmatter, Parser } from '../parser'
+import { FileName, FilePath, Task, modifyFileContents } from '../FileInterface'
+import { Frontmatter, Parser } from '../Parser'
 import { Result, err, ok } from 'neverthrow'
 import { Writable, get, writable } from 'svelte/store'
 
 import TQPlugin from '../main'
-import { TaskDetails } from '../task-details'
+import { TaskDetails } from '../TaskDetails'
 import { match } from 'assert'
 import moment from 'moment'
 

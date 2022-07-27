@@ -1,7 +1,8 @@
-import  { Writable,writable } from 'svelte/store';
-import type { FilePath } from '../file-interface';
-import { TaskDetails } from '../task-details';
+import  { Writable, writable } from 'svelte/store';
+
+import type { FilePath } from '../FileInterface';
 import type TQPlugin from '../main';
+import { TaskDetails } from '../TaskDetails';
 
 export class TaskDetailsNavigation{
     public tasksNavigation: Writable<FilePath[]>

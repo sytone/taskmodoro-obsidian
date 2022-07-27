@@ -1,6 +1,6 @@
 /* eslint-disable linebreak-style */
 
-import { PomodoroSessionType, TimerState } from '../enums/timer-state'
+import { PomodoroSessionType, TimerState } from '../Enums/timer-state'
 import { Writable, writable } from 'svelte/store'
 import moment, { Duration } from 'moment'
 

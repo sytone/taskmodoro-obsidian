@@ -1,7 +1,7 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 import { DateField } from './DateField';
 import type { Moment } from 'moment';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 
 /**
  * Support the 'starts' search instruction.

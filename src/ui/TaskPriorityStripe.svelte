@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Task } from '../file-interface';
+  import type { Task } from '../FileInterface';
 
   export let task: Task;
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import ViewSourceBtn from './../ViewSourceBtn.svelte';
-  import { externalLink } from '../../graphics';
-  import type { TaskDetails } from '../../task-details';
+  import ViewSourceBtn from '../ViewSourceBtn.svelte';
+  import { externalLink } from '../../Graphics';
+  import type { TaskDetails } from '../../TaskDetails';
   import TimerOpenBtn from '../TimerOpenBtn.svelte';
 
   export let showTrailingMenu: boolean;

@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 // import { getSettings } from './config/Settings';
 /* eslint-disable @typescript-eslint/prefer-readonly */
-import type * as fileInterface from './file-interface';
+import type * as fileInterface from './FileInterface';
 
 import type { Query, SortingProperty } from './Query';
 

@@ -1,5 +1,5 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 import { TextField } from './TextField';
 // import { getSettings } from '../../config/Settings';
 

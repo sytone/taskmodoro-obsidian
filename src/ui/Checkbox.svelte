@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { checkMark } from './../graphics';
+  import { checkMark } from '../Graphics';
   import { createEventDispatcher } from 'svelte';
 
   export let checked: Boolean;

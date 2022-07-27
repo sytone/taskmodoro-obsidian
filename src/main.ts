@@ -1,6 +1,6 @@
 /* eslint-disable simple-import-sort/sort */
-import { FileInterface, Task } from './file-interface'
-import { ISettings, settingsWithDefaults } from './settings'
+import { FileInterface, Task } from './FileInterface'
+import { ISettings, settingsWithDefaults } from './Settings'
 import {
   MarkdownPostProcessorContext,
   MarkdownView,
@@ -12,14 +12,14 @@ import {
 
 import { Query } from './Query';
 import QueryTasksList from './ui/QueryTasksList.svelte'
-import SubtasksExpandedState from './stores/SubtasksExpansionRecord'
-import { TaskCache } from './stores/TaskCache'
-import type { TaskDetails } from './task-details'
-import { TaskDetailsModal } from './modals'
-import { TaskDetailsMode } from './enums/component-context'
-import { TaskDetailsNavigation } from './stores/TaskNavigationRecord'
-import { TimerTaskView } from './timer-task-view'
-import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './helpers/constants'
+import SubtasksExpandedState from './Stores/SubtasksExpansionRecord'
+import { TaskCache } from './Stores/TaskCache'
+import type { TaskDetails } from './TaskDetails'
+import { TaskDetailsModal } from './Modals'
+import { TaskDetailsMode } from './Enums/component-context'
+import { TaskDetailsNavigation } from './Stores/TaskNavigationRecord'
+import { TimerTaskView } from './TimerTaskView'
+import { VIEW_TYPE_POMODORO_TASK as VIEW_TYPE_TIMER_TASK } from './Helpers/Constants'
 import { writable } from 'svelte/store'
 
 export default class TQPlugin extends Plugin {

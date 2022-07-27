@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { TFile } from 'obsidian';
   import type TQPlugin from '../main';
-  import { externalLink } from '../graphics';
-import { viewSource } from '../editor/helpers';
+  import { externalLink } from '../Graphics';
+import { viewSource } from '../Editor/EditorHelpers';
 import { throwDeprecation } from 'process';
 
   export let classes = '';

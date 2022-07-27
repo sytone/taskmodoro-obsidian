@@ -6,11 +6,11 @@ import {
   Parser,
   setCompletedDate,
   setDueDateToNext,
-} from './parser'
+} from './Parser'
 
 import type TQPlugin from './main'
-import type { TaskDetails } from './task-details'
-import { getTextAbv } from './helpers/util';
+import type { TaskDetails } from './TaskDetails'
+import { getTextAbv } from './Helpers/Helpers';
 import { isArrayLike } from 'lodash'
 import moment from 'moment'
 

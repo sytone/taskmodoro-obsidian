@@ -3,7 +3,7 @@ import { DateParser } from '../DateParser';
 import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
 import type { Moment } from 'moment';
-import { Task } from '../../file-interface';
+import { Task } from '../../FileInterface';
 
 /**
  * DateField is an abstract base class to help implement

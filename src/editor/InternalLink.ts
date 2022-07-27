@@ -1,6 +1,6 @@
 /* eslint-disable linebreak-style */
 
-import { walkNodeTree as traverseNodeTree, viewSource } from '../editor/helpers'
+import { walkNodeTree as traverseNodeTree, viewSource } from './EditorHelpers'
 
 import { TFile } from 'obsidian'
 import TQPlugin from '../main'

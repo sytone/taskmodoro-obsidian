@@ -1,5 +1,5 @@
 import type { GroupHeading } from './GroupHeading';
-import { Task } from '../file-interface';
+import { Task } from '../FileInterface';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 

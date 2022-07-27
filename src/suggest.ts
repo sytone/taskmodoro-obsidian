@@ -1,7 +1,7 @@
 import { App, ISuggestOwner, Scope } from 'obsidian';
 import { Instance as PopperInstance, createPopper } from '@popperjs/core';
 
-import Cursor from './helpers/cursor';
+import Cursor from './Helpers/Cursor';
 
 export const wrapAround = (value: number, size: number): number =>
   ((value % size) + size) % size;

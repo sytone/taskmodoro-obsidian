@@ -1,6 +1,6 @@
 <!-- Reproduced from: https://github.com/SharifClick/svelte-touch-timepicker -->
 <script lang="ts">
-  import type { SwitcherType } from './../../../enums/duration-picker-type';
+  import type { SwitcherType } from '../../../Enums/duration-picker-type';
 
   import { afterUpdate, onMount, createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
