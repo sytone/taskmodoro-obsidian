@@ -1,9 +1,9 @@
 import { BooleanField } from './Filter/BooleanField';
-import { CompletedField } from './Filter/StatusField';
+import { CompletedField } from './Filter/CompletedField';
 import { DescriptionField } from './Filter/DescriptionField';
 import { DoneDateField } from './Filter/DoneDateField';
 import { DueDateField } from './Filter/DueDateField';
-import { ExcludeSubItemsField } from './Filter/ExcludeSubItemsField';
+import { ExcludeSubtasksField } from './Filter/ExcludeSubItemsField';
 import type { FilterOrErrorMessage } from './Filter/Filter';
 import { HappensDateField } from './Filter/HappensDateField';
 import { HeadingField } from './Filter/HeadingField';
@@ -29,7 +29,7 @@ const fieldCreators = [
     () => new DescriptionField(),
     () => new TagsField(),
     // () => new HeadingField(),
-    () => new ExcludeSubItemsField(),
+    () => new ExcludeSubtasksField(),
     () => new BooleanField(),
 ];
 
