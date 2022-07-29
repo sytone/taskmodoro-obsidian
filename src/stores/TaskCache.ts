@@ -68,7 +68,7 @@ export class TaskCache {
   ): Promise<void> => {
     (await this.loadTask(file)).match(
       newTask => {
-        console.log('event:', event, 'task-loaded:', newTask.taskName)
+        console.log('task-loaded:', newTask.taskName)
         this.tasks.update(
           (tasks): Record<FilePath, Task> => {
             tasks[newTask.file.path] = newTask

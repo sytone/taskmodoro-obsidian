@@ -2,7 +2,7 @@
 import { FilterInstructionsBasedField } from './FilterInstructionsBasedField';
 
 /**
- * Implements 'exclude sub-items' filter
+ * Implements 'exclude subtasks' filter
  */
 export class ExcludeSubtasksField extends FilterInstructionsBasedField {
     constructor() {

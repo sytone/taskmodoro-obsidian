@@ -75,6 +75,7 @@ export default class TQPlugin extends Plugin {
       this.app.vault.on('create', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.fileInterface.handleTaskModified(file)
+          console.log('onCreate')
         }
       }),
     )
@@ -83,6 +84,8 @@ export default class TQPlugin extends Plugin {
       this.app.vault.on('modify', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.fileInterface.handleTaskModified(file)
+          console.log('onModify')
+
         }
       }),
     )
@@ -91,6 +94,8 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('changed', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
+          console.log('onChanged')
+
         }
       }),
     )
@@ -99,6 +104,8 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('resolve', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
+          console.log('onResolve')
+
 
         }
       }),
@@ -178,7 +185,7 @@ export default class TQPlugin extends Plugin {
       props: {
         plugin: this,
         view: null,
-        query: writable(new Query({source})),
+        query: new Query({source}),
         // state: writable(stateFromConfig(source.split('\n'))),
       },
     })

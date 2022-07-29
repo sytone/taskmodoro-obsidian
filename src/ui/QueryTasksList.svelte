@@ -12,7 +12,7 @@
   export let plugin: TQPlugin;
   export let view: Component;
 
-  export let query: Writable<Query>;
+  export let query: Query;
 
     const getHeading = (level: number, name: string) =>{
     level = level + 4
@@ -30,7 +30,7 @@
 
   let tasksCache = plugin.taskCache.tasks;
   $: tasks = Object.keys($tasksCache).map((key) => $tasksCache[key]);
-  $: taskGroups = $query.applyQueryToTasks(tasks).groups;
+  $: taskGroups = query.applyQueryToTasks(tasks).groups;
 
 </script>
 
