@@ -12,8 +12,13 @@ module.exports = {
     "jsdoc",
     "prefer-arrow",
     "simple-import-sort",
+    "prettier"
+  ],
+  extends: [
+    "prettier"
   ],
   rules: {
+    "prettier/prettier": "error" ,
     "@typescript-eslint/array-type": "error",
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/consistent-type-assertions": "error",

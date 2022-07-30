@@ -1,12 +1,11 @@
 <script lang="ts">
   import type TQPlugin from '../main';
   import TaskTile from './TaskTile/TaskTile.svelte';
-  import type { Component } from 'obsidian';
-
   import { TaskListTileParent } from '../Enums/component-context';
   import { TaskDetails } from '../TaskDetails';
   import type { Query } from '../Query';
-import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
+import type { TaskGroup } from '../Query/TaskGroup';
 
   export let plugin: TQPlugin;
 
@@ -18,21 +17,20 @@ import { onMount } from 'svelte';
     return `<h${level}>${name}</h${level}>`;
   }
 
-  onMount(()=>{
-    console.log('onMount: filters:',query.filters)
-  })
+  let taskGroups:TaskGroup[]=[];
 
   // As task is modified, this codeblock will rerun at least four times
   // Modifying task will trigger at least two events - changed and resolved
   // Each event will trigger this codeblock at least two times because
   // In tasksCache store we trigger reactivity first by assigning new value to key
   // And then by returning that modified object in update callback, hence two times.
+  
+  const unsubscribe = plugin.taskCache.tasks.subscribe((tasksCache)=>{
+    const tasks = Object.keys(tasksCache).map((key) => tasksCache[key]);
+    taskGroups = query.applyQueryToTasks(tasks).groups;
+  })
 
-  // TODO: Figure out how to decrease the number of reloards
-
-  let tasksCache = plugin.taskCache.tasks;
-  $: tasks = Object.keys($tasksCache).map((key) => $tasksCache[key]);
-  $: taskGroups = query.applyQueryToTasks(tasks).groups;
+  onDestroy(()=>{unsubscribe()})
 
 </script>
 
