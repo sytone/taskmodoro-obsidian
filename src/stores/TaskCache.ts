@@ -26,7 +26,7 @@ export class TaskCache {
     this.app = app
 
     this.tasks = writable({})
-
+    this.tasks.subscribe(()=>{console.log('taskCache has been updated')})
   }
 
   /**

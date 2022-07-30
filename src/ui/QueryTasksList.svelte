@@ -1,16 +1,14 @@
 <script lang="ts">
   import type TQPlugin from '../main';
-  import { CalcTaskScore, Task } from '../FileInterface';
   import TaskTile from './TaskTile/TaskTile.svelte';
   import type { Component } from 'obsidian';
-  import { Dictionary, every, filter, forEach, groupBy, sortBy } from 'lodash';
-  import type { Writable } from 'svelte/store';
+
   import { TaskListTileParent } from '../Enums/component-context';
   import { TaskDetails } from '../TaskDetails';
   import type { Query } from '../Query';
+import { onMount } from 'svelte';
 
   export let plugin: TQPlugin;
-  export let view: Component;
 
   export let query: Query;
 
@@ -20,13 +18,17 @@
     return `<h${level}>${name}</h${level}>`;
   }
 
+  onMount(()=>{
+    console.log('onMount: filters:',query.filters)
+  })
+
   // As task is modified, this codeblock will rerun at least four times
   // Modifying task will trigger at least two events - changed and resolved
   // Each event will trigger this codeblock at least two times because
   // In tasksCache store we trigger reactivity first by assigning new value to key
   // And then by returning that modified object in update callback, hence two times.
 
-  // TODO: Find out where other reloads come from and improve reload number
+  // TODO: Figure out how to decrease the number of reloards
 
   let tasksCache = plugin.taskCache.tasks;
   $: tasks = Object.keys($tasksCache).map((key) => $tasksCache[key]);
@@ -42,7 +44,6 @@
     {/each}
       {#each taskGroup.tasks as task (task.file.path)}
         <TaskTile
-          {view}
           td={new TaskDetails(plugin, task)}
           parentComponent={TaskListTileParent.TasksList}
         />

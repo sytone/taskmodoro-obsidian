@@ -20,7 +20,6 @@
   import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import { preventModalOpenOnInternalLinksClick } from '../../Editor/InternalLink';
 
-  export let view: Component;
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
 

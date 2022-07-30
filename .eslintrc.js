@@ -153,6 +153,6 @@ module.exports = {
       },
     ],
     "use-isnan": "error",
-    "linebreak-style": ["error", "unix"],
+    "linebreak-style": ["error", "windows"],
   },
 };

@@ -7,6 +7,8 @@ import { Sort } from './Sort';
 import { Task } from './FileInterface';
 import type { TaskGroups } from './Query/TaskGroups';
 import { parseFilter } from './Query/FilterParser';
+import { time } from 'console';
+import { times } from 'lodash';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 
@@ -55,7 +57,7 @@ export class Query implements IQuery {
     private _error: string | undefined = undefined;
     private readonly _sorting: Sorting[] = [];
     private readonly _grouping: Grouping[] = [];
-
+    private timestamp: Date;
     // If a tag is specified the user can also add a number to specify
     // which one to sort by if there is more than one.
     private readonly sortByRegexp =
@@ -73,6 +75,7 @@ export class Query implements IQuery {
     private readonly commentRegexp = /^#.*/;
 
     constructor({ source }: { source: string }) {
+        this.timestamp = new Date()
         this.source = source;
         source
             .split('\n')
@@ -132,7 +135,7 @@ export class Query implements IQuery {
     }
 
     public applyQueryToTasks(tasks: Task[]): TaskGroups {
-        console.log('filters:',this.filters)
+        console.log('date:',window.moment(this.timestamp).format('H:m:s'),'reactive filters:',this.filters)
         this.filters.forEach((filter) => {
             tasks = tasks.filter(filter);
         });

@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable simple-import-sort/sort */
 import { FileInterface, Task } from './FileInterface'
 import { ISettings, settingsWithDefaults } from './Settings'
@@ -10,11 +11,12 @@ import {
   Setting,
 } from 'obsidian'
 
-import { Query } from './Query';
+import { Query } from './Query'
+import QueryRenderChild from './QueryRenderChild'
 import QueryTasksList from './ui/QueryTasksList.svelte'
 import SubtasksExpandedState from './Stores/SubtasksExpansionRecord'
 import { TaskCache } from './Stores/TaskCache'
-import type { TaskDetails } from './TaskDetails'
+import { TaskDetails } from './TaskDetails'
 import { TaskDetailsModal } from './Modals'
 import { TaskDetailsMode } from './Enums/component-context'
 import { TaskDetailsNavigation } from './Stores/TaskNavigationRecord'
@@ -85,7 +87,6 @@ export default class TQPlugin extends Plugin {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.fileInterface.handleTaskModified(file)
           console.log('onModify')
-
         }
       }),
     )
@@ -95,18 +96,15 @@ export default class TQPlugin extends Plugin {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
           console.log('onChanged')
-
         }
       }),
     )
-    
+
     this.registerEvent(
       this.app.metadataCache.on('resolve', file => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file)
           console.log('onResolve')
-
-
         }
       }),
     )
@@ -119,9 +117,12 @@ export default class TQPlugin extends Plugin {
       }),
     )
 
+
     this.registerMarkdownCodeBlockProcessor(
       'tq',
-      this.markdownCodeBlockProcessor,
+      (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+        ctx.addChild(new QueryRenderChild(this, el, source))
+      },
     )
 
     // this.registerObsidianProtocolHandler('tq', async params => {
@@ -174,22 +175,6 @@ export default class TQPlugin extends Plugin {
   private async loadSettings (): Promise<void> {
     this.settings = settingsWithDefaults(await this.loadData())
   }
-
-  private readonly markdownCodeBlockProcessor = (
-    source: string,
-    el: HTMLElement,
-    ctx: MarkdownPostProcessorContext,
-  ): void => {
-    new QueryTasksList({
-      target: el,
-      props: {
-        plugin: this,
-        view: null,
-        query: new Query({source}),
-        // state: writable(stateFromConfig(source.split('\n'))),
-      },
-    })
-  }
 }
 
 class SettingsTab extends PluginSettingTab {
@@ -228,7 +213,7 @@ class SettingsTab extends PluginSettingTab {
         }
       })
   }
-  
+
   private readonly addDefaultTaskDir = (setting: Setting): void => {
     setting
       .setName('Tasks Directory')
