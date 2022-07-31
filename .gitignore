@@ -2,3 +2,5 @@ node_modules
 yarn-cache
 main.js
 data.json
+.vscode
+.vs
