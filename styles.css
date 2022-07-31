@@ -28,6 +28,11 @@ Settings Page
 .tq{
   --pomodoro-rest-indicator: #2b81be;
   --pomodoro-work-indicator: var(--text-accent);
+  --overall-worktime-prop: #b63737;
+  --daily-worktime-prop: #af7853;
+  --repeat-prop:#c86092;
+  --due-prop: #8562cb;
+  --scheduled-prop:#54a8b4;
   --mid-blue-gray: #909595;
   --mid2-blue-gray: #686B6F;
   --mid3-blue-gray: #5b6060;
