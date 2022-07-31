@@ -18,6 +18,7 @@
     showDueDatePicker,
     showScheduledDatePicker,
   } from '../../Helpers/ShowPickers';
+  import TaskDetailsSidebarProp from './TaskDetailsSidebarProp.svelte';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -49,11 +50,10 @@
   const updater = () => {
     td = td;
   };
-
 </script>
 
 <div class="TaskDetails-sidebar">
-  <span class="sidebar-refs-container">
+  <span class="sidebar__external-actions-container">
     {#if mode !== TaskDetailsMode.Create}
       <TimerOpenBtn on:click={showPomodoroTaskView} />
     {/if}
@@ -65,74 +65,54 @@
     />
   </span>
   <div class="sidebar-container">
-    <div class="group">
-      <div class="label">Due date</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showDueDatePicker(td, mode, updater);
-        }}
-      >
-        {!td.due ? 'Someday' : td.due}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Scheduled date</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showScheduledDatePicker(td, mode, updater);
-        }}
-      >
-        {!td.scheduled ? 'Someday' : td.scheduled}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Repeat</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showRepeatPicker(td, mode, updater);
-        }}
-      >
-        {!td.recurringConfig
-          ? 'None'
-          : td.recurringConfig}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Pomodoro length</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showPomoLengthPicker(td, mode, updater);
-        }}
-      >
-        {`${td.pomodoroLenght.asMinutes()}min`}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Estimated worktime</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showEstWorktimePicker(td, mode, updater);
-        }}
-      >
-        {td.getWorktimeStr(td.estWorktime)}
-      </div>
-    </div>
-    <div class="group">
-      <div class="label">Daily scheduled worktime</div>
-      <div
-        class="sidebar-input"
-        on:click={() => {
-          showDailyScheduleWorktimePicker(td, mode, updater);
-        }}
-      >
-        {td.getWorktimeStr(td.dailyScheduledWorktime)}
-      </div>
-    </div>
+    <TaskDetailsSidebarProp
+      title="Due date"
+      onSelect={() => {
+        showDueDatePicker(td, mode, updater);
+      }}
+      value={!td.due ? 'Someday' : td.due}
+    />
+
+    <TaskDetailsSidebarProp
+      title="Scheduled date"
+      onSelect={() => {
+        showScheduledDatePicker(td, mode, updater);
+      }}
+      value={!td.scheduled ? 'Someday' : td.scheduled}
+    />
+
+    <TaskDetailsSidebarProp
+      title="Repeat"
+      onSelect={() => {
+        showRepeatPicker(td, mode, updater);
+      }}
+      value={!td.recurringConfig ? 'None' : td.recurringConfig}
+    />
+
+    <TaskDetailsSidebarProp
+      title="Pomodoro length"
+      onSelect={() => {
+        showPomoLengthPicker(td, mode, updater);
+      }}
+      value={`${td.pomodoroLenght.asMinutes()}min`}
+    />
+
+    <TaskDetailsSidebarProp
+      title="Estimated worktime"
+      onSelect={() => {
+        showEstWorktimePicker(td, mode, updater);
+      }}
+      value={td.getWorktimeStr(td.estWorktime)}
+    />
+
+    <TaskDetailsSidebarProp
+      title="Daily scheduled worktime"
+      onSelect={() => {
+        showDailyScheduleWorktimePicker(td, mode, updater);
+      }}
+      value={td.getWorktimeStr(td.dailyScheduledWorktime)}
+    />
+
     <div class="group">
       <div class="label">Tags</div>
       <TextSuggest
@@ -173,7 +153,7 @@
     justify-content: end;
   }
 
-  .sidebar-refs-container {
+  .sidebar__external-actions-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -191,19 +171,6 @@
 
   .group {
     padding-bottom: 24px;
-  }
-
-  .sidebar-input {
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    padding: 0 0;
-  }
-
-  .sidebar-input:hover,
-  .sidebar-input:focus {
-    cursor: pointer;
-    background-color: #1b1e20;
   }
 
   .label {

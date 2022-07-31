@@ -13,7 +13,7 @@
     cursor:pointer
   }
   
-  :global(.sidebar-refs-container .timer-open-btn  svg){
+  :global(.sidebar__external-actions-container .timer-open-btn  svg){
     width: 28px;
   }
 
