@@ -49,7 +49,7 @@
   const updater = () => {
     td = td;
   };
-  
+
 </script>
 
 <div class="TaskDetails-sidebar">
@@ -73,7 +73,7 @@
           showDueDatePicker(td, mode, updater);
         }}
       >
-        {td.due == '' || !td.due ? 'Someday' : td.due}
+        {!td.due ? 'Someday' : td.due}
       </div>
     </div>
     <div class="group">
@@ -84,7 +84,7 @@
           showScheduledDatePicker(td, mode, updater);
         }}
       >
-        {td.scheduled == '' || !td.scheduled ? 'Someday' : td.scheduled}
+        {!td.scheduled ? 'Someday' : td.scheduled}
       </div>
     </div>
     <div class="group">
@@ -95,7 +95,7 @@
           showRepeatPicker(td, mode, updater);
         }}
       >
-        {td.recurringConfig == '' || !td.recurringConfig
+        {!td.recurringConfig
           ? 'None'
           : td.recurringConfig}
       </div>
@@ -181,10 +181,8 @@
 
   .TaskDetails-sidebar {
     background-color: #151719;
-
     width: 30%;
     padding: 24px 24px;
-    /* position: relative; */
   }
 
   .sidebar-container {
