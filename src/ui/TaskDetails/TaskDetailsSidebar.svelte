@@ -1,24 +1,23 @@
 <script lang="ts">
-  import type { Frontmatter } from './../../Parser.ts';
-  import moment, { Duration, duration, Moment } from 'moment';
-
   import type { TaskDetails } from '../../TaskDetails';
   import { TaskDetailsMode } from '../../Enums/component-context';
-  import {
-    DatePickerModal,
-    DurationPickerModal,
-    RepeatPickerModal,
-  } from '../../Modals';
-  import { formatDate, formatFMDate } from '../../Helpers/Helpers';
-  import { externalLink } from '../../Graphics';
-  import { DurationPickerType } from '../../Enums/duration-picker-type';
+
   import TextSuggest from '../TextSuggest.svelte';
   import TimerOpenBtn from '../TimerOpenBtn.svelte';
   import ViewSourceBtn from '../ViewSourceBtn.svelte';
   import { onMount } from 'svelte';
-  import { findIndex, set } from 'lodash';
-  import type { get } from 'lodash';
-  import { stringify } from 'querystring';
+  import {
+    showEstWorktimePicker,
+    showDailyScheduleWorktimePicker,
+  } from '../../Helpers/ShowPickers';
+  import {
+    showRepeatPicker,
+    showPomoLengthPicker,
+  } from '../../Helpers/ShowPickers';
+  import {
+    showDueDatePicker,
+    showScheduledDatePicker,
+  } from '../../Helpers/ShowPickers';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -36,152 +35,6 @@
       }
     }
   });
-
-  const showDueDatePicker = () => {
-    let pickerStartDate = td.due == '' ? moment() : moment(td.due);
-
-    const onSet = (newDueDate: Moment) => {
-      td.due = formatDate(newDueDate);
-      td = td;
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
-      }
-    };
-
-    new DatePickerModal(
-      td.plugin.app,
-      pickerStartDate,
-      'Due date',
-      onSet,
-    ).open();
-  };
-
-  const showScheduledDatePicker = () => {
-    let pickerStartDate = td.scheduled == '' ? moment() : moment(td.scheduled);
-
-    const onSet = (newScheduledDate: Moment) => {
-      td.scheduled = formatDate(newScheduledDate);
-      td = td;
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          newScheduledDate,
-          'scheduled',
-        );
-        console.log('schedule_fm_update:', newScheduledDate);
-      }
-    };
-
-    new DatePickerModal(
-      td.plugin.app,
-      pickerStartDate,
-      'Schedule date',
-      onSet,
-    ).open();
-  };
-
-  const showRepeatPicker = () => {
-    let startRepeatPickerConfig = td.recurringConfig;
-
-    const onSet = (newRepeatConfig: string) => {
-      td.recurringConfig = newRepeatConfig;
-      td = td;
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          newRepeatConfig,
-          'repeat',
-        );
-      }
-    };
-
-    new RepeatPickerModal(td.plugin.app, startRepeatPickerConfig, onSet).open();
-  };
-
-  const showEstWorktimePicker = () => {
-    const onSet = (estWorktime: Duration) => {
-      td.estWorktime = estWorktime;
-
-      td = td;
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          {
-            minutes: estWorktime.asMinutes(),
-          },
-          'estimated_worktime',
-        );
-      }
-    };
-
-    new DurationPickerModal(
-      td.plugin.app,
-      'Estimated worktime',
-      td.estWorktime,
-      DurationPickerType.Worktime,
-      onSet,
-    ).open();
-  };
-
-  const showDailyScheduleWorktimePicker = () => {
-    const now = moment().format('YYYY-MM-DD');
-    console.log('now:', now);
-    const replacer = (value: any, frontmatter: Frontmatter) => {
-      var dailyWorktime = frontmatter.get('daily_scheduled_worktime');
-      if (!dailyWorktime) {
-        var dailyWorktime: { [key: string]: Object } = {};
-      }
-      dailyWorktime[now] = value;
-      return dailyWorktime;
-    };
-
-    const onSet = (dailyScheduledWorktime: Duration) => {
-      td.dailyScheduledWorktime = dailyScheduledWorktime;
-
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          { minutes: dailyScheduledWorktime.asMinutes() },
-          'daily_scheduled_worktime',
-          false,
-          replacer,
-        );
-      }
-    };
-
-    new DurationPickerModal(
-      td.plugin.app,
-      'Daily scheduled worktime',
-      td.dailyScheduledWorktime,
-      DurationPickerType.Worktime,
-      onSet,
-    ).open();
-  };
-
-  const showPomoLengthPicker = () => {
-    const onSet = (newPomoDuration: Duration) => {
-      td.pomodoroLenght = newPomoDuration;
-
-      td = td;
-      if (mode == TaskDetailsMode.Update) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          {
-            minutes: newPomoDuration.asMinutes(),
-          },
-          'pomodoro_length',
-        );
-      }
-    };
-
-    new DurationPickerModal(
-      td.plugin.app,
-      'Pomodoro length',
-      td.pomodoroLenght,
-      DurationPickerType.PomodoroLength,
-      onSet,
-    ).open();
-  };
 
   const updateTagsFm = () => {
     if (mode == TaskDetailsMode.Update) {
@@ -209,19 +62,22 @@
   <div class="sidebar-container">
     <div class="group">
       <div class="label">Due date</div>
-      <div class="sidebar-input" on:click={showDueDatePicker}>
+      <div class="sidebar-input" on:click={() => showDueDatePicker(td, mode)}>
         {td.due == '' || !td.due ? 'Someday' : td.due}
       </div>
     </div>
     <div class="group">
       <div class="label">Scheduled date</div>
-      <div class="sidebar-input" on:click={showScheduledDatePicker}>
+      <div
+        class="sidebar-input"
+        on:click={() => showScheduledDatePicker(td, mode)}
+      >
         {td.scheduled == '' || !td.scheduled ? 'Someday' : td.scheduled}
       </div>
     </div>
     <div class="group">
       <div class="label">Repeat</div>
-      <div class="sidebar-input" on:click={showRepeatPicker}>
+      <div class="sidebar-input" on:click={() => showRepeatPicker(td, mode)}>
         {td.recurringConfig == '' || !td.recurringConfig
           ? 'None'
           : td.recurringConfig}
@@ -229,19 +85,28 @@
     </div>
     <div class="group">
       <div class="label">Pomodoro length</div>
-      <div class="sidebar-input" on:click={showPomoLengthPicker}>
+      <div
+        class="sidebar-input"
+        on:click={() => showPomoLengthPicker(td, mode)}
+      >
         {`${td.pomodoroLenght.asMinutes()}min`}
       </div>
     </div>
     <div class="group">
       <div class="label">Estimated worktime</div>
-      <div class="sidebar-input" on:click={showEstWorktimePicker}>
+      <div
+        class="sidebar-input"
+        on:click={() => showEstWorktimePicker(td, mode)}
+      >
         {td.getWorktimeStr(td.estWorktime)}
       </div>
     </div>
     <div class="group">
       <div class="label">Daily scheduled worktime</div>
-      <div class="sidebar-input" on:click={showDailyScheduleWorktimePicker}>
+      <div
+        class="sidebar-input"
+        on:click={() => showDailyScheduleWorktimePicker(td, mode)}
+      >
         {td.getWorktimeStr(td.dailyScheduledWorktime)}
       </div>
     </div>

@@ -4,13 +4,12 @@ import type { Duration, Moment } from 'moment'
 import DatePicker from './UI/pickers/DuePicker.svelte'
 import DurationPicker from './UI/pickers/DurationPicker/DurationPicker.svelte'
 import type { DurationPickerType } from './Enums/duration-picker-type'
-import RepeatPicker from './UI/pickers/RepeatPicker.svelte'
+import RepeatPicker from './UI/Pickers/RepeatPicker.svelte'
 import type TQPlugin from './main'
-import type { Task } from './FileInterface'
-import { TaskDetails } from './TaskDetails';
+
 import type { TaskDetailsMode } from './Enums/component-context'
 import TaskDetailsUI from './UI/TaskDetails/TaskDetailsUI.svelte'
-import { on } from 'events'
+
 
 export class TaskDetailsModal extends Modal {
   private readonly mode: TaskDetailsMode

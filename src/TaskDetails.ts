@@ -1,5 +1,4 @@
 import type { FileName, Task } from './FileInterface'
-import { FilePath as FileName } from './FileInterface';
 import { durationFormat, formatDate } from './Helpers/Helpers'
 import type TQPlugin from './main'
 import { toInteger } from 'lodash'

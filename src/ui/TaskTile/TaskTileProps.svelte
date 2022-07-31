@@ -1,24 +1,25 @@
 <script lang="ts">
   import type { TaskDetails } from '../../TaskDetails';
   import { durationFormat } from '../../Helpers/Helpers';
-  import {
-    RepeatPickerModal,
-    DatePickerModal,
-    DurationPickerModal,
-  } from '../../Modals';
-  import type { Moment } from 'moment';
-  import type { Duration } from 'moment';
   import { calendar, hourglass, repeat, timer } from '../../Graphics';
-  import { DurationPickerType } from '../../Enums/duration-picker-type';
   import { onMount } from 'svelte';
   import { Render } from '../../Helpers/Render';
+  import { TaskDetailsMode } from '../../Enums/component-context';
+  import {
+    showScheduledDatePicker,
+    showRepeatPicker,
+  } from '../../Helpers/ShowPickers';
+  import {
+    showEstWorktimePicker,
+    showDueDatePicker,
+  } from '../../Helpers/ShowPickers';
   export let td: TaskDetails;
 
   let showWorktimeProp: boolean;
   let showEstWorktimeProp: boolean;
   let tagsEl: HTMLElement[] = [];
   let cleanedTags = td.cleanTags(td.tags);
-
+  const mode = TaskDetailsMode.Update;
   $: {
     showEstWorktimeProp = td.estWorktime && td.estWorktime.asMinutes() !== 0;
     let showSpentWorktimeProp =
@@ -37,74 +38,6 @@
       Render.renderMD(tags[i], tagsEl[i], td.file);
     }
   };
-
-  const showDuePicker = () => {
-    new DatePickerModal(
-      td.plugin.app,
-      window.moment(td.due),
-      'Due date',
-      (newDueDate: Moment) => {
-        if (td.file) {
-          td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
-        }
-      },
-    ).open();
-  };
-
-  const showSchedulePicker = () => {
-    new DatePickerModal(
-      td.plugin.app,
-      window.moment(td.due),
-      'Schedule date',
-      (newScheduledDate: Moment) => {
-        if (td.file) {
-          td.plugin.fileInterface.updateFMProp(
-            td.file,
-            newScheduledDate,
-            'scheduled',
-          );
-        }
-      },
-    ).open();
-  };
-
-  const showRepeatPicker = () => {
-    new RepeatPickerModal(
-      td.plugin.app,
-      td.recurringConfig,
-      (newRepeatConfig: string) => {
-        if (td.file) {
-          td.plugin.fileInterface.updateFMProp(
-            td.file,
-            newRepeatConfig,
-            'repeat',
-          );
-        }
-      },
-    ).open();
-  };
-
-  const showEstWorktimePicker = () => {
-    const onSet = (estWorktime: Duration) => {
-      if (td.file) {
-        td.plugin.fileInterface.updateFMProp(
-          td.file,
-          {
-            minutes: estWorktime.asMinutes(),
-          },
-          'estimated_worktime',
-        );
-      }
-    };
-
-    new DurationPickerModal(
-      td.plugin.app,
-      'Estimated worktime',
-      td.estWorktime,
-      DurationPickerType.Worktime,
-      onSet,
-    ).open();
-  };
 </script>
 
 <div class="props-container">
@@ -119,7 +52,7 @@
       {#if showEstWorktimeProp}
         <span id="worktime-seperator"> / </span>
         <span
-          on:click={showEstWorktimePicker}
+          on:click={() => showEstWorktimePicker(td, mode)}
           id="est-worktime-container"
           class="prop"
         >
@@ -132,13 +65,13 @@
     </span>
   {/if}
   {#if td.due && td.due !== ''}
-    <span class="prop" on:click={showDuePicker}>
+    <span class="prop" on:click={() => showDueDatePicker(td, mode)}>
       {@html calendar}
       <span class="prop-text" id="due">{td.due?.format('YYYY-MM-DD')}</span>
     </span>
   {/if}
   {#if td.scheduled && td.scheduled !== ''}
-    <span class="prop" on:click={showSchedulePicker}>
+    <span class="prop" on:click={() => showScheduledDatePicker(td, mode)}>
       {@html hourglass}
       <span class="prop-text" id="scheduled"
         >{td.scheduled?.format('YYYY-MM-DD')}</span
@@ -146,7 +79,7 @@
     </span>
   {/if}
   {#if td.recurringConfig && td.recurringConfig !== ''}
-    <span class="prop" on:click={showRepeatPicker}>
+    <span class="prop" on:click={() => showRepeatPicker(td, mode)}>
       {@html repeat}
       <span class="prop-text" id="repeat"
         >{td.recurringConfig?.toLowerCase()}</span

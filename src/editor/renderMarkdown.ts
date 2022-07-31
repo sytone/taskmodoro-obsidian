@@ -9,14 +9,14 @@
 
 import { CachedMetadata, MarkdownRenderer, TFile, View, setIcon } from 'obsidian'
 
-import type { FilePath } from '../FileInterface';
-import type TQPlugin from '../main';
 import { c } from './EditorHelpers';
 
 // import { t } from 'src/lang/Helpers';
+import type { FilePath } from '../FileInterface';
+import type TQPlugin from '../main';
 
 // quick replacement
-const t = (str:string)=>{
+const t = (str: string) => {
   return str
 }
 
@@ -27,7 +27,7 @@ const videoExt = ['mp4', 'webm', 'ogv']
 const noBreakSpace = /\u00A0/g
 const illigalChars = /[!"#$%&()*+,.:;<=>?@^`{|}~/[\]\\]/g
 
-function sanitize (e: string): string {
+function sanitize(e: string): string {
   return e
     .replace(illigalChars, ' ')
     .replace(/\s+/g, ' ')
@@ -40,7 +40,7 @@ interface NormalizedPath {
   alias: string
 }
 
-export function getNormalizedPath (path: string): NormalizedPath {
+export function getNormalizedPath(path: string): NormalizedPath {
   const stripped = path.replace(noBreakSpace, ' ').normalize('NFC')
 
   // split on first occurance of '|'
@@ -60,7 +60,7 @@ export function getNormalizedPath (path: string): NormalizedPath {
   }
 }
 
-function getSubpathBoundary (fileCache: CachedMetadata, subpath: string) {
+function getSubpathBoundary(fileCache: CachedMetadata, subpath: string) {
   if (!fileCache || !subpath) return null
 
   const pathArr = subpath.split('#').filter(e => {
@@ -113,7 +113,7 @@ function getSubpathBoundary (fileCache: CachedMetadata, subpath: string) {
       !targetHeading &&
       currentHeading.level > targetHeadingLevel &&
       sanitize(currentHeading.heading).toLowerCase() ===
-        sanitize(pathArr[l]).toLowerCase()
+      sanitize(pathArr[l]).toLowerCase()
     ) {
       l++
       targetHeadingLevel = currentHeading.level
@@ -125,27 +125,27 @@ function getSubpathBoundary (fileCache: CachedMetadata, subpath: string) {
 
   return targetHeading
     ? {
-        type: 'heading',
-        current: targetHeading,
-        next: nextHeading,
-        start: targetHeading.position.start.offset,
-        end: nextHeading ? nextHeading.position.start.offset : null,
-        startLine: targetHeading.position.start.line,
-        endLine: nextHeading ? nextHeading.position.end.line : null,
-      }
+      type: 'heading',
+      current: targetHeading,
+      next: nextHeading,
+      start: targetHeading.position.start.offset,
+      end: nextHeading ? nextHeading.position.start.offset : null,
+      startLine: targetHeading.position.start.line,
+      endLine: nextHeading ? nextHeading.position.end.line : null,
+    }
     : null
 }
 
-function applyCheckboxIndexes (dom: HTMLDivElement) {
+function applyCheckboxIndexes(dom: HTMLDivElement) {
   const checkboxes = dom.querySelectorAll('.task-list-item-checkbox')
 
   checkboxes.forEach((el, i) => {
-    ;(el as HTMLElement).dataset.checkboxIndex = i.toString()
+    ; (el as HTMLElement).dataset.checkboxIndex = i.toString()
   })
 }
 
-function findUnresolvedLinks (dom: HTMLDivElement, taskFilePath: FilePath,plugin:TQPlugin) {
-   
+function findUnresolvedLinks(dom: HTMLDivElement, taskFilePath: FilePath, plugin: TQPlugin) {
+
   const links = dom.querySelectorAll('.internal-link')
 
   links.forEach(link => {
@@ -161,7 +161,7 @@ function findUnresolvedLinks (dom: HTMLDivElement, taskFilePath: FilePath,plugin
   })
 }
 
-function handleImage (el: HTMLElement, file: TFile, plugin: TQPlugin) {
+function handleImage(el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.empty()
 
   el.createEl(
@@ -185,7 +185,7 @@ function handleImage (el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.addClasses(['image-embed', 'is-loaded'])
 }
 
-function handleAudio (el: HTMLElement, file: TFile, plugin: TQPlugin) {
+function handleAudio(el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.empty()
   el.createEl('audio', {
     attr: { controls: '', src: plugin.app.vault.getResourcePath(file) },
@@ -193,7 +193,7 @@ function handleAudio (el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.addClasses(['media-embed', 'is-loaded'])
 }
 
-function handleVideo (el: HTMLElement, file: TFile, plugin: TQPlugin) {
+function handleVideo(el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.empty()
 
   el.createEl(
@@ -216,7 +216,7 @@ function handleVideo (el: HTMLElement, file: TFile, plugin: TQPlugin) {
   el.addClasses(['media-embed', 'is-loaded'])
 }
 
-async function getEmbeddedMarkdownString (
+async function getEmbeddedMarkdownString(
   file: TFile,
   normalizedPath: NormalizedPath,
   plugin: TQPlugin,
@@ -245,9 +245,8 @@ async function getEmbeddedMarkdownString (
     }
   } else if (normalizedPath.subpath) {
     return {
-      markdown: `${t('Unable to find')} ${normalizedPath.root}${
-        normalizedPath.subpath
-      }`,
+      markdown: `${t('Unable to find')} ${normalizedPath.root}${normalizedPath.subpath
+        }`,
       boundary: null,
     }
   }
@@ -286,7 +285,7 @@ async function getEmbeddedMarkdownString (
 //   }, 2000)
 // }
 
-async function handleMarkdown (
+async function handleMarkdown(
   el: HTMLElement,
   file: TFile,
   normalizedPath: NormalizedPath,
@@ -359,13 +358,13 @@ async function handleMarkdown (
   }
 
   if (depth > 0) {
-    await handleEmbeds(dom, file.path,plugin, --depth)
+    await handleEmbeds(dom, file.path, plugin, --depth)
   }
 }
 
 
 
-function handleUnknownFile (el: HTMLElement, file: TFile) {
+function handleUnknownFile(el: HTMLElement, file: TFile) {
   el.addClass('is-loaded')
   el.empty()
   el.createEl(
@@ -382,7 +381,7 @@ function handleUnknownFile (el: HTMLElement, file: TFile) {
   )
 }
 
-function handleEmbeds (dom: HTMLDivElement,filePath:FilePath,plugin: TQPlugin, depth: number) {
+function handleEmbeds(dom: HTMLDivElement, filePath: FilePath, plugin: TQPlugin, depth: number) {
   return Promise.all(
     dom.findAll('.internal-embed').map(async el => {
       const src = el.getAttribute('src')
@@ -419,7 +418,7 @@ function handleEmbeds (dom: HTMLDivElement,filePath:FilePath,plugin: TQPlugin, d
   )
 }
 
-export async function renderMarkdown (
+export async function renderMarkdown(
   plugin: TQPlugin,
   taskFilePath: FilePath,
   mdStr: string,
@@ -435,9 +434,9 @@ export async function renderMarkdown (
     )
 
     applyCheckboxIndexes(dom)
-    findUnresolvedLinks(dom,taskFilePath,plugin)
+    findUnresolvedLinks(dom, taskFilePath, plugin)
 
-    await handleEmbeds(dom,taskFilePath,plugin, 5)
+    await handleEmbeds(dom, taskFilePath, plugin, 5)
   } catch (e) {
     console.error(e)
   }
