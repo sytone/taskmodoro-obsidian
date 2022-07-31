@@ -1,7 +1,7 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian'
 
 import type { Duration } from 'moment'
-import SidebarTimerTaskView from './ui/SidebarTimer/SidebarTimerTaskView.svelte'
+import SidebarTimerTaskView from './UI/SidebarTimer/SidebarTimerTaskView.svelte'
 import type TQPlugin from './main'
 import type { Task } from './FileInterface'
 import type { TaskDetails } from './TaskDetails';
@@ -12,29 +12,29 @@ export class TimerTaskView extends ItemView {
   private readonly plugin: TQPlugin
   public td: TaskDetails
 
-  constructor (leaf: WorkspaceLeaf, plugin: TQPlugin) {
+  constructor(leaf: WorkspaceLeaf, plugin: TQPlugin) {
     super(leaf)
     this.plugin = plugin
   }
 
-  getViewType (): string {
+  getViewType(): string {
     return VIEW_TYPE_POMODORO_TASK
   }
-  getDisplayText (): string {
+  getDisplayText(): string {
     return 'Tq pomodoro'
   }
 
-  getIcon (): string {
+  getIcon(): string {
     return 'clock'
   }
 
-  async onOpen (): Promise<void> {
+  async onOpen(): Promise<void> {
     console.log('onOpen task view')
     const content = this.containerEl.children[1]
     content.empty()
     new SidebarTimerTaskView({
       target: content,
-      props: { plugin: this.plugin, td: this.td},
+      props: { plugin: this.plugin, td: this.td },
     })
   }
 

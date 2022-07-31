@@ -1,27 +1,27 @@
 import { App, Modal } from 'obsidian'
 import type { Duration, Moment } from 'moment'
 
-import DatePicker from './ui/pickers/DuePicker.svelte'
-import DurationPicker from './ui/pickers/DurationPicker/DurationPicker.svelte'
+import DatePicker from './UI/pickers/DuePicker.svelte'
+import DurationPicker from './UI/pickers/DurationPicker/DurationPicker.svelte'
 import type { DurationPickerType } from './Enums/duration-picker-type'
-import RepeatPicker from './ui/pickers/RepeatPicker.svelte'
+import RepeatPicker from './UI/pickers/RepeatPicker.svelte'
 import type TQPlugin from './main'
 import type { Task } from './FileInterface'
 import { TaskDetails } from './TaskDetails';
 import type { TaskDetailsMode } from './Enums/component-context'
-import TaskDetailsUI from './ui/TaskDetails/TaskDetailsUI.svelte'
+import TaskDetailsUI from './UI/TaskDetails/TaskDetailsUI.svelte'
 import { on } from 'events'
 
 export class TaskDetailsModal extends Modal {
   private readonly mode: TaskDetailsMode
   private readonly filePath: string
   private readonly plugin: TQPlugin
-  constructor (
+  constructor(
     plugin: TQPlugin,
     mode: TaskDetailsMode,
   ) {
     super(plugin.app)
-    this.plugin=plugin
+    this.plugin = plugin
     this.mode = mode
   }
 
@@ -53,7 +53,7 @@ export class DurationPickerModal extends Modal {
   private readonly duration: Duration
   private readonly set: (duration: Duration) => void
   private readonly type: DurationPickerType
-  constructor (
+  constructor(
     app: App,
     title: string,
     duration: Duration,
@@ -92,7 +92,7 @@ export class DatePickerModal extends Modal {
   private readonly startDate: Moment
   private readonly set: (date: Moment) => void
   private readonly title: string
-  constructor (
+  constructor(
     app: App,
     startDate: Moment,
     title: string,
@@ -128,7 +128,7 @@ export class RepeatPickerModal extends Modal {
   private readonly repeatConfig: string
   private readonly set: (repeatConfig: string) => void
 
-  constructor (
+  constructor(
     app: App,
     repeatConfig: string,
     set: (repeatConfig: string) => void,

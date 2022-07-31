@@ -5,7 +5,6 @@
   import { TaskListTileParent } from '../../Enums/component-context';
   import TaskListTile from '../TaskTile/TaskTile.svelte';
   import TimerView from './TimerView.svelte';
-  import moment from 'moment';
   import type { TaskDetails } from 'src/TaskDetails';
   import PomodoroSessionProgress from './PomodoroSessionProgress.svelte';
   import PomodoroSession from '../../Stores/PomodoroSession';
@@ -21,7 +20,6 @@
      {pomodoroSession}
     >
       <TaskListTile
-        view={null}
         bind:td
         parentComponent={TaskListTileParent.TimerTaskView}
       />

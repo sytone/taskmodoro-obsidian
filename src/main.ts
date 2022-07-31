@@ -13,7 +13,7 @@ import {
 
 import { Query } from './Query';
 import QueryRenderChild from './QueryRenderChild';
-import QueryTasksList from './ui/QueryTasksList.svelte';
+import QueryTasksList from './UI/QueryTasksList.svelte';
 import SubtasksExpandedState from './Stores/SubtasksExpansionRecord';
 import { TaskCache } from './Stores/TaskCache';
 import { TaskDetails } from './TaskDetails';

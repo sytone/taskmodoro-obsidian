@@ -14,7 +14,7 @@
   import { TaskListTileParent as TaskTileParent } from '../../Enums/component-context';
   import type { Task } from '../../FileInterface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
-  import { Render } from '../../Helpers/Render';
+
   import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3';
   type Moment = moment.Moment;
   import { renderMarkdown } from '../../Editor/RenderMarkdown';

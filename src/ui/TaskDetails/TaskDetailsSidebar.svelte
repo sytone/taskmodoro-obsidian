@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Frontmatter } from './../../Parser.ts';
   import moment, { Duration, duration, Moment } from 'moment';
 
   import type { TaskDetails } from '../../TaskDetails';
@@ -14,7 +15,10 @@
   import TextSuggest from '../TextSuggest.svelte';
   import TimerOpenBtn from '../TimerOpenBtn.svelte';
   import ViewSourceBtn from '../ViewSourceBtn.svelte';
-import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
+  import { findIndex, set } from 'lodash';
+  import type { get } from 'lodash';
+  import { stringify } from 'querystring';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -25,13 +29,13 @@ import { onMount } from 'svelte';
     isCreateBtnEnabled = td.taskName != '';
   }
 
-  onMount(()=>{
-    if(mode===TaskDetailsMode.Create){
-      if(td.parents.length === 0){
-          td.tags = td.plugin.settings.RootTasksTags + td.tags
-        }
+  onMount(() => {
+    if (mode === TaskDetailsMode.Create) {
+      if (td.parents.length === 0) {
+        td.tags = td.plugin.settings.RootTasksTags + td.tags;
+      }
     }
-  })
+  });
 
   const showDueDatePicker = () => {
     let pickerStartDate = td.due == '' ? moment() : moment(td.due);
@@ -114,7 +118,42 @@ import { onMount } from 'svelte';
       td.plugin.app,
       'Estimated worktime',
       td.estWorktime,
-      DurationPickerType.EstimatedWorktime,
+      DurationPickerType.Worktime,
+      onSet,
+    ).open();
+  };
+
+  const showDailyScheduleWorktimePicker = () => {
+    const now = moment().format('YYYY-MM-DD');
+    console.log('now:', now);
+    const replacer = (value: any, frontmatter: Frontmatter) => {
+      var dailyWorktime = frontmatter.get('daily_scheduled_worktime');
+      if (!dailyWorktime) {
+        var dailyWorktime: { [key: string]: Object } = {};
+      }
+      dailyWorktime[now] = value;
+      return dailyWorktime;
+    };
+
+    const onSet = (dailyScheduledWorktime: Duration) => {
+      td.dailyScheduledWorktime = dailyScheduledWorktime;
+
+      if (mode == TaskDetailsMode.Update) {
+        td.plugin.fileInterface.updateFMProp(
+          td.file,
+          { minutes: dailyScheduledWorktime.asMinutes() },
+          'daily_scheduled_worktime',
+          false,
+          replacer,
+        );
+      }
+    };
+
+    new DurationPickerModal(
+      td.plugin.app,
+      'Daily scheduled worktime',
+      td.dailyScheduledWorktime,
+      DurationPickerType.Worktime,
       onSet,
     ).open();
   };
@@ -183,7 +222,9 @@ import { onMount } from 'svelte';
     <div class="group">
       <div class="label">Repeat</div>
       <div class="sidebar-input" on:click={showRepeatPicker}>
-        {td.recurringConfig == '' || !td.recurringConfig ? 'None' : td.recurringConfig}
+        {td.recurringConfig == '' || !td.recurringConfig
+          ? 'None'
+          : td.recurringConfig}
       </div>
     </div>
     <div class="group">
@@ -195,7 +236,13 @@ import { onMount } from 'svelte';
     <div class="group">
       <div class="label">Estimated worktime</div>
       <div class="sidebar-input" on:click={showEstWorktimePicker}>
-        {td.estWorktimeStr}
+        {td.getWorktimeStr(td.estWorktime)}
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Daily scheduled worktime</div>
+      <div class="sidebar-input" on:click={showDailyScheduleWorktimePicker}>
+        {td.getWorktimeStr(td.dailyScheduledWorktime)}
       </div>
     </div>
     <div class="group">
@@ -216,7 +263,7 @@ import { onMount } from 'svelte';
       <button
         disabled={!isCreateBtnEnabled}
         class="mod-cta create-btn
-                        {isCreateBtnEnabled ? '' : 'disabled-btn'}"
+                                {isCreateBtnEnabled ? '' : 'disabled-btn'}"
         on:click={td.create}>Create</button
       >
     </div>
@@ -228,6 +275,7 @@ import { onMount } from 'svelte';
     padding-bottom: 8px;
     border-bottom: 1px solid #2a2d30;
   }
+
   .create-btn {
     width: 100%;
   }

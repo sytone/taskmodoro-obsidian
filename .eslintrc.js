@@ -12,20 +12,23 @@ module.exports = {
     "jsdoc",
     "prefer-arrow",
     "simple-import-sort",
-    "prettier"
+    "prettier",
+    "plugin:svelte/prettier",
   ],
   extends: [
     "prettier"
   ],
   rules: {
-    "prettier/prettier": "error" ,
+    "prettier/prettier": "error",
     "@typescript-eslint/array-type": "error",
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/consistent-type-definitions": "error",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
-      { allowExpressions: true },
+      {
+        allowExpressions: true
+      },
     ],
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
@@ -65,20 +68,30 @@ module.exports = {
         format: ["camelCase", "PascalCase", "snake_case", "UPPER_CASE"],
         leadingUnderscore: "allow",
       },
-      { selector: "typeLike", format: ["PascalCase"] },
-      { selector: "enumMember", format: ["PascalCase"] },
+      {
+        selector: "typeLike",
+        format: ["PascalCase"]
+      },
+      {
+        selector: "enumMember",
+        format: ["PascalCase"]
+      },
     ],
     // "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-extraneous-class": "error",
     //"@typescript-eslint/no-namespace": "error",
     "@typescript-eslint/no-non-null-assertion": "error",
-    "@typescript-eslint/no-this-alias": ["error", { allowDestructuring: true }],
+    "@typescript-eslint/no-this-alias": ["error", {
+      allowDestructuring: true
+    }],
     "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-unused-expressions": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-readonly": "error",
-    "@typescript-eslint/quotes": ["error", "single", { avoidEscape: true }],
+    "@typescript-eslint/quotes": ["error", "single", {
+      avoidEscape: true
+    }],
     "arrow-body-style": ["error", "as-needed"],
     "constructor-super": "error",
     curly: ["error", "multi-line"],
@@ -130,7 +143,9 @@ module.exports = {
     "object-shorthand": "error",
     "one-var": ["error", "never"],
     "prefer-arrow/prefer-arrow-functions": "error",
-    "prefer-const": ["error", { destructuring: "all" }],
+    "prefer-const": ["error", {
+      destructuring: "all"
+    }],
     "prefer-object-spread": "error",
     "prefer-rest-params": "error",
     radix: "error",
@@ -153,8 +168,12 @@ module.exports = {
       "error",
       "always",
       {
-        line: { markers: ["#region", "#endregion"] },
-        block: { balanced: true },
+        line: {
+          markers: ["#region", "#endregion"]
+        },
+        block: {
+          balanced: true
+        },
       },
     ],
     "use-isnan": "error",

@@ -31,7 +31,7 @@
       mSwitcherData = pomoLenMin;
       mSwitcherSelectedPos = duration.asMinutes();
       currValueTitle = `${mSwitcherSelectedPos}min`;
-    } else if (type === DurationPickerType.EstimatedWorktime) {
+    } else if (type === DurationPickerType.Worktime) {
       hSwitcherType = SwitcherType.WorktimeHrs;
       hSwitcherData = worktimeHrs;
       hSwitcherSelectedPos = duration.days() * 24 + duration.hours();

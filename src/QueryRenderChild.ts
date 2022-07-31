@@ -5,7 +5,7 @@ import TQPlugin from './main'
 
 export default class QueryRenderChild extends MarkdownRenderChild {
   private readonly queryTaskList: any
-  constructor (plugin: TQPlugin, container: HTMLElement, source: string) {
+  constructor(plugin: TQPlugin, container: HTMLElement, source: string) {
     super(container)
     this.queryTaskList = new QueryTasksList({
       target: container,
@@ -15,7 +15,7 @@ export default class QueryRenderChild extends MarkdownRenderChild {
       },
     })
   }
-  public onunload (): void {
+  public onunload(): void {
     this.queryTaskList.$destroy()
   }
 }

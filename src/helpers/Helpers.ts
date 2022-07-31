@@ -20,15 +20,15 @@ export const durationFormat = (dur: Duration): string => {
       return `${hrs}h`
     }
     return `${hrs}h ${mins}min`
-  } 
-    return `${mins}min`
-  
+  }
+  return `${mins}min`
+
 }
 
 export const getTextAbv = (text: string, charCnt: number): string => {
   if (text.length > charCnt) {
     return text.substring(0, charCnt) + '...'
-  } 
-    return text
-  
+  }
+  return text
+
 }

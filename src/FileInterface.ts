@@ -13,6 +13,7 @@ import type { TaskDetails } from './TaskDetails'
 import { getTextAbv } from './Helpers/Helpers';
 import { isArrayLike } from 'lodash'
 import moment from 'moment'
+import { Frontmatter } from './Parser';
 
 export interface Task {
   file: TFile
@@ -73,7 +74,7 @@ export class FileInterface {
   private readonly plugin: TQPlugin
   private readonly app: App
 
-  public constructor (plugin: TQPlugin, app: App) {
+  public constructor(plugin: TQPlugin, app: App) {
     this.plugin = plugin
     this.app = app
     this.tasksDir = this.plugin.settings.TasksDir
@@ -83,17 +84,17 @@ export class FileInterface {
     afile: TAbstractFile,
   ): Promise<void> => {
     return
-    const tfile = this.app.metadataCache.getFirstLinkpathDest(afile.path, '/')
-    if (!tfile) {
-      console.debug('tq: Unable to find TFile for TAFile: ' + afile.path)
-      return
-    }
+    // const tfile = this.app.metadataCache.getFirstLinkpathDest(afile.path, '/')
+    // if (!tfile) {
+    //   console.debug('tq: Unable to find TFile for TAFile: ' + afile.path)
+    //   return
+    // }
 
-    return modifyFileContents(
-      tfile,
-      this.app.vault,
-      (lines: string[]): boolean => this.processRepeating(tfile.path, lines),
-    )
+    // return modifyFileContents(
+    //   tfile,
+    //   this.app.vault,
+    //   (lines: string[]): boolean => this.processRepeating(tfile.path, lines),
+    // )
   }
 
   public readonly setTimerActivity = (
@@ -133,7 +134,7 @@ export class FileInterface {
     value: Moment | string | string[] | Number | Object,
     propName: string,
     appendArr = false,
-    reloadParent = true
+    replacer: (value: any, Frontmatter: Frontmatter) => any = null
   ): Promise<void> =>
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
@@ -145,7 +146,12 @@ export class FileInterface {
       }
 
       if (appendArr) {
-        value = this.appendValue(propName,value,frontmatter)
+        value = this.appendValue(propName, value, frontmatter)
+      }
+
+      if (!appendArr && replacer) {
+        value = replacer(value, frontmatter)
+        console.log('replacer_value:', value)
       }
 
       frontmatter.set(propName, value)
@@ -224,7 +230,7 @@ export class FileInterface {
     td: TaskDetails,
   ): Promise<string> => {
     const subtasksFileNames: string[] = []
-    
+
     // First we store subtasks recursively and get their file names 
     for (const subtask of td.subtasks) {
       const fileName = await this.storeNestedTasks(subtask)
@@ -250,7 +256,7 @@ export class FileInterface {
         `${this.tasksDir}/${fileName}`,
         '/',
       )
-      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true,false)
+      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true, false)
     }
 
     return currTaskPath
@@ -293,17 +299,19 @@ export class FileInterface {
     return fileName
   }
 
-  private readonly appendValue = (propName: string,value: any,frontmatter:Frontmatter): any=> {
+  private readonly appendValue = (propName: string, value: any, frontmatter: Frontmatter): any => {
     const fmArr = frontmatter.get(propName)
     if (!fmArr) {
       value = [value]
+
     }
     if (fmArr && isArrayLike(fmArr)) {
       value = [...fmArr, value]
+
     }
     return value
   }
-  
+
   /**
    * @return YAML frontmatter
    */
@@ -372,7 +380,7 @@ export class FileInterface {
     }
     contents.push('## Task')
     contents.push('- [ ] ' + taskName)
-    
+
     contents.push(
       `\n ${FileInterface.descStartToken}\n${description}\n${FileInterface.descEndToken}`,
     )

@@ -101,7 +101,7 @@
       td.plugin.app,
       'Estimated worktime',
       td.estWorktime,
-      DurationPickerType.EstimatedWorktime,
+      DurationPickerType.Worktime,
       onSet,
     ).open();
   };
@@ -148,12 +148,13 @@
   {#if td.recurringConfig && td.recurringConfig !== ''}
     <span class="prop" on:click={showRepeatPicker}>
       {@html repeat}
-      <span class="prop-text" id="repeat">{td.recurringConfig?.toLowerCase()}</span
+      <span class="prop-text" id="repeat"
+        >{td.recurringConfig?.toLowerCase()}</span
       >
     </span>
   {/if}
   {#if cleanedTags.length !== 0}
-    {#each cleanedTags as tag, i (tag+i)}
+    {#each cleanedTags as tag, i (tag + i)}
       <span id="task-tag" bind:this={tagsEl[i]} class="prop" />
     {/each}
   {/if}
@@ -166,8 +167,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-    padding-top:2px;
-    padding-bottom:4px;
+    padding-top: 2px;
+    padding-bottom: 4px;
     row-gap: 8px;
   }
 
