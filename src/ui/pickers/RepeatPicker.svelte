@@ -48,7 +48,6 @@ import { RepeatAdapter } from '../../Repeat';
   ];
 
   export let repeatConfig: string;
-  export let repeats: boolean;
   export let set: (repeatConfig: string) => void;
   export let close: () => void;
 
@@ -66,20 +65,12 @@ import { RepeatAdapter } from '../../Repeat';
   let monthlyRepeatType = startingRepeatType;
 
   const save = (): void => {
-    set(repeats ? repeatConfig : 'none');
+    set(repeatConfig);
     close();
   };
 </script>
 
-<div class="form">
-  <div>
-    <label>
-      Repeats
-      <input type="checkbox" bind:checked={repeats} />
-    </label>
-  </div>
-
-  {#if repeats}
+<div class="form repeat-picker">
     <div class="interval-row">
       <span>Every</span>
       <input
@@ -160,7 +151,7 @@ import { RepeatAdapter } from '../../Repeat';
         </div>
       {/if}
     </div>
-  {/if}
+
 
   {#if set !== null}
     <button style='margin-top: 1rem' class="mod-cta" on:click={save}>Save</button>
@@ -170,7 +161,10 @@ import { RepeatAdapter } from '../../Repeat';
 <style>
 
 
-
+  .repeat-picker input[type=checkbox],.repeat-picker input[type=checkbox]:hover{
+      padding:7px;
+  }
+  
   #interval-selector {
     width: 60px;
     height: 40px;
