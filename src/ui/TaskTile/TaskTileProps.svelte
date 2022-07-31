@@ -43,6 +43,9 @@
       Render.renderMD(tags[i], tagsEl[i], td.file);
     }
   };
+  const updater = () => {
+    td = td;
+  };
 </script>
 
 <div class="props-container">
@@ -57,7 +60,7 @@
       {#if showEstWorktime}
         <span id="worktime-seperator"> / </span>
         <span
-          on:click={() => showEstWorktimePicker(td, mode)}
+          on:click={() => showEstWorktimePicker(td, mode,updater)}
           id="est-worktime-container"
           class="prop"
         >
@@ -80,7 +83,7 @@
       {#if showDailyScheduledWorktime}
         <span id="worktime-seperator"> / </span>
         <span
-          on:click={() => showDailyScheduleWorktimePicker(td, mode)}
+          on:click={() => showDailyScheduleWorktimePicker(td, mode,updater)}
           id="daily-scheduled-worktime-container"
           class="prop"
         >
@@ -93,14 +96,14 @@
     </span>
   {/if}
   {#if td.due}
-    <span class="prop" on:click={() => showDueDatePicker(td, mode)}>
+    <span class="prop" on:click={() => showDueDatePicker(td, mode,updater)}>
       {@html calendar}
       <span class="prop-text" id="due-text">{td.due?.format('YYYY-MM-DD')}</span
       >
     </span>
   {/if}
   {#if td.scheduled}
-    <span class="prop" on:click={() => showScheduledDatePicker(td, mode)}>
+    <span class="prop" on:click={() => showScheduledDatePicker(td, mode,updater)}>
       {@html hourglass}
       <span class="prop-text" id="scheduled-text"
         >{td.scheduled?.format('YYYY-MM-DD')}</span
@@ -108,7 +111,7 @@
     </span>
   {/if}
   {#if td.recurringConfig}
-    <span class="prop" on:click={() => showRepeatPicker(td, mode)}>
+    <span class="prop" on:click={() => showRepeatPicker(td, mode,updater)}>
       {@html repeat}
       <span class="prop-text" id="repeat-text"
         >{td.recurringConfig?.toLowerCase()}</span

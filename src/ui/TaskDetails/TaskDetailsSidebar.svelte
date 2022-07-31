@@ -45,6 +45,11 @@
     await td.plugin.activatePomodoroTaskView(td);
     td.close();
   };
+
+  const updater = () => {
+    td = td;
+  };
+  
 </script>
 
 <div class="TaskDetails-sidebar">
@@ -62,7 +67,12 @@
   <div class="sidebar-container">
     <div class="group">
       <div class="label">Due date</div>
-      <div class="sidebar-input" on:click={() => showDueDatePicker(td, mode)}>
+      <div
+        class="sidebar-input"
+        on:click={() => {
+          showDueDatePicker(td, mode, updater);
+        }}
+      >
         {td.due == '' || !td.due ? 'Someday' : td.due}
       </div>
     </div>
@@ -70,14 +80,21 @@
       <div class="label">Scheduled date</div>
       <div
         class="sidebar-input"
-        on:click={() => showScheduledDatePicker(td, mode)}
+        on:click={() => {
+          showScheduledDatePicker(td, mode, updater);
+        }}
       >
         {td.scheduled == '' || !td.scheduled ? 'Someday' : td.scheduled}
       </div>
     </div>
     <div class="group">
       <div class="label">Repeat</div>
-      <div class="sidebar-input" on:click={() => showRepeatPicker(td, mode)}>
+      <div
+        class="sidebar-input"
+        on:click={() => {
+          showRepeatPicker(td, mode, updater);
+        }}
+      >
         {td.recurringConfig == '' || !td.recurringConfig
           ? 'None'
           : td.recurringConfig}
@@ -87,7 +104,9 @@
       <div class="label">Pomodoro length</div>
       <div
         class="sidebar-input"
-        on:click={() => showPomoLengthPicker(td, mode)}
+        on:click={() => {
+          showPomoLengthPicker(td, mode, updater);
+        }}
       >
         {`${td.pomodoroLenght.asMinutes()}min`}
       </div>
@@ -96,7 +115,9 @@
       <div class="label">Estimated worktime</div>
       <div
         class="sidebar-input"
-        on:click={() => showEstWorktimePicker(td, mode)}
+        on:click={() => {
+          showEstWorktimePicker(td, mode, updater);
+        }}
       >
         {td.getWorktimeStr(td.estWorktime)}
       </div>
@@ -105,7 +126,9 @@
       <div class="label">Daily scheduled worktime</div>
       <div
         class="sidebar-input"
-        on:click={() => showDailyScheduleWorktimePicker(td, mode)}
+        on:click={() => {
+          showDailyScheduleWorktimePicker(td, mode, updater);
+        }}
       >
         {td.getWorktimeStr(td.dailyScheduledWorktime)}
       </div>
@@ -122,7 +145,6 @@
       />
     </div>
   </div>
-  <!-- </div> -->
   {#if mode === TaskDetailsMode.Create}
     <div class="create-btn-wrapper">
       <button

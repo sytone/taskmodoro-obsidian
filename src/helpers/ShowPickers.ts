@@ -12,17 +12,19 @@ import type { Frontmatter } from '../Parser';
 import { DurationPickerType } from './../Enums/duration-picker-type';
 import { formatDate } from './Helpers';
 
-export const showDueDatePicker = (td: TaskDetails, mode: TaskDetailsMode) => {
+export const showDueDatePicker = (
+    td: TaskDetails,
+    mode: TaskDetailsMode,
+    updater: () => void = null,
+) => {
     const pickerStartDate = td.due == '' ? moment() : moment(td.due);
-
     const onSet = (newDueDate: Moment) => {
         td.due = formatDate(newDueDate);
-        td = td;
+        updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(td.file, newDueDate, 'due');
         }
     };
-
     new DatePickerModal(
         td.plugin.app,
         pickerStartDate,
@@ -34,20 +36,20 @@ export const showDueDatePicker = (td: TaskDetails, mode: TaskDetailsMode) => {
 export const showScheduledDatePicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
+    updater: () => void = null,
 ) => {
     const pickerStartDate =
         td.scheduled == '' ? moment() : moment(td.scheduled);
-
     const onSet = (newScheduledDate: Moment) => {
         td.scheduled = formatDate(newScheduledDate);
-        td = td;
+        updater();
+
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,
                 newScheduledDate,
                 'scheduled',
             );
-            console.log('schedule_fm_update:', newScheduledDate);
         }
     };
 
@@ -59,11 +61,15 @@ export const showScheduledDatePicker = (
     ).open();
 };
 
-export const showRepeatPicker = (td: TaskDetails, mode: TaskDetailsMode) => {
+export const showRepeatPicker = (
+    td: TaskDetails,
+    mode: TaskDetailsMode,
+    updater: () => void = null,
+) => {
     const startRepeatPickerConfig = td.recurringConfig;
     const onSet = (newRepeatConfig: string) => {
         td.recurringConfig = newRepeatConfig;
-        td = td;
+        updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,
@@ -78,11 +84,11 @@ export const showRepeatPicker = (td: TaskDetails, mode: TaskDetailsMode) => {
 export const showEstWorktimePicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
+    updater: () => void = null,
 ) => {
     const onSet = (estWorktime: Duration) => {
         td.estWorktime = estWorktime;
-
-        td = td;
+        updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,
@@ -106,9 +112,9 @@ export const showEstWorktimePicker = (
 export const showDailyScheduleWorktimePicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
+    updater: () => void = null,
 ) => {
     const now = moment().format('YYYY-MM-DD');
-    console.log('now:', now);
     const replacer = (value: any, frontmatter: Frontmatter) => {
         let dailyWorktime: { [key: string]: Object } = frontmatter.get(
             'daily_scheduled_worktime',
@@ -122,7 +128,7 @@ export const showDailyScheduleWorktimePicker = (
 
     const onSet = (dailyScheduledWorktime: Duration) => {
         td.dailyScheduledWorktime = dailyScheduledWorktime;
-
+        updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,
@@ -146,11 +152,11 @@ export const showDailyScheduleWorktimePicker = (
 export const showPomoLengthPicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
+    updater: () => void = null,
 ) => {
     const onSet = (newPomoDuration: Duration) => {
         td.pomodoroLenght = newPomoDuration;
-
-        td = td;
+        updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,

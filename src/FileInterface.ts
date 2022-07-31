@@ -13,7 +13,6 @@ import type { TaskDetails } from './TaskDetails'
 import { getTextAbv } from './Helpers/Helpers';
 import { isArrayLike } from 'lodash'
 import moment from 'moment'
-import { Frontmatter } from './Parser';
 
 export interface Task {
   file: TFile
@@ -30,40 +29,6 @@ export interface Task {
   parents: FileName[]
 }
 
-export const CalcTaskScore = (task: Task): number => {
-  // Factors:
-  // - Days overdue (current date - due date)
-  // - Days until due (due date - current date)
-  // - Priority
-  // - Urgency
-  // - How long ago it was created (more recent task are more important)
-
-  let score = 1
-  if (task.completed) {
-    return score
-  }
-
-  if (task.due) {
-    const untilDue = task.due.diff(window.moment(), 'days')
-    if (untilDue > 0) {
-      // Upcoming tasks use 1/(days until due)
-      score *= 1 / untilDue
-    } else {
-      // negative value indicates amount over-due
-      // Overdue tasks use (days overdue)/2
-      score *= untilDue / 2
-    }
-  }
-
-  // if (task.urgent) {
-  //   score *= 2
-  // }
-  // if (task.important) {
-  //   score *= 1.5
-  // }
-
-  return score
-}
 
 export type FilePath = string
 export type FileName = string
@@ -196,15 +161,6 @@ export class FileInterface {
     return false
   }
 
-  private getFrontmatter = (lines: string[]): Frontmatter => {
-    try {
-      return new Frontmatter(lines)
-    } catch (error) {
-      console.debug(error)
-      return null
-    }
-  }
-
   /**
    * processCompleted checks the provided lines to see if they describe a
    * repeating task and whether that task is checked. If so, the task is
@@ -264,6 +220,7 @@ export class FileInterface {
       td.description,
       td.pomodoroLenght,
       td.estWorktime,
+      td.dailyScheduledWorktime,
       td.due,
       td.scheduled,
       td.recurringConfig,
@@ -288,6 +245,7 @@ export class FileInterface {
     description: string,
     pomoDuration: Duration,
     estWorktime: Duration,
+    dailyScheduledWorktime:Duration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -302,6 +260,7 @@ export class FileInterface {
       description,
       pomoDuration,
       estWorktime,
+      dailyScheduledWorktime,
       due,
       scheduled,
       repeat,
@@ -341,6 +300,7 @@ export class FileInterface {
     description: string,
     pomoDuration: Duration,
     estWorktime: Duration,
+    dailyScheduledWorktime: Duration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -362,6 +322,12 @@ export class FileInterface {
     if (estWorktime) {
       const fmM = `  minutes: ${estWorktime.asMinutes()}`
       frontMatter.push(`estimated_worktime:\n${fmM}`)
+    }
+
+    if(dailyScheduledWorktime){
+      const now = window.moment().format('YYYY-MM-DD')
+      const prop = `  '${now}':\n    minutes: ${dailyScheduledWorktime.asMinutes()}`
+      frontMatter.push(`daily_scheduled_worktime:\n${prop}`)
     }
 
     if (due) {
@@ -391,6 +357,7 @@ export class FileInterface {
       }
       frontMatter.push(`subtasks:${subtasks}`)
     }
+    
 
     const contents = []
     if (frontMatter.length > 0) {
@@ -418,6 +385,16 @@ export class FileInterface {
     }
     return hash
   }
+
+  private getFrontmatter = (lines: string[]): Frontmatter => {
+    try {
+      return new Frontmatter(lines)
+    } catch (error) {
+      console.debug(error)
+      return null
+    }
+  }
+
 }
 
 /**
@@ -437,4 +414,6 @@ export const modifyFileContents = async (
   if (modified) {
     return vault.modify(file, lines.join('\n'))
   }
+
+  
 }
