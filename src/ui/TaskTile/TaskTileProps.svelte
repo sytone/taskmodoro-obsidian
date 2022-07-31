@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { Render } from '../../Helpers/Render';
   import { TaskDetailsMode } from '../../Enums/component-context';
+import { showDailyScheduleWorktimePicker } from '../../Helpers/ShowPickers';
   import {
     showScheduledDatePicker,
     showRepeatPicker,
@@ -22,9 +23,9 @@
   const mode = TaskDetailsMode.Update;
   $: {
     showEstWorktimeProp = td.estWorktime && td.estWorktime.asMinutes() !== 0;
-    let showSpentWorktimeProp =
-      td.spentWorktime && td.spentWorktime.asMinutes() !== 0;
-    showWorktimeProp = showSpentWorktimeProp || showEstWorktimeProp;
+    let showOverallWorktimeProp =
+      td.overallWorktime && td.overallWorktime.asMinutes() !== 0;
+    showWorktimeProp = showOverallWorktimeProp || showEstWorktimeProp;
     cleanedTags = td.cleanTags(td.tags);
     renderTags(cleanedTags);
   }
@@ -43,10 +44,10 @@
 <div class="props-container">
   {#if showWorktimeProp}
     <span class="prop">
-      <span id="spent-worktime-container" class="prop">
+      <span id="overall-worktime-container" class="prop">
         {@html timer}
-        <span class="prop-text" id="spent-worktime"
-          >{durationFormat(td.spentWorktime)}</span
+        <span class="prop-text" id="spent-worktime-text"
+          >{durationFormat(td.overallWorktime)}</span
         >
       </span>
       {#if showEstWorktimeProp}
@@ -57,23 +58,47 @@
           class="prop"
         >
           {@html timer}
-          <span class="prop-text" id="est-worktime"
+          <span class="prop-text" id="est-worktime-text"
             >{durationFormat(td.estWorktime)}</span
           >
         </span>
       {/if}
     </span>
+
+  {/if}
+  {#if td.dailyWorktime || td.dailyScheduledWorktime}
+  <span class="prop">
+    <span id="daily-worktime-container" class="prop">
+      {@html timer}
+      <span class="prop-text" id="daily-worktime-text"
+        >{durationFormat(td.dailyWorktime)}</span
+      >
+    </span>
+    {#if td.dailyScheduledWorktime}
+      <span id="worktime-seperator"> / </span>
+      <span
+        on:click={() => showDailyScheduleWorktimePicker(td, mode)}
+        id="daily-scheduled-worktime-container"
+        class="prop"
+      >
+        {@html timer}
+        <span class="prop-text" id="daily-scheduled-worktime-text"
+          >{durationFormat(td.dailyScheduledWorktime)}</span
+        >
+      </span>
+    {/if}
+  </span>
   {/if}
   {#if td.due && td.due !== ''}
     <span class="prop" on:click={() => showDueDatePicker(td, mode)}>
       {@html calendar}
-      <span class="prop-text" id="due">{td.due?.format('YYYY-MM-DD')}</span>
+      <span class="prop-text" id="due-text">{td.due?.format('YYYY-MM-DD')}</span>
     </span>
   {/if}
   {#if td.scheduled && td.scheduled !== ''}
     <span class="prop" on:click={() => showScheduledDatePicker(td, mode)}>
       {@html hourglass}
-      <span class="prop-text" id="scheduled"
+      <span class="prop-text" id="scheduled-text"
         >{td.scheduled?.format('YYYY-MM-DD')}</span
       >
     </span>
@@ -81,7 +106,7 @@
   {#if td.recurringConfig && td.recurringConfig !== ''}
     <span class="prop" on:click={() => showRepeatPicker(td, mode)}>
       {@html repeat}
-      <span class="prop-text" id="repeat"
+      <span class="prop-text" id="repeat-text"
         >{td.recurringConfig?.toLowerCase()}</span
       >
     </span>
@@ -130,7 +155,7 @@
     height: auto;
   }
 
-  :global(#spent-worktime-container > .timer-icon path) {
+  :global(#overall-worktime-container > .timer-icon path) {
     fill: #b63737;
   }
 
@@ -140,11 +165,21 @@
     /* fill: #A58F8E; */
   }
 
-  #est-worktime-container {
+  :global(#daily-worktime-container > .timer-icon path) {
+    fill: #c86092;
+  }
+
+  :global(#daily-scheduled-worktime-container > .timer-icon path) {
+    fill: #c86092;
+    opacity: 0.7;
+    /* fill: #A58F8E; */
+  }
+
+  #est-worktime-container, #daily-scheduled-worktime-container  {
     margin-right: 0px;
   }
 
-  #spent-worktime-container {
+  #overall-worktime-container, #daily-worktime-container {
     margin-right: 0px;
     cursor: default;
   }
@@ -154,24 +189,33 @@
     margin-left: 8px;
   }
 
-  #repeat {
+  #repeat-text {
     color: #c86092;
   }
 
-  #due {
+  #due-text {
     color: #8562cb;
   }
 
-  #spent-worktime {
+  #spent-worktime-text {
     color: #b63737;
   }
 
-  #est-worktime {
+  #est-worktime-text {
     color: #b63737;
     opacity: 0.7;
   }
 
-  #scheduled {
+  #daily-worktime-text {
+    color: #c86092;
+  }
+
+  #daily-scheduled-worktime-text {
+    color: #c86092;
+    opacity: 0.7;
+  }
+
+  #scheduled-text {
     color: #54a8b4;
   }
 </style>

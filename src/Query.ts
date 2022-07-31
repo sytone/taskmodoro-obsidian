@@ -57,14 +57,13 @@ export class Query implements IQuery {
     private _error: string | undefined = undefined;
     private readonly _sorting: Sorting[] = [];
     private readonly _grouping: Grouping[] = [];
-    private timestamp: Date;
     // If a tag is specified the user can also add a number to specify
     // which one to sort by if there is more than one.
     private readonly sortByRegexp =
         /^sort by (urgency|status|priority|start|scheduled|due|done|path|description|tag)( reverse)?[\s]*(\d+)?/;
 
     private readonly groupByRegexp =
-        /^group by (backlink|done|due|filename|folder|happens|heading|path|priority|recurrence|recurring|root|scheduled|start|status|tags)/;
+        /^group by (backlink|done|due|filename|folder|happens|heading|path|priority|recurrence|recurring|root|scheduled|start|completed|tags)/;
 
     private readonly hideOptionsRegexp =
         /^hide (task count|backlink|priority|start date|scheduled date|done date|due date|recurrence rule|edit button)/;
@@ -75,7 +74,6 @@ export class Query implements IQuery {
     private readonly commentRegexp = /^#.*/;
 
     constructor({ source }: { source: string }) {
-        this.timestamp = new Date()
         this.source = source;
         source
             .split('\n')
@@ -135,7 +133,6 @@ export class Query implements IQuery {
     }
 
     public applyQueryToTasks(tasks: Task[]): TaskGroups {
-        console.log('date:',window.moment(this.timestamp).format('H:m:s'),'reactive filters:',this.filters)
         this.filters.forEach((filter) => {
             tasks = tasks.filter(filter);
         });

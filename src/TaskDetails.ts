@@ -1,117 +1,125 @@
-import type { FileName, Task } from './FileInterface'
-import { durationFormat, formatDate } from './Helpers/Helpers'
-import type TQPlugin from './main'
-import { toInteger } from 'lodash'
-import type { Duration } from 'moment'
-import moment from 'moment'
-import MomentDurationSetup from 'moment-duration-format'
-import type { TFile } from 'obsidian'
-MomentDurationSetup(moment)
+import type { FileName, Task } from './FileInterface';
+import { durationFormat, formatDate } from './Helpers/Helpers';
+import type TQPlugin from './main';
+import { toInteger } from 'lodash';
+import type { Duration } from 'moment';
+import moment from 'moment';
+import MomentDurationSetup from 'moment-duration-format';
+import type { TFile } from 'obsidian';
 
 export class TaskDetails {
-  public plugin: TQPlugin
-  public file: TFile
-  public tagsCache: string[]
-  public taskName = ''
-  public description = ''
-  public completed = false
-  public recurringConfig = ''
-  public due = ''
-  public scheduled = ''
-  public tags = ''
-  public pomodoroLenght = moment.duration(30, 'minutes')
-  public spentWorktime = moment.duration(0, 'seconds')
-  public dailyScheduledWorktime: Duration = null
-  public estWorktime: Duration = null
-  public subtasks: TaskDetails[] = []
-  public parents: FileName[] = []
+  public plugin: TQPlugin;
+  public file: TFile;
+  public tagsCache: string[];
+  public taskName = '';
+  public description = '';
+  public completed = false;
+  public recurringConfig = '';
+  public due = '';
+  public scheduled = '';
+  public tags = '';
+  public pomodoroLenght = moment.duration(30, 'minutes');
+  public overallWorktime = moment.duration(0, 'seconds');
+  public dailyWorktime = moment.duration(0, 'seconds');
+  public dailyScheduledWorktime: Duration = null;
+  public estWorktime: Duration = null;
+  public subtasks: TaskDetails[] = [];
+  public parents: FileName[] = [];
 
   // Callback for closing TaskDetailsModal
-  public close: () => void
+  public close: () => void;
 
   public getWorktimeStr(worktime: Duration): string {
     const estWorktimeStr =
       !worktime || worktime.asMinutes() === 0
         ? 'None'
-        : `${durationFormat(worktime)}`
-    return estWorktimeStr
+        : `${durationFormat(worktime)}`;
+    return estWorktimeStr;
   }
 
   constructor(
     plugin: TQPlugin,
     task: Task = undefined,
-    close: () => void = undefined
+    close: () => void = undefined,
   ) {
-    this.plugin = plugin
-    this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags())
+    this.plugin = plugin;
+    this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags());
     if (close) {
-      this.close = close
+      this.close = close;
     }
     if (task) {
-      const fm = task.frontmatter
-      this.due = formatDate(task.due)
-      this.recurringConfig = fm.get('repeat')
-      this.scheduled = formatDate(task.scheduled)
-      this.taskName = task.taskName
-      this.description = task.description
-      this.completed = task.completed
-      this.file = task.file
-      const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30
-      this.pomodoroLenght = moment.duration(pomoLen, 'minutes')
+      const fm = task.frontmatter;
+      this.due = formatDate(task.due);
+      this.recurringConfig = fm.get('repeat');
+      this.scheduled = formatDate(task.scheduled);
+      this.taskName = task.taskName;
+      this.description = task.description;
+      this.completed = task.completed;
+      this.file = task.file;
+      const pomoLen = toInteger(fm.get('pomodoro_length')?.minutes) || 30;
+      this.pomodoroLenght = moment.duration(pomoLen, 'minutes');
       const now = moment().format('YYYY-MM-DD');
-      const dailyScheduledWorktime = fm.get('daily_scheduled_worktime')
+      const dailyScheduledWorktime = fm.get('daily_scheduled_worktime');
       if (dailyScheduledWorktime && dailyScheduledWorktime[now]) {
-        this.dailyScheduledWorktime = moment.duration(dailyScheduledWorktime[now], 'minutes')
+        this.dailyScheduledWorktime = moment.duration(
+          dailyScheduledWorktime[now],
+          'minutes',
+        );
       }
-      const estWorklength = fm.get('estimated_worktime')?.minutes
+      const estWorklength = fm.get('estimated_worktime')?.minutes;
 
       if (estWorklength) {
-        this.estWorktime = moment.duration(estWorklength, 'minutes')
+        this.estWorktime = moment.duration(estWorklength, 'minutes');
       }
-      const tags: string[] = fm.get('tags')
+      const tags: string[] = fm.get('tags');
 
       if (tags) {
-        this.tags += tags.join(' ')
+        this.tags += tags.join(' ');
       }
 
-      const ta: [{ start: string; end: string }] = fm.get('timer_activity')
+      const ta: [{ start: string; end: string }] = fm.get('timer_activity');
 
       if (ta) {
-        this.spentWorktime = moment.duration()
-        ta.forEach(a => {
-          const diff = moment(a.end).diff(moment(a.start))
-          this.spentWorktime.add(diff, 'milliseconds')
-        })
+        this.overallWorktime = moment.duration();
+        ta.forEach((a) => {
+          let diff = moment(a.end).diff(moment(a.start));
+          this.overallWorktime.add(diff, 'milliseconds');
+
+          if (now === moment(a.start).format('YYYY-MM-DD')) {
+            if (now !== moment(a.end).format('YYYY-MM-DD')) {
+              const end = moment(a.end).subtract(1, 'day').endOf('day');
+              diff = end.diff(moment(a.start));
+            }
+            this.dailyWorktime.add(diff, 'milliseconds');
+          }
+        });
       }
-      const subtasks: Task[] = task.subtasks
+      const subtasks: Task[] = task.subtasks;
 
       for (const subtask of subtasks) {
-        const subtd = new TaskDetails(this.plugin, subtask, close)
-        this.subtasks.push(subtd)
+        const subtd = new TaskDetails(this.plugin, subtask, close);
+        this.subtasks.push(subtd);
       }
 
-      this.parents = task.parents
-
+      this.parents = task.parents;
     }
   }
 
   public get cleanedTags(): string[] {
-    return this.cleanTags(this.tags)
+    return this.cleanTags(this.tags);
   }
 
   // Seperate method to leverage svelte reactivity
   public cleanTags(tags: string): string[] {
-    return tags
-      .split(/[ ]+/)
-      .filter(x => x !== '')
+    return tags.split(/[ ]+/).filter((x) => x !== '');
   }
 
   public create = async (): Promise<string> => {
-    const fileName = this.plugin.fileInterface.storeNestedTasks(this)
+    const fileName = this.plugin.fileInterface.storeNestedTasks(this);
 
     if (this.close) {
-      this.close()
+      this.close();
     }
-    return fileName
-  }
+    return fileName;
+  };
 }
