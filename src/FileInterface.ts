@@ -182,23 +182,45 @@ export class FileInterface {
     this.app.vault.modify(file, content)
   }
 
+
+  public readonly processUnchecked = (lines: string[]): boolean => {
+    let frontmatter = this.getFrontmatter(lines)
+    if (!frontmatter) return false
+    if (!frontmatter.contains('repeat') && frontmatter.contains('completed')) {
+      let completed: string[] = frontmatter.get('completed')
+      completed.pop()
+      frontmatter.set('completed', completed)
+      frontmatter.overwrite()
+      return true
+    }
+    return false
+  }
+
+  private getFrontmatter = (lines: string[]): Frontmatter => {
+    try {
+      return new Frontmatter(lines)
+    } catch (error) {
+      console.debug(error)
+      return null
+    }
+  }
+
   /**
-   * processRepeating checks the provided lines to see if they describe a
+   * processCompleted checks the provided lines to see if they describe a
    * repeating task and whether that task is checked. If so, the task is
    * unchecked, the due date updated according to the repeat config, and the
    * current date added to the completed list in the frontmatter.
    * */
-  public readonly processRepeating = (
+  public readonly processCompleted = (
     path: string,
     lines: string[],
   ): boolean => {
-    let frontmatter: Frontmatter
-    try {
-      frontmatter = new Frontmatter(lines)
-    } catch (error) {
-      console.debug(error)
-      return false
-    }
+    let frontmatter = this.getFrontmatter(lines)
+    if (!frontmatter) return false
+
+    //Since task is completed it's completion date will be set
+    setCompletedDate(frontmatter)
+    frontmatter.overwrite()
 
     if (!frontmatter.contains('repeat')) {
       // This is not a repeating task, no work to do
@@ -206,8 +228,8 @@ export class FileInterface {
     }
 
     // Look for the task and check status
-    const taskLine = lines.findIndex(line => /^- \[[xX]\]/.test(line))
-    if (taskLine < 0) {
+    const checkedTaskLine = lines.findIndex(line => /^- \[[xX]\]/.test(line))
+    if (checkedTaskLine < 0) {
       // Completed task not found, skip
       return false
     }
@@ -215,9 +237,8 @@ export class FileInterface {
     console.debug('tq: Reloading repeating task in ' + path)
 
     // Uncheck the task
-    lines[taskLine] = lines[taskLine].replace(/\[[xX]\]/, '[ ]')
+    lines[checkedTaskLine] = lines[checkedTaskLine].replace(/\[[xX]\]/, '[ ]')
 
-    setCompletedDate(frontmatter)
     setDueDateToNext(frontmatter)
 
     frontmatter.overwrite()
@@ -256,7 +277,7 @@ export class FileInterface {
         `${this.tasksDir}/${fileName}`,
         '/',
       )
-      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true, false)
+      this.updateFMProp(subtaskFile, currTaskPath, 'parents', true)
     }
 
     return currTaskPath

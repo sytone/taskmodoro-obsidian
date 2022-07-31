@@ -1,14 +1,14 @@
+import { match } from 'assert';
 import { App, CachedMetadata, TFile } from 'obsidian';
 /* eslint-disable linebreak-style */
-import { FileName, FilePath, Task, modifyFileContents } from '../FileInterface';
-import { Frontmatter, Parser } from '../Parser';
 import { Result, err, ok } from 'neverthrow';
 import { Writable, get, writable } from 'svelte/store';
+import moment from 'moment';
+import { FileName, FilePath, Task, modifyFileContents } from '../FileInterface';
+import { Frontmatter, Parser } from '../Parser';
 
 import TQPlugin from '../main';
 import { TaskDetails } from '../TaskDetails';
-import { match } from 'assert';
-import moment from 'moment';
 
 /**
  * TaskCache is the main interface for querying and modifying tasks. It
@@ -68,7 +68,11 @@ export class TaskCache {
 
       // succession.
 
-      this.plugin.fileInterface.processRepeating(td.file.path, lines);
+      if (!td.completed) {
+        this.plugin.fileInterface.processUnchecked(lines);
+      } else {
+        this.plugin.fileInterface.processCompleted(td.file.path, lines);
+      }
 
       return true;
     });
