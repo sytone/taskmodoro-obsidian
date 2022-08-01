@@ -13,6 +13,7 @@ import type { TaskDetails } from './TaskDetails'
 import { getTextAbv } from './Helpers/Helpers';
 import { isArrayLike } from 'lodash'
 import moment from 'moment'
+import { Frontmatter } from './Parser';
 
 export interface Task {
   file: TFile
@@ -147,7 +148,9 @@ export class FileInterface {
     this.app.vault.modify(file, content)
   }
 
-
+ /**
+  * If task is non-repeating and has been unchecked then we remove completion date
+  */
   public readonly processUnchecked = (lines: string[]): boolean => {
     let frontmatter = this.getFrontmatter(lines)
     if (!frontmatter) return false
@@ -161,14 +164,8 @@ export class FileInterface {
     return false
   }
 
-  /**
-   * processCompleted checks the provided lines to see if they describe a
-   * repeating task and whether that task is checked. If so, the task is
-   * unchecked, the due date updated according to the repeat config, and the
-   * current date added to the completed list in the frontmatter.
-   * */
   public readonly processCompleted = (
-    path: string,
+    path: FilePath,
     lines: string[],
   ): boolean => {
     let frontmatter = this.getFrontmatter(lines)
@@ -176,12 +173,23 @@ export class FileInterface {
 
     //Since task is completed it's completion date will be set
     setCompletedDate(frontmatter)
-    frontmatter.overwrite()
-
-    if (!frontmatter.contains('repeat')) {
-      // This is not a repeating task, no work to do
-      return false
+    
+    if (frontmatter.contains('repeat')) {
+      this.processRepeating(frontmatter,lines,path)
     }
+
+    frontmatter.overwrite()
+    return true
+  }
+
+  /**
+   * processRepeating checks the provided lines to see if they describe a
+   * repeating task and whether that task is checked. If so, the task is
+   * unchecked, the due date updated according to the repeat config, and the
+   * current date added to the completed list in the frontmatter.
+   * */
+  private readonly processRepeating = (frontmatter: Frontmatter,lines:string[],path: FilePath)=>{
+  
 
     // Look for the task and check status
     const checkedTaskLine = lines.findIndex(line => /^- \[[xX]\]/.test(line))
@@ -196,8 +204,6 @@ export class FileInterface {
     lines[checkedTaskLine] = lines[checkedTaskLine].replace(/\[[xX]\]/, '[ ]')
 
     setDueDateToNext(frontmatter)
-
-    frontmatter.overwrite()
 
     new Notice('New task repetition created')
     return true
