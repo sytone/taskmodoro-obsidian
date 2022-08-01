@@ -55,7 +55,7 @@ export class Group {
         // root: Group.groupByRoot,
         scheduled: Group.groupByScheduledDate,
         // start: Group.groupByStartDate,
-        // status: Group.groupByStatus,
+        completed: Group.groupByCompleted,
         tags: Group.groupByTags,
     };
 
@@ -172,9 +172,13 @@ export class Group {
     //     return [linkText];
     // }
 
-    // private static groupByStatus(task: Task): string[] {
-    //     return [task.status];
-    // }
+    private static groupByCompleted(task: Task): string[] {
+        if(task.completed) {
+            return ['Completed']
+        }else {
+            return ['Not completed']
+        }
+    }
 
     // private static groupByHeading(task: Task): string[] {
     //     if (
