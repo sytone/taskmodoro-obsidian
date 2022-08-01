@@ -1,5 +1,5 @@
 {
-  "name": "tq-obsidian",
+  "name": "taskmodoro-obsidian",
   "version": "0.5.1",
   "description": "File-based Task Management",
   "main": "main.js",

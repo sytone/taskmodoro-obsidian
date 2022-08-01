@@ -2,7 +2,7 @@ import { dump, load } from 'js-yaml'
 
 import { CachedMetadata } from 'obsidian'
 import { FileInterface } from './FileInterface'
-import {RRule} from 'rrule'
+import { RRule } from 'rrule'
 import { formatDate } from './Helpers/Helpers'
 import moment from 'moment'
 
@@ -10,21 +10,21 @@ type Moment = moment.Moment
 
 export class Parser {
   public static readonly taskRegex = /- \[[xX ]\] /
-  
+
   public static readonly getTaskData = (
     content: string[],
   ): { isTaskCompleted: boolean; taskName: string } => {
     // We do it manually rather than using CachedMetadata because of the edge cases
     // where cache is not updating in time and causing bugs in task name fetch
-    const taskIndex = content.findIndex((line)=> this.taskRegex.test(line))
-    if(taskIndex >= 0) {
+    const taskIndex = content.findIndex((line) => this.taskRegex.test(line))
+    if (taskIndex >= 0) {
       const completed = /^- \[[xX]\] /
-      const isTaskCompleted= completed.test(content[taskIndex])
-      const taskName= content[taskIndex].replace(this.taskRegex,'')
-      return {isTaskCompleted, taskName}
+      const isTaskCompleted = completed.test(content[taskIndex])
+      const taskName = content[taskIndex].replace(this.taskRegex, '')
+      return { isTaskCompleted, taskName }
     }
 
-    return {isTaskCompleted: false,taskName: 'Task name not found'}
+    return { isTaskCompleted: false, taskName: 'Task name not found' }
   }
 
   public static readonly replaceTaskName = (
@@ -102,7 +102,7 @@ export class Frontmatter {
    */
   private contents: { [k: string]: any }
 
-  constructor (lines: string[]) {
+  constructor(lines: string[]) {
     this.lines = lines
     this.initBoundaries()
     this.parse()
@@ -133,7 +133,7 @@ export class Frontmatter {
   private readonly initBoundaries = (): void => {
     this.start = this.lines.findIndex(line => line === '---') + 1
     if (this.start === 0) {
-      console.debug('tq: No frontmatter found for note')
+      console.debug('taskmodoro: No frontmatter found for note')
       this.start = -1
       this.end = -1
       return
@@ -156,7 +156,7 @@ export class Frontmatter {
     const fmLines = this.lines.slice(this.start, this.end + 1).join('\n')
     const fm = load(fmLines)
     if (typeof fm === 'string' || typeof fm === 'number') {
-      throw new Error('tq: Unexpected type of frontmatter')
+      throw new Error('taskmodoro: Unexpected type of frontmatter')
     }
 
     this.contents = fm
@@ -177,7 +177,7 @@ export const setCompletedDate = (frontmatter: Frontmatter): void => {
   } else if (Array.isArray(cur)) {
     cur.push(today)
   } else {
-    console.warn('tq: Unexpected type for completed field in frontmatter')
+    console.warn('taskmodoro: Unexpected type for completed field in frontmatter')
   }
 }
 

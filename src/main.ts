@@ -31,7 +31,7 @@ export default class TQPlugin extends Plugin {
   public taskNav: TaskDetailsNavigation;
   public expState: SubtasksExpandedState;
   public async onload(): Promise<void> {
-    console.log('tq: Loading plugin' + this.manifest.version);
+    console.log('taskmodoro: Loading plugin' + this.manifest.version);
 
     await this.loadSettings();
     this.addSettingTab(new SettingsTab(this));
@@ -45,7 +45,7 @@ export default class TQPlugin extends Plugin {
       (leaf) => new TimerTaskView(leaf, this),
     );
 
-    this.addRibbonIcon('checkbox-glyph', 'tq', () => {
+    this.addRibbonIcon('checkbox-glyph', 'taskmodoro', () => {
       new TaskDetailsModal(this, TaskDetailsMode.Create).open();
     });
 
@@ -77,7 +77,7 @@ export default class TQPlugin extends Plugin {
       this.app.vault.on('create', (file) => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.fileInterface.handleTaskModified(file);
-          console.log('onCreate');
+          // console.log('onCreate');
         }
       }),
     );
@@ -86,7 +86,7 @@ export default class TQPlugin extends Plugin {
       this.app.vault.on('modify', (file) => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.fileInterface.handleTaskModified(file);
-          console.log('onModify');
+          // console.log('onModify');
         }
       }),
     );
@@ -95,7 +95,7 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('changed', (file) => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file);
-          console.log('onChanged');
+          // console.log('onChanged');
         }
       }),
     );
@@ -104,7 +104,7 @@ export default class TQPlugin extends Plugin {
       this.app.metadataCache.on('resolve', (file) => {
         if (file.path.startsWith(this.settings.TasksDir)) {
           this.taskCache.handleTaskModified(file);
-          console.log('onResolve');
+          // console.log('onResolve');
         }
       }),
     );
@@ -118,15 +118,15 @@ export default class TQPlugin extends Plugin {
     );
 
     this.registerMarkdownCodeBlockProcessor(
-      'tq',
+      'taskmodoro',
       (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
         ctx.addChild(new QueryRenderChild(this, el, source));
       },
     );
 
-    // this.registerObsidianProtocolHandler('tq', async params => {
+    // this.registerObsidianProtocolHandler('taskmodoro', async params => {
     //   if (!params.create) {
-    //     console.debug('tq: Unknown URL request')
+    //     console.debug('taskmodoro: Unknown URL request')
     //     console.debug(params)
     //     return
     //   }
@@ -187,7 +187,7 @@ class SettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'tq Plugin - Settings' });
+    containerEl.createEl('h2', { text: 'taskmodoro Plugin - Settings' });
 
     this.addDefaultTaskDir(new Setting(containerEl));
     this.addRootTaskDefaultTag(new Setting(containerEl));
@@ -231,7 +231,7 @@ class SettingsTab extends PluginSettingTab {
 // const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {
 //   const a = document.createElement('a')
 //   a.setAttribute('href', link)
-//   a.addClass('tq-donate-button')
+//   a.addClass('taskmodoro-donate-button')
 //   a.appendChild(img)
 //   return a
 // }

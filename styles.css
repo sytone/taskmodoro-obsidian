@@ -2,21 +2,21 @@
 Settings Page
 */
 
-.tq-input-error {
+.taskmodoro-input-error {
   border-color: var(--text-error) !important;
 }
 
-.tq-donation {
+.taskmodoro-donation {
   width: 70%;
   margin: 0 auto;
   text-align: center;
 }
 
-.tq-donate-button {
+.taskmodoro-donate-button {
   margin: 10px;
 }
 
-.tq-modal {
+.taskmodoro-modal {
   font-family: 'lato';
   min-width: 900px;
   padding: 0;
@@ -25,7 +25,7 @@ Settings Page
   text-decoration: none;
 }
 
-.tq{
+.taskmodoro{
   --pomodoro-rest-indicator: #2b81be;
   --pomodoro-work-indicator: var(--text-accent);
   --overall-worktime-prop: #b63737;
@@ -40,7 +40,7 @@ Settings Page
   --dark2-blue-gray: #343636;
  
 }
-.tq-circle {
+.taskmodoro-circle {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -50,17 +50,17 @@ Settings Page
   border: 2px solid var(--mid-blue-gray);
 }
 
-.tq-circle:hover {
+.taskmodoro-circle:hover {
   cursor: pointer;
 }
 
-.tq-modal-content {
+.taskmodoro-modal-content {
   margin-top: 0px;
   display: flex;
   flex-direction: row;
   overflow: hidden;
 }
-.tq-modal>.modal-close-button{
+.taskmodoro-modal>.modal-close-button{
   top: 24px;
   right: 24px;
   font-size: 44px;

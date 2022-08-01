@@ -1,11 +1,11 @@
-# tq
+# taskmodoro
 
-tq is a plugin for [Obsidian](https://obsidian.md) for managing tasks using a
+taskmodoro is a plugin for [Obsidian](https://obsidian.md) for managing tasks using a
 file-based workflow. Each task is represented as a Markdown note with a single
 task line and some metadata in the frontmatter. Tasks are viewed by embedding
 queries in other notes, such as your Daily Note.
 
-![tq demo](https://raw.githubusercontent.com/tgrosinger/tq-obsidian/main/resources/screenshots/tq-demo.gif)
+![taskmodoro demo](https://raw.githubusercontent.com/tgrosinger/taskmodoro-obsidian/main/resources/screenshots/taskmodoro-demo.gif)
 
 An example task note:
 
@@ -33,7 +33,7 @@ Tasks can be queried by using custom code blocks in notes. Here's an example
 which would include any tasks for the specified date or which are overdue (in
 relation to that date). It will also omit any tasks which have been completed.
 
-    ```tq
+    ```taskmodoro
     select-day: 2021-06-06
     completed:  false
     overdue:    true
@@ -41,7 +41,7 @@ relation to that date). It will also omit any tasks which have been completed.
 
 Or for a more complicated example:
 
-    ```tq
+    ```taskmodoro
     select-week: 2021-06-13
     select-tags: [ home, shopping ]
     completed: false
@@ -51,18 +51,18 @@ Or for a more complicated example:
 
 ### Custom Block Properties
 
-| Property      | Value                  | Description                                                  | Default   |
-| ------------- | ---------------------- | ------------------------------------------------------------ | --------- |
-| `select-day`  | Date                   | Include only tasks due this day                              | All tasks |
-| `select-week` | Date                   | Include only tasks due this week                             | All tasks |
-| `select-tags` | String List            | Include only tasks with this tag (can be used with day/week) | All tasks |
-| `omit-tags`   | String List            | Exclude tasks with this tag (can be used with day/week)      | Omit none |
-| `overdue`     | true/false             | Include if task is overdue in relation to selected day/week  | false     |
-| `completed`   | true/false             | Include only tasks which are checked or not checked. If completed is not provided, then both completed and incomplete tasks are shown. If set to true, then only completed tasks are shown, and if false then only incomplete tasks are shown.          | All tasks |
-| `due`         | true/false             | Include tasks which have a due date                          | true      |
-| `no-due`      | true/false             | Include tasks which do not have a due date                   | true      |
-| `sort`        | "score", "due", ""     | Specify the sort order of the tasks                          | ""        |
-| `group`       | "due", "completed", "" | Specify how tasks should be grouped in the list              | ""        |
+| Property      | Value                  | Description                                                                                                                                                                                                                                    | Default   |
+| ------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `select-day`  | Date                   | Include only tasks due this day                                                                                                                                                                                                                | All tasks |
+| `select-week` | Date                   | Include only tasks due this week                                                                                                                                                                                                               | All tasks |
+| `select-tags` | String List            | Include only tasks with this tag (can be used with day/week)                                                                                                                                                                                   | All tasks |
+| `omit-tags`   | String List            | Exclude tasks with this tag (can be used with day/week)                                                                                                                                                                                        | Omit none |
+| `overdue`     | true/false             | Include if task is overdue in relation to selected day/week                                                                                                                                                                                    | false     |
+| `completed`   | true/false             | Include only tasks which are checked or not checked. If completed is not provided, then both completed and incomplete tasks are shown. If set to true, then only completed tasks are shown, and if false then only incomplete tasks are shown. | All tasks |
+| `due`         | true/false             | Include tasks which have a due date                                                                                                                                                                                                            | true      |
+| `no-due`      | true/false             | Include tasks which do not have a due date                                                                                                                                                                                                     | true      |
+| `sort`        | "score", "due", ""     | Specify the sort order of the tasks                                                                                                                                                                                                            | ""        |
+| `group`       | "due", "completed", "" | Specify how tasks should be grouped in the list                                                                                                                                                                                                | ""        |
 
 Note that `select-tags` and `omit-tags` support nested tags. In other words,
 `select-tags: work` will match notes tagged with `work` as well as
@@ -70,12 +70,12 @@ Note that `select-tags` and `omit-tags` support nested tags. In other words,
 
 ## Obsidian Links and Shortcuts
 
-You may use Obsidian links to interact with tq from within or outside of the app.
+You may use Obsidian links to interact with taskmodoro from within or outside of the app.
 
 ### Creating Tasks
 
 ```
-obsidian://tq?create&due=2021-06-01&task=Water%20the%20garden
+obsidian://taskmodoro?create&due=2021-06-01&task=Water%20the%20garden
 ```
 
 Properties must be URL escaped.
@@ -113,8 +113,8 @@ my way through one of the following methods:
 So far the majority of my effort has been focused on functionality, so the UI
 has some very rough edges. It will hopefully improve over time!
 
-![create-task](https://raw.githubusercontent.com/tgrosinger/tq-obsidian/main/resources/screenshots/create-task.png)
+![create-task](https://raw.githubusercontent.com/tgrosinger/taskmodoro-obsidian/main/resources/screenshots/create-task.png)
 
-![edit task repeat](https://raw.githubusercontent.com/tgrosinger/tq-obsidian/main/resources/screenshots/edit-repeat.png)
+![edit task repeat](https://raw.githubusercontent.com/tgrosinger/taskmodoro-obsidian/main/resources/screenshots/edit-repeat.png)
 
-![task details](https://raw.githubusercontent.com/tgrosinger/tq-obsidian/main/resources/screenshots/expanded-task.png)
+![task details](https://raw.githubusercontent.com/tgrosinger/taskmodoro-obsidian/main/resources/screenshots/expanded-task.png)

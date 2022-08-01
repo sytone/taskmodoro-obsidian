@@ -26,8 +26,8 @@ export class TaskDetailsModal extends Modal {
 
   public onOpen = (): void => {
     const { contentEl, modalEl } = this
-    modalEl.addClasses(['tq-modal', 'tq'])
-    contentEl.addClass('tq-modal-content')
+    modalEl.addClasses(['taskmodoro-modal', 'taskmodoro'])
+    contentEl.addClass('taskmodoro-modal-content')
     new TaskDetailsUI({
       target: contentEl,
       props: {

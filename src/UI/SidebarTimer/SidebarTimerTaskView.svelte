@@ -14,18 +14,21 @@
   const pomodoroSession = new PomodoroSession(td.pomodoroLenght);
 </script>
 
-<div class="tq">
+<div class="taskmodoro">
   <div class="timer-task-container">
-    <PomodoroSessionProgress
-     {pomodoroSession}
-    >
+    <PomodoroSessionProgress {pomodoroSession}>
       <TaskListTile
         bind:td
         parentComponent={TaskListTileParent.TimerTaskView}
       />
     </PomodoroSessionProgress>
   </div>
-  <TimerView file={td.file} {plugin} {pomodoroSession} workSessionLength={td.pomodoroLenght} />
+  <TimerView
+    file={td.file}
+    {plugin}
+    {pomodoroSession}
+    workSessionLength={td.pomodoroLenght}
+  />
 </div>
 
 <style>

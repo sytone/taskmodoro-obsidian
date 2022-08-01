@@ -51,7 +51,7 @@ export class FileInterface {
     return
     // const tfile = this.app.metadataCache.getFirstLinkpathDest(afile.path, '/')
     // if (!tfile) {
-    //   console.debug('tq: Unable to find TFile for TAFile: ' + afile.path)
+    //   console.debug('taskmodoro: Unable to find TFile for TAFile: ' + afile.path)
     //   return
     // }
 
@@ -190,7 +190,7 @@ export class FileInterface {
       return false
     }
 
-    console.debug('tq: Reloading repeating task in ' + path)
+    console.debug('taskmodoro: Reloading repeating task in ' + path)
 
     // Uncheck the task
     lines[checkedTaskLine] = lines[checkedTaskLine].replace(/\[[xX]\]/, '[ ]')
@@ -245,7 +245,7 @@ export class FileInterface {
     description: string,
     pomoDuration: Duration,
     estWorktime: Duration,
-    dailyScheduledWorktime:Duration,
+    dailyScheduledWorktime: Duration,
     due: string,
     scheduled: string,
     repeat: string,
@@ -268,7 +268,7 @@ export class FileInterface {
       subtasksNames,
     )
 
-    console.debug('tq: Creating a new task in ' + filePath)
+    console.debug('taskmodoro: Creating a new task in ' + filePath)
     console.debug(data)
 
     if (!(await this.app.vault.adapter.exists(this.tasksDir))) {
@@ -324,7 +324,7 @@ export class FileInterface {
       frontMatter.push(`estimated_worktime:\n${fmM}`)
     }
 
-    if(dailyScheduledWorktime){
+    if (dailyScheduledWorktime) {
       const now = window.moment().format('YYYY-MM-DD')
       const prop = `  '${now}':\n    minutes: ${dailyScheduledWorktime.asMinutes()}`
       frontMatter.push(`daily_scheduled_worktime:\n${prop}`)
@@ -357,7 +357,7 @@ export class FileInterface {
       }
       frontMatter.push(`subtasks:${subtasks}`)
     }
-    
+
 
     const contents = []
     if (frontMatter.length > 0) {
@@ -415,5 +415,5 @@ export const modifyFileContents = async (
     return vault.modify(file, lines.join('\n'))
   }
 
-  
+
 }

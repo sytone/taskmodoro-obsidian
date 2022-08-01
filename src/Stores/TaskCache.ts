@@ -54,7 +54,7 @@ export class TaskCache {
 
       if (taskLine < 0) {
         console.warn(
-          'tq: Unable to find a task line to toggle in file ' + td.file.path,
+          'taskmodoro: Unable to find a task line to toggle in file ' + td.file.path,
         );
 
         return false;
@@ -180,7 +180,7 @@ export class TaskCache {
     const metadata = this.app.metadataCache.getFileCache(file);
 
     if (this.isTaskAbsent(metadata)) {
-      return err('tq: No task found in task file ' + file.path);
+      return err('taskmodoro: No task found in task file ' + file.path);
     }
 
     const contents = await this.app.vault.read(file);
