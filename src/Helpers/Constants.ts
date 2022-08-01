@@ -1,0 +1,1 @@
+export const VIEW_TYPE_POMODORO_TASK = 'tq-pomodoro-task-view'
