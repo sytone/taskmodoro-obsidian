@@ -152,7 +152,7 @@ export const showDailyScheduleWorktimePicker = (
 export const showPomoLengthPicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
-    updater: () => void = null,
+    updater: () => void,
 ) => {
     const onSet = (newPomoDuration: Duration) => {
         td.pomodoroLenght = newPomoDuration;

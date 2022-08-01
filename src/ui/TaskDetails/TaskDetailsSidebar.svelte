@@ -19,6 +19,8 @@
     showScheduledDatePicker,
   } from '../../Helpers/ShowPickers';
   import TaskDetailsSidebarProp from './TaskDetailsSidebarProp.svelte';
+  import moment from 'moment';
+  import type { Frontmatter } from '../../Parser';
 
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
@@ -50,6 +52,68 @@
   const updater = () => {
     td = td;
   };
+
+  const dailyScheduledWorktimeOnReset = () => {
+    td.dailyScheduledWorktime = null;
+
+    const replacer = (value: any, frontmatter: Frontmatter) => {
+      const now = moment().format('YYYY-MM-DD');
+      let dailyScheduledWorktime: { [key: string]: Object } = frontmatter.get(
+        'daily_scheduled_worktime',
+      );
+      delete dailyScheduledWorktime[now];
+      return dailyScheduledWorktime;
+    };
+
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(
+        td.file,
+        null,
+        'daily_scheduled_worktime',
+        false,
+        replacer,
+      );
+    }
+  };
+
+  const estWorktimeOnReset = () => {
+    td.estWorktime = null;
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(td.file, null, 'estimated_worktime');
+    }
+  };
+
+  const pomodoroLengthOnReset = () => {
+    td.pomodoroLenght = moment.duration(30, 'minutes');
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(
+        td.file,
+        { minutes: 30 },
+        'pomodoro_length',
+      );
+    }
+  };
+
+  const repeatOnReset = () => {
+    td.recurringConfig = '';
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(td.file, '', 'repeat');
+    }
+  };
+
+  const scheduledOnReset = () => {
+    td.scheduled = '';
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(td.file, '', 'scheduled');
+    }
+  };
+
+  const dueOnReset = () => {
+    td.due = '';
+    if (mode === TaskDetailsMode.Update) {
+      td.plugin.fileInterface.updateFMProp(td.file, '', 'due');
+    }
+  };
 </script>
 
 <div class="TaskDetails-sidebar">
@@ -70,6 +134,7 @@
       onSelect={() => {
         showDueDatePicker(td, mode, updater);
       }}
+      onReset={dueOnReset}
       value={!td.due ? 'Someday' : td.due}
     />
 
@@ -78,6 +143,7 @@
       onSelect={() => {
         showScheduledDatePicker(td, mode, updater);
       }}
+      onReset={scheduledOnReset}
       value={!td.scheduled ? 'Someday' : td.scheduled}
     />
 
@@ -86,6 +152,7 @@
       onSelect={() => {
         showRepeatPicker(td, mode, updater);
       }}
+      onReset={repeatOnReset}
       value={!td.recurringConfig ? 'None' : td.recurringConfig}
     />
 
@@ -94,6 +161,7 @@
       onSelect={() => {
         showPomoLengthPicker(td, mode, updater);
       }}
+      onReset={pomodoroLengthOnReset}
       value={`${td.pomodoroLenght.asMinutes()}min`}
     />
 
@@ -102,6 +170,7 @@
       onSelect={() => {
         showEstWorktimePicker(td, mode, updater);
       }}
+      onReset={estWorktimeOnReset}
       value={td.getWorktimeStr(td.estWorktime)}
     />
 
@@ -110,6 +179,7 @@
       onSelect={() => {
         showDailyScheduleWorktimePicker(td, mode, updater);
       }}
+      onReset={dailyScheduledWorktimeOnReset}
       value={td.getWorktimeStr(td.dailyScheduledWorktime)}
     />
 
