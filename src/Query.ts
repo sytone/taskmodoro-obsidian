@@ -4,11 +4,9 @@ import { Group } from './Query/Group';
 import type { IQuery } from './IQuery';
 // import type { LayoutOptions } from './LayoutOptions';
 import { Sort } from './Sort';
-import { Task } from './FileInterface';
+import type { Task } from './FileInterface';
 import type { TaskGroups } from './Query/TaskGroups';
 import { parseFilter } from './Query/FilterParser';
-import { time } from 'console';
-import { times } from 'lodash';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 

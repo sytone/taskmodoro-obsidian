@@ -1,5 +1,4 @@
 <script lang="ts">
-  import exp from 'constants';
 
   import { chevronDown } from '../../Graphics';
 
@@ -8,7 +7,6 @@
   const onClick = () => {
     expanded = !expanded;
   };
-  let classes = '';
   if (expanded) {
   }
 </script>

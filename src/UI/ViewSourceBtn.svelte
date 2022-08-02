@@ -3,7 +3,6 @@
   import type TQPlugin from '../main';
   import { externalLink } from '../Graphics';
 import { viewSource } from '../Editor/EditorHelpers';
-import { throwDeprecation } from 'process';
 
   export let classes = '';
   export let plugin: TQPlugin;
