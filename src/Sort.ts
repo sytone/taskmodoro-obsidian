@@ -88,7 +88,7 @@ export class Sort {
     private static compareByCompleted(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
         if (a.completed && !b.completed) {
             return 1;
-        } else if (a.completed && b.completed) {
+        } else if (!a.completed && b.completed) {
             return -1;
         } 
             return 0;
