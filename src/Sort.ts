@@ -23,7 +23,7 @@ export class Sort {
     public static by(query: Pick<Query, 'sorting'>, tasks: fileInterface.Task[]): fileInterface.Task[] {
         const defaultComparators: Comparator[] = [
             // Sort.compareByUrgency,
-            // Sort.compareByStatus,
+            Sort.compareByCompleted,
             Sort.compareByDueDate,
             // Sort.compareByPriority,
             Sort.compareByPath,
@@ -57,8 +57,8 @@ export class Sort {
         scheduled: Sort.compareByScheduledDate,
         due: Sort.compareByDueDate,
         // done: Sort.compareByDoneDate,
-        path: Sort.compareByPath,
-        // status: Sort.compareByStatus,
+        // path: Sort.compareByPath,
+        completed: Sort.compareByCompleted,
         tag: Sort.compareByTag,
     };
 
@@ -85,15 +85,15 @@ export class Sort {
     //     return b.urgency - a.urgency;
     // }
 
-    // private static compareByStatus(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
-    //     if (a.status < b.status) {
-    //         return 1;
-    //     } else if (a.status > b.status) {
-    //         return -1;
-    //     } 
-    //         return 0;
+    private static compareByCompleted(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+        if (a.completed && !b.completed) {
+            return 1;
+        } else if (a.completed && b.completed) {
+            return -1;
+        } 
+            return 0;
         
-    // }
+    }
 
     // private static compareByPriority(a: fileInterface.Task, b: fileInterface.Task): number {
     //     return a.priority.localeCompare(b.priority);

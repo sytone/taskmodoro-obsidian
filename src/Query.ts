@@ -18,7 +18,7 @@ export type SortingProperty =
     | 'scheduled'
     | 'due'
     // | 'done'
-    | 'path'
+    // | 'path'
     | 'description'
     | 'tag';
 interface Sorting {

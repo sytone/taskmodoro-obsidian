@@ -100,7 +100,7 @@ export class FileInterface {
     value: Moment | string | string[] | Number | Object,
     propName: string,
     appendArr = false,
-    replacer: (value: any, Frontmatter: Frontmatter) => any = null
+    replacer: ((value: any, Frontmatter: Frontmatter) => any) | null = null
   ): Promise<void> =>
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
       let frontmatter: Frontmatter
@@ -128,6 +128,7 @@ export class FileInterface {
 
   public readonly updateTaskName = async (file: TFile, taskName: string): Promise<void> => {
     const metadata = this.app.metadataCache.getFileCache(file)
+    if(!metadata) return
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
     const taskNameLines = taskName.split('\n')
@@ -240,6 +241,7 @@ export class FileInterface {
         `${this.tasksDir}/${fileName}`,
         '/',
       )
+      if(!subtaskFile) continue
       this.updateFMProp(subtaskFile, currTaskPath, 'parents', true)
     }
 
@@ -392,7 +394,7 @@ export class FileInterface {
     return hash
   }
 
-  private getFrontmatter = (lines: string[]): Frontmatter => {
+  private getFrontmatter = (lines: string[]): Frontmatter|null => {
     try {
       return new Frontmatter(lines)
     } catch (error) {

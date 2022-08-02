@@ -29,7 +29,7 @@ esbuild
         preprocess: sveltePreprocess(),
       }),
     ],
-    sourcemap: 'inline',
+    sourcemap: dev ? 'inline' : false,
     target: 'es2016',
     treeShaking: true,
     watch: !prod && !dev,
