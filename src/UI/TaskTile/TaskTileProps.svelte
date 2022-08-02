@@ -1,14 +1,14 @@
 <script lang="ts">
   import type { TaskDetails } from '../../TaskDetails';
   import { durationFormat } from '../../Helpers/Helpers';
-  import { calendar, hourglass, repeat, timer } from '../../Graphics';
+  import { calendar, hourglass, recurrence, timer } from '../../Graphics';
   import { onMount } from 'svelte';
   import { Render } from '../../Helpers/Render';
   import { TaskDetailsMode } from '../../Enums/component-context';
   import { showDailyScheduleWorktimePicker } from '../../Helpers/ShowPickers';
   import {
     showScheduledDatePicker,
-    showRepeatPicker,
+    showRecurrencePicker,
   } from '../../Helpers/ShowPickers';
   import {
     showEstWorktimePicker,
@@ -20,7 +20,6 @@
   let cleanedTags = td.cleanTags(td.tags);
   const mode = TaskDetailsMode.Update;
 
-
   $: {
     cleanedTags = td.cleanTags(td.tags);
     renderTags(cleanedTags);
@@ -28,12 +27,13 @@
 
   $: showEstWorktime = td.estWorktime && td.estWorktime.asMinutes() !== 0;
   $: showOverallWorktime =
-      td.overallWorktime && td.overallWorktime.asMinutes() !== 0;
-  $: showOverallWorktimeProps = showEstWorktime || showOverallWorktime 
+    td.overallWorktime && td.overallWorktime.asMinutes() !== 0;
+  $: showOverallWorktimeProps = showEstWorktime || showOverallWorktime;
 
-  $: showDailyWorktime = td.dailyWorktime && td.dailyWorktime.asMinutes()  
-  $: showDailyScheduledWorktime = td.dailyScheduledWorktime && td.dailyScheduledWorktime.asMinutes()!==0
-  $: showDailyWorktimeProps = showDailyWorktime || showDailyScheduledWorktime
+  $: showDailyWorktime = td.dailyWorktime && td.dailyWorktime.asMinutes();
+  $: showDailyScheduledWorktime =
+    td.dailyScheduledWorktime && td.dailyScheduledWorktime.asMinutes() !== 0;
+  $: showDailyWorktimeProps = showDailyWorktime || showDailyScheduledWorktime;
   onMount(() => {
     renderTags(cleanedTags);
   });
@@ -60,7 +60,7 @@
       {#if showEstWorktime}
         <span id="worktime-seperator"> / </span>
         <span
-          on:click={() => showEstWorktimePicker(td, mode,updater)}
+          on:click={() => showEstWorktimePicker(td, mode, updater)}
           id="est-worktime-container"
           class="prop"
         >
@@ -83,7 +83,7 @@
       {#if showDailyScheduledWorktime}
         <span id="worktime-seperator"> / </span>
         <span
-          on:click={() => showDailyScheduleWorktimePicker(td, mode,updater)}
+          on:click={() => showDailyScheduleWorktimePicker(td, mode, updater)}
           id="daily-scheduled-worktime-container"
           class="prop"
         >
@@ -96,25 +96,28 @@
     </span>
   {/if}
   {#if td.due}
-    <span class="prop" on:click={() => showDueDatePicker(td, mode,updater)}>
+    <span class="prop" on:click={() => showDueDatePicker(td, mode, updater)}>
       {@html calendar}
       <span class="prop-text" id="due-text">{td.due?.format('YYYY-MM-DD')}</span
       >
     </span>
   {/if}
   {#if td.scheduled}
-    <span class="prop" on:click={() => showScheduledDatePicker(td, mode,updater)}>
+    <span
+      class="prop"
+      on:click={() => showScheduledDatePicker(td, mode, updater)}
+    >
       {@html hourglass}
       <span class="prop-text" id="scheduled-text"
         >{td.scheduled?.format('YYYY-MM-DD')}</span
       >
     </span>
   {/if}
-  {#if td.recurringConfig}
-    <span class="prop" on:click={() => showRepeatPicker(td, mode,updater)}>
-      {@html repeat}
-      <span class="prop-text" id="repeat-text"
-        >{td.recurringConfig?.toLowerCase()}</span
+  {#if td.recurrence}
+    <span class="prop" on:click={() => showRecurrencePicker(td, mode, updater)}>
+      {@html recurrence}
+      <span class="prop-text" id="recurrence-text"
+        >{td.recurrence?.toLowerCase()}</span
       >
     </span>
   {/if}
@@ -156,7 +159,7 @@
     padding-left: 4px;
   }
 
-  :global(.repeat-icon, .timer-icon) {
+  :global(.recurrence-icon, .timer-icon) {
     width: 16px;
     min-width: 16px;
     height: auto;
@@ -173,11 +176,11 @@
   }
 
   :global(#daily-worktime-container > .timer-icon path) {
-    fill:  var(--daily-worktime-prop);
+    fill: var(--daily-worktime-prop);
   }
 
   :global(#daily-scheduled-worktime-container > .timer-icon path) {
-    fill:  var(--daily-worktime-prop);
+    fill: var(--daily-worktime-prop);
     opacity: 0.7;
     /* fill: #A58F8E; */
   }
@@ -195,12 +198,12 @@
 
   #worktime-seperator {
     opacity: 0.3;
-    color:white;
+    color: white;
     margin-left: 8px;
   }
 
-  #repeat-text {
-    color: var(--repeat-prop);
+  #recurrence-text {
+    color: var(--recurrence-prop);
   }
 
   #due-text {

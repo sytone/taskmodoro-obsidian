@@ -4,7 +4,6 @@ import type TQPlugin from './main';
 import { toInteger } from 'lodash';
 import type { Duration } from 'moment';
 import moment from 'moment';
-import MomentDurationSetup from 'moment-duration-format';
 import type { TFile } from 'obsidian';
 
 export class TaskDetails {
@@ -14,7 +13,7 @@ export class TaskDetails {
   public taskName = '';
   public description = '';
   public completed = false;
-  public recurringConfig = '';
+  public recurrence = '';
   public due = '';
   public scheduled = '';
   public tags = '';
@@ -50,7 +49,7 @@ export class TaskDetails {
     if (task) {
       const fm = task.frontmatter;
       this.due = formatDate(task.due);
-      this.recurringConfig = fm.get('repeat');
+      this.recurrence = fm.get('recurrence');
       this.scheduled = formatDate(task.scheduled);
       this.taskName = task.taskName;
       this.description = task.description;

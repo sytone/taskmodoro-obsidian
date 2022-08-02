@@ -1,6 +1,6 @@
 import  {ByWeekday, Frequency, RRule, Weekday} from 'rrule';
 
-export class RepeatAdapter {
+export class RecurrenceAdapter {
   private readonly rrule: RRule;
   private subscriptions: { id: number; hook: (val: any) => void }[];
 

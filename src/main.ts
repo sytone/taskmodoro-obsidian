@@ -140,7 +140,7 @@ export default class TQPlugin extends Plugin {
     //     params.description,
     //     params.due,
     //     params.scheduled,
-    //     params.repeat,
+    //     params.recurrence,
     //     params.tags ? params.tags.split(',') : [],
     //   )
 

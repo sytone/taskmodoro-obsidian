@@ -2,7 +2,7 @@
   import ButtonGroup from '../ButtonGroup.svelte';
   import WeekDaysOfMonthSelector from './WeekDaysOfMonthSelector.svelte';
   import { RRule,Frequency } from 'rrule';
-import { RepeatAdapter } from '../../Repeat';
+import { RecurrenceAdapter } from '../../Repeat';
 
   // Repetition types:
   // - Daily with interval
@@ -47,30 +47,30 @@ import { RepeatAdapter } from '../../Repeat';
     { id: 12, text: 'Dec' },
   ];
 
-  export let repeatConfig: string;
-  export let set: (repeatConfig: string) => void;
+  export let recurrence: string;
+  export let set: (recurrence: string) => void;
   export let close: () => void;
 
   const repeater =
-    repeatConfig != ''
-      ? new RepeatAdapter(RRule.fromText(repeatConfig))
-      : new RepeatAdapter(new RRule({ freq: Frequency.WEEKLY, interval: 1 }));
+    recurrence != ''
+      ? new RecurrenceAdapter(RRule.fromText(recurrence))
+      : new RecurrenceAdapter(new RRule({ freq: Frequency.WEEKLY, interval: 1 }));
 
-  repeater.subscribe((value: RepeatAdapter) => {
-    repeatConfig = value.toText();
+  repeater.subscribe((value: RecurrenceAdapter) => {
+    recurrence = value.toText();
   });
 
-  const startingRepeatType =
+  const startingRecurrenceType =
     repeater.getWeekDaysOfMonth().length > 0 ? 'every' : 'onThe';
-  let monthlyRepeatType = startingRepeatType;
+  let monthlyRecurrenceType = startingRecurrenceType;
 
   const save = (): void => {
-    set(repeatConfig);
+    set(recurrence);
     close();
   };
 </script>
 
-<div class="form repeat-picker">
+<div class="form recurrence-picker">
     <div class="interval-row">
       <span>Every</span>
       <input
@@ -123,12 +123,12 @@ import { RepeatAdapter } from '../../Repeat';
 
       {#if $repeater.frequency === Frequency.MONTHLY || $repeater.frequency === Frequency.YEARLY}
         <div>
-          <select class="dropdown" bind:value={monthlyRepeatType}>
+          <select class="dropdown" bind:value={monthlyRecurrenceType}>
             <option value={'onThe'}>on the</option>
             <option value={'every'}>every</option>
           </select>
 
-          {#if monthlyRepeatType == 'onThe'}
+          {#if monthlyRecurrenceType == 'onThe'}
             <input
               id="onthe-selector"
               bind:value={$repeater.dayOfMonth}
@@ -161,7 +161,7 @@ import { RepeatAdapter } from '../../Repeat';
 <style>
 
 
-  .repeat-picker input[type=checkbox],.repeat-picker input[type=checkbox]:hover{
+  .recurrence-picker input[type=checkbox],.recurrence-picker input[type=checkbox]:hover{
       padding:7px;
   }
   

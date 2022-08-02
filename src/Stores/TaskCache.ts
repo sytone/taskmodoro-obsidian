@@ -199,7 +199,7 @@ export class TaskCache {
             md: contents,
             frontmatter,
             taskName: taskData.taskName,
-            repeats: frontmatter.get('repeat'),
+            recurrence: frontmatter.get('recurrence'),
             description: Parser.getDescription(lines),
             completed: taskData.isTaskCompleted,
             tags: tags ? tags : [],

@@ -11,7 +11,7 @@
     showDailyScheduleWorktimePicker,
   } from '../../Helpers/ShowPickers';
   import {
-    showRepeatPicker,
+    showRecurrencePicker,
     showPomoLengthPicker,
   } from '../../Helpers/ShowPickers';
   import {
@@ -68,7 +68,7 @@
     if (mode === TaskDetailsMode.Update) {
       td.plugin.fileInterface.updateFMProp(
         td.file,
-        null,
+        undefined,
         'daily_scheduled_worktime',
         false,
         replacer,
@@ -79,7 +79,7 @@
   const estWorktimeOnReset = () => {
     td.estWorktime = null;
     if (mode === TaskDetailsMode.Update) {
-      td.plugin.fileInterface.updateFMProp(td.file, null, 'estimated_worktime');
+      td.plugin.fileInterface.updateFMProp(td.file, undefined, 'estimated_worktime');
     }
   };
 
@@ -94,24 +94,24 @@
     }
   };
 
-  const repeatOnReset = () => {
-    td.recurringConfig = '';
+  const recurrenceOnReset = () => {
+    td.recurrence = '';
     if (mode === TaskDetailsMode.Update) {
-      td.plugin.fileInterface.updateFMProp(td.file, '', 'repeat');
+      td.plugin.fileInterface.updateFMProp(td.file, undefined, 'recurrence');
     }
   };
 
   const scheduledOnReset = () => {
     td.scheduled = '';
     if (mode === TaskDetailsMode.Update) {
-      td.plugin.fileInterface.updateFMProp(td.file, '', 'scheduled');
+      td.plugin.fileInterface.updateFMProp(td.file, undefined, 'scheduled');
     }
   };
 
   const dueOnReset = () => {
     td.due = '';
     if (mode === TaskDetailsMode.Update) {
-      td.plugin.fileInterface.updateFMProp(td.file, '', 'due');
+      td.plugin.fileInterface.updateFMProp(td.file, undefined, 'due');
     }
   };
 </script>
@@ -148,12 +148,12 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Repeat"
+      title="Recurrence"
       onSelect={() => {
-        showRepeatPicker(td, mode, updater);
+        showRecurrencePicker(td, mode, updater);
       }}
-      onReset={repeatOnReset}
-      value={!td.recurringConfig ? 'None' : td.recurringConfig}
+      onReset={recurrenceOnReset}
+      value={!td.recurrence ? 'None' : td.recurrence}
     />
 
     <TaskDetailsSidebarProp

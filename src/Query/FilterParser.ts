@@ -33,11 +33,10 @@ const fieldCreators = [
     () => new BooleanField(),
 ];
 
-export const parseFilter=(filterString: string): FilterOrErrorMessage | null => {
+export const parseFilter = (filterString: string): FilterOrErrorMessage | null => {
     for (const creator of fieldCreators) {
         const field = creator();
-        if (field.canCreateFilterForLine(filterString))
-            {return field.createFilterOrErrorMessage(filterString);}
+        if (field.canCreateFilterForLine(filterString)) { return field.createFilterOrErrorMessage(filterString); }
     }
     return null;
 }

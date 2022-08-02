@@ -4,8 +4,7 @@ import builtins from 'builtin-modules';
 import esbuildSvelte from 'esbuild-svelte';
 import sveltePreprocess from 'svelte-preprocess';
 
-const banner = `/*
-`;
+const banner = ``;
 
 const prod = process.argv[2] === 'production';
 const dev = process.argv[2] === 'development';

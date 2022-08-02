@@ -182,8 +182,8 @@ export const setCompletedDate = (frontmatter: Frontmatter): void => {
 }
 
 export const setDueDateToNext = (frontmatter: Frontmatter): void => {
-  const repeatConfig = frontmatter.get('repeat')
-  const repeater = RRule.fromText(repeatConfig)
+  const recurrence = frontmatter.get('recurrence')
+  const repeater = RRule.fromText(recurrence)
   const next = repeater.after(
     window.moment
       .utc()

@@ -22,7 +22,7 @@ export interface Task {
   taskName: string
   description: string
   tags: string[]
-  recurring: string
+  recurrence: string
   completed: boolean
   due: Moment | undefined
   scheduled: Moment | undefined
@@ -97,7 +97,7 @@ export class FileInterface {
 
   public readonly updateFMProp = async (
     file: TFile,
-    value: Moment | string | string[] | Number | Object,
+    value: Moment | string | string[] | Number | Object | undefined,
     propName: string,
     appendArr = false,
     replacer: ((value: any, Frontmatter: Frontmatter) => any) | null = null
@@ -128,7 +128,7 @@ export class FileInterface {
 
   public readonly updateTaskName = async (file: TFile, taskName: string): Promise<void> => {
     const metadata = this.app.metadataCache.getFileCache(file)
-    if(!metadata) return
+    if (!metadata) return
     let content = await this.app.vault.read(file)
     let contentLines = content.split('\n')
     const taskNameLines = taskName.split('\n')
@@ -149,13 +149,13 @@ export class FileInterface {
     this.app.vault.modify(file, content)
   }
 
- /**
-  * If task is non-repeating and has been unchecked then we remove completion date
-  */
+  /**
+   * If task is non-repeating and has been unchecked then we remove completion date
+   */
   public readonly processUnchecked = (lines: string[]): boolean => {
     let frontmatter = this.getFrontmatter(lines)
     if (!frontmatter) return false
-    if (!frontmatter.contains('repeat') && frontmatter.contains('completed')) {
+    if (!frontmatter.contains('recurrence') && frontmatter.contains('completed')) {
       let completed: string[] = frontmatter.get('completed')
       completed.pop()
       frontmatter.set('completed', completed)
@@ -174,9 +174,9 @@ export class FileInterface {
 
     //Since task is completed it's completion date will be set
     setCompletedDate(frontmatter)
-    
-    if (frontmatter.contains('repeat')) {
-      this.processRepeating(frontmatter,lines,path)
+
+    if (frontmatter.contains('recurrence')) {
+      this.processRecurring(frontmatter, lines, path)
     }
 
     frontmatter.overwrite()
@@ -184,13 +184,13 @@ export class FileInterface {
   }
 
   /**
-   * processRepeating checks the provided lines to see if they describe a
-   * repeating task and whether that task is checked. If so, the task is
-   * unchecked, the due date updated according to the repeat config, and the
+   * processRecurring checks the provided lines to see if they describe a
+   * recurring task and whether that task is checked. If so, the task is
+   * unchecked, the due date updated according to the recurrence config, and the
    * current date added to the completed list in the frontmatter.
    * */
-  private readonly processRepeating = (frontmatter: Frontmatter,lines:string[],path: FilePath)=>{
-  
+  private readonly processRecurring = (frontmatter: Frontmatter, lines: string[], path: FilePath) => {
+
 
     // Look for the task and check status
     const checkedTaskLine = lines.findIndex(line => /^- \[[xX]\]/.test(line))
@@ -199,7 +199,7 @@ export class FileInterface {
       return false
     }
 
-    console.debug('taskmodoro: Reloading repeating task in ' + path)
+    console.debug('taskmodoro: Reloading recurring task in ' + path)
 
     // Uncheck the task
     lines[checkedTaskLine] = lines[checkedTaskLine].replace(/\[[xX]\]/, '[ ]')
@@ -230,7 +230,7 @@ export class FileInterface {
       td.dailyScheduledWorktime,
       td.due,
       td.scheduled,
-      td.recurringConfig,
+      td.recurrence,
       td.cleanedTags,
       subtasksFileNames,
     )
@@ -241,7 +241,7 @@ export class FileInterface {
         `${this.tasksDir}/${fileName}`,
         '/',
       )
-      if(!subtaskFile) continue
+      if (!subtaskFile) continue
       this.updateFMProp(subtaskFile, currTaskPath, 'parents', true)
     }
 
@@ -256,7 +256,7 @@ export class FileInterface {
     dailyScheduledWorktime: Duration,
     due: string,
     scheduled: string,
-    repeat: string,
+    recurrence: string,
     tags: string[],
     subtasksNames: FileName[],
   ): Promise<string> => {
@@ -271,7 +271,7 @@ export class FileInterface {
       dailyScheduledWorktime,
       due,
       scheduled,
-      repeat,
+      recurrence,
       tags,
       subtasksNames,
     )
@@ -311,7 +311,7 @@ export class FileInterface {
     dailyScheduledWorktime: Duration,
     due: string,
     scheduled: string,
-    repeat: string,
+    reccurence: string,
     tags: string[],
     subtasksNames: string[],
   ): string => {
@@ -346,8 +346,8 @@ export class FileInterface {
       frontMatter.push(`scheduled: '${scheduled}'`)
     }
 
-    if (repeat) {
-      frontMatter.push('repeat: ' + repeat)
+    if (reccurence) {
+      frontMatter.push('recurrence: ' + reccurence)
     }
 
     if (tags && tags.length > 0 && tags[0].length > 0) {
@@ -394,7 +394,7 @@ export class FileInterface {
     return hash
   }
 
-  private getFrontmatter = (lines: string[]): Frontmatter|null => {
+  private getFrontmatter = (lines: string[]): Frontmatter | null => {
     try {
       return new Frontmatter(lines)
     } catch (error) {

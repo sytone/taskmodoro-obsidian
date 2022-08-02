@@ -79,19 +79,19 @@ export class Group {
     // }
 
     private static groupByRecurrence(task: Task): string[] {
-        if (task.recurring != null) {
-            return [task.recurring];
-        } 
-            return ['None'];
-        
+        if (task.recurrence != null) {
+            return [task.recurrence];
+        }
+        return ['None'];
+
     }
 
     private static groupByRecurring(task: Task): string[] {
-        if (task.recurring != null) {
+        if (task.recurrence != null) {
             return ['Recurring'];
-        } 
-            return ['Not Recurring'];
-        
+        }
+        return ['Not Recurring'];
+
     }
 
     // private static groupByStartDate(task: Task): string[] {
@@ -173,9 +173,9 @@ export class Group {
     // }
 
     private static groupByCompleted(task: Task): string[] {
-        if(task.completed) {
+        if (task.completed) {
             return ['Completed']
-        }else {
+        } else {
             return ['Not completed']
         }
     }

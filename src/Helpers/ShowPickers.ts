@@ -5,7 +5,7 @@ import { TaskDetailsMode } from '../Enums/component-context';
 import {
     DatePickerModal,
     DurationPickerModal,
-    RepeatPickerModal,
+    RecurrencePickerModal,
 } from '../Modals';
 import type { TaskDetails } from '../TaskDetails';
 import type { Frontmatter } from '../Parser';
@@ -61,24 +61,24 @@ export const showScheduledDatePicker = (
     ).open();
 };
 
-export const showRepeatPicker = (
+export const showRecurrencePicker = (
     td: TaskDetails,
     mode: TaskDetailsMode,
     updater: () => void = null,
 ) => {
-    const startRepeatPickerConfig = td.recurringConfig;
-    const onSet = (newRepeatConfig: string) => {
-        td.recurringConfig = newRepeatConfig;
+    const initialRecurrence = td.recurrence;
+    const onSet = (newRecurrence: string) => {
+        td.recurrence = newRecurrence;
         updater();
         if (mode == TaskDetailsMode.Update) {
             td.plugin.fileInterface.updateFMProp(
                 td.file,
-                newRepeatConfig,
-                'repeat',
+                newRecurrence,
+                'recurrence',
             );
         }
     };
-    new RepeatPickerModal(td.plugin.app, startRepeatPickerConfig, onSet).open();
+    new RecurrencePickerModal(td.plugin.app, initialRecurrence, onSet).open();
 };
 
 export const showEstWorktimePicker = (

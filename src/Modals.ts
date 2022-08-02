@@ -4,7 +4,7 @@ import type { Duration, Moment } from 'moment'
 import DatePicker from './UI/pickers/DuePicker.svelte'
 import DurationPicker from './UI/pickers/DurationPicker/DurationPicker.svelte'
 import type { DurationPickerType } from './Enums/duration-picker-type'
-import RepeatPicker from './UI/Pickers/RepeatPicker.svelte'
+import RecurrencePicker from './UI/Pickers/RepeatPicker.svelte'
 import type TQPlugin from './main'
 
 import type { TaskDetailsMode } from './Enums/component-context'
@@ -123,31 +123,30 @@ export class DatePickerModal extends Modal {
   }
 }
 
-export class RepeatPickerModal extends Modal {
-  private readonly repeatConfig: string
-  private readonly set: (repeatConfig: string) => void
+export class RecurrencePickerModal extends Modal {
+  private readonly recurrence: string
+  private readonly set: (recurrence: string) => void
 
   constructor(
     app: App,
-    repeatConfig: string,
-    set: (repeatConfig: string) => void,
+    recurrence: string,
+    set: (recurrence: string) => void,
   ) {
     super(app)
 
-    this.repeatConfig = repeatConfig
+    this.recurrence = recurrence
     this.set = set
   }
 
   public onOpen = (): void => {
     const { titleEl, contentEl } = this
     titleEl.setText('Set Repeat Config')
-    new RepeatPicker({
+    new RecurrencePicker({
       target: contentEl,
       props: {
         close: () => this.close(),
         set: this.set,
-        repeatConfig: this.repeatConfig,
-        repeats: this.repeatConfig !== 'none',
+        recurrence: this.recurrence,
       },
     })
   }
