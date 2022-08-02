@@ -31,7 +31,6 @@
   $: {
     $sessionLeftStore = sessionLeft;
   }
-  let sessionProgress: Duration;
   let state = pomodoroSession.state;
   let type = pomodoroSession.type;
   let startedAt: Moment;
@@ -66,7 +65,7 @@
 
   const setTimerActivity = () => {
     if ($type === PomodoroSessionType.WORK) {
-      let endedAt = startedAt.clone().add(sessionProgress);
+      let endedAt = moment()
       plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
     }
   };
@@ -96,13 +95,11 @@
   const start = (): void => {
     $state = TimerState.ONGOING;
     startedAt = moment(new Date());
-    sessionProgress = moment.duration();
     timer = setInterval(() => {
       if (sessionLeft.asSeconds() == 0) {
         done();
       } else {
         sessionLeft = sessionLeft.subtract(1, 'second');
-        sessionProgress = sessionProgress.add(1, 'second');
         markers = markers;
       }
     }, 1000);

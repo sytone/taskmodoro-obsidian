@@ -69,15 +69,9 @@ export class FileInterface {
     end: Moment,
   ): void => {
     modifyFileContents(file, this.app.vault, (lines: string[]): boolean => {
-      let frontmatter: Frontmatter
-
-      try {
-        frontmatter = new Frontmatter(lines)
-      } catch (error) {
-        console.debug(error)
-        return false
-      }
-
+      let frontmatter = this.getFrontmatter(lines)
+      if(!frontmatter) return false
+      
       const format = 'YYYY-MM-DD H:m:s'
       const startStr = start.format(format)
       const endStr = end.format(format)
