@@ -116,8 +116,8 @@
   };
 </script>
 
-<div class="TaskDetails-sidebar">
-  <span class="sidebar__external-actions-container">
+<div class="task-details__side-panel">
+  <span class="side-panel__external-actions-container">
     {#if mode !== TaskDetailsMode.Create}
       <TimerOpenBtn on:click={showPomodoroTaskView} />
     {/if}
@@ -128,9 +128,9 @@
       close={td.close}
     />
   </span>
-  <div class="sidebar-container">
+  <div class="side-panel__container">
     <TaskDetailsSidebarProp
-      title="Due date"
+      propLabel="Due date"
       onSelect={() => {
         showDueDatePicker(td, mode, updater);
       }}
@@ -139,7 +139,7 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Scheduled date"
+      propLabel="Scheduled date"
       onSelect={() => {
         showScheduledDatePicker(td, mode, updater);
       }}
@@ -148,7 +148,7 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Recurrence"
+      propLabel="Recurrence"
       onSelect={() => {
         showRecurrencePicker(td, mode, updater);
       }}
@@ -157,7 +157,7 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Pomodoro length"
+      propLabel="Pomodoro length"
       onSelect={() => {
         showPomoLengthPicker(td, mode, updater);
       }}
@@ -166,7 +166,7 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Estimated worktime"
+      propLabel="Estimated worktime"
       onSelect={() => {
         showEstWorktimePicker(td, mode, updater);
       }}
@@ -175,7 +175,7 @@
     />
 
     <TaskDetailsSidebarProp
-      title="Daily scheduled worktime"
+      propLabel="Daily scheduled worktime"
       onSelect={() => {
         showDailyScheduleWorktimePicker(td, mode, updater);
       }}
@@ -184,7 +184,7 @@
     />
 
     <div class="group">
-      <div class="label">Tags</div>
+      <div class="prop__label">Tags</div>
       <TextSuggest
         classes={'tag-input'}
         app={td.plugin.app}
@@ -208,7 +208,7 @@
 </div>
 
 <style>
-  :global(.TaskDetails-sidebar .tag-input) {
+  :global(.task-details__side-panel .tag-input) {
     padding-bottom: 8px;
     border-bottom: 1px solid var(--input-border);
   }
@@ -223,19 +223,19 @@
     justify-content: end;
   }
 
-  .sidebar__external-actions-container {
+  .side-panel__external-actions-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
   }
 
-  .TaskDetails-sidebar {
-    background-color: var(--background-secondary);
+  .task-details__side-panel {
+    background-color: var(--side-panel-background);
     width: 30%;
     padding: 24px 24px;
   }
 
-  .sidebar-container {
+  .side-panel__container {
     padding: 24px 0px;
   }
 
@@ -243,7 +243,7 @@
     padding-bottom: 24px;
   }
 
-  .label {
+  .prop__label {
     font-size: 1rem;
     padding-bottom: 8px;
     color: var(--text-muted);

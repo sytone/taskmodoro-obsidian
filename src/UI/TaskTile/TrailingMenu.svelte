@@ -48,8 +48,8 @@
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-primary) 20%,
-      var(--background-primary)
+      var(--timer-container__task-tile-background) 20%,
+      var(--timer-container__task-tile-background)
     );
   }
 
@@ -58,8 +58,8 @@
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-nav) 20%,
-      var(--background-nav)
+      var(--main-panel-background) 20%,
+      var(--main-panel-background)
     );
   }
 
@@ -73,8 +73,8 @@
     background: linear-gradient(
       to right,
       transparent 0%,
-      var(--background-secondary) 20%,
-      var(--background-secondary)
+      var(--query-task-list__task-tile-background) 20%,
+      var(--query-task-list__task-tile-background)
     );
   }
 

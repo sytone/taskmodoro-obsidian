@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { circledPlay, play } from '../Graphics';
+  import { circledPlay} from '../Graphics';
 </script>
 
 <div on:click class="timer-open-btn">
@@ -11,7 +11,7 @@
     cursor: pointer;
   }
 
-  :global(.sidebar__external-actions-container .timer-open-btn svg) {
+  :global(.side-panel__external-actions-container .timer-open-btn svg) {
     width: 28px;
   }
 

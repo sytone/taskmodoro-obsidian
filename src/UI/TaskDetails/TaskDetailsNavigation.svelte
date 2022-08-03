@@ -58,6 +58,7 @@ import { getTextAbv } from '../../Helpers/Helpers';
 <style>
   .task-navigation {
     min-height: 56px;
+    color: var(--text-muted)
   }
 
   .navigation-text:hover {

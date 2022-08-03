@@ -174,17 +174,17 @@
 </div>
 
 <style>
-  :global(.subtasks-list .task-tile) {
+  :global(.main-task-panel .task-tile) {
     margin: 8px 0;
-    background-color: var(--background-nav);
+    background-color: var(--main-panel-background);
     font-size: 1.25rem;
     font-weight: 700;
   }
 
-  :global(.subtasks-list .task-title) {
+  :global(.main-task-panel .task-title) {
     margin: 8px 0;
     padding-right: 16px;
-    background-color: var(--background-nav);
+    background-color: var(--main-panel-background);
   }
 
   :global(.subtasks-list .leading) {
@@ -218,7 +218,7 @@
   }
 
   :global(.timer-task-container .task-tile) {
-    background-color: var(--background-primary);
+    background-color: var(--timer-container__task-tile-background);
   }
 
   :global(.query-tasks-list .leading) {
@@ -228,8 +228,8 @@
   :global(.query-tasks-list .task-tile) {
     margin: 4px 0;
     border-radius: 10px;
-    background-color: var(--background-secondary);
-    border: thin solid var(--background-secondary);
+    background-color: var(--query-task-list__task-tile-background);
+    border: thin solid var(--query-task-list__task-tile-background);
   }
 
   :global(.query-tasks-list .task-tile .nested-subtasks-list .task-tile) {

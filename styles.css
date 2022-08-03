@@ -17,7 +17,8 @@
   min-width: 900px;
   padding: 0;
   margin: 0;
-  border: 1px solid var(--background-secondary-alt) ;
+  border:none;
+  /* border: 1px solid var(--background-secondary-alt) ; */
   text-decoration: none;
 }
 
@@ -35,8 +36,10 @@
   --checkbox-border: var(--text-faint);
   --input-border: var(--background-modifier-border);
   --placeholder: var(--text-faint);
-
- 
+  --main-panel-background: var(--background-primary);
+  --side-panel-background: var(--background-secondary);
+  --timer-container__task-tile-background: var(--background-primary);
+  --query-task-list__task-tile-background: var(--background-secondary)
 }
 .taskmodoro-circle {
   box-sizing: border-box;
@@ -58,7 +61,8 @@
   flex-direction: row;
   overflow: hidden;
 }
-.taskmodoro-modal>.modal-close-button{
+
+.taskmodoro-modal>div.modal-close-button{
   top: 20px;
   right: 24px;
   font-size: 44px;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { cancel } from '../../Graphics';
-  export let title: string;
+  export let propLabel: string;
   export let onSelect: () => void;
   export let onReset: () => void;
   export let value: string;
@@ -9,8 +9,8 @@
 </script>
 
 <div class="group">
-  <div class="label">{title}</div>
-  <div class="prop-input-container">
+  <div class="prop__label">{propLabel}</div>
+  <div class="prop__input-container">
     <div
       on:focus={() => {}}
       on:mouseover={() => {
@@ -19,7 +19,7 @@
       on:mouseleave={() => {
         isPropInputFocus = false;
       }}
-      class="prop-input"
+      class="prop__input"
       on:click={() => {
         if (!isResetBtnFocus) {
           onSelect();
@@ -47,7 +47,7 @@
 </div>
 
 <style>
-  .prop-input-container {
+  .prop__input-container {
     display: flex;
     flex-direction: row;
   }
@@ -80,23 +80,25 @@
     padding-bottom: 24px;
   }
 
-  .prop-input {
+  .prop__input {
     position: relative;
     background-color: transparent;
     border: none;
     width: 100%;
     padding: 4px 0px;
+    padding-left:8px;
+    margin-left:-8px;
     color: var(--text-normal);
 
   }
 
-  .prop-input:hover,
-  .prop-input:focus {
+  .prop__input:hover,
+  .prop__input:focus {
     cursor: pointer;
     background-color: var(--interactive-hover);
   }
 
-  .label {
+  .prop__label {
     font-size: 1rem;
     padding-bottom: 4px;
     color: var(--title);

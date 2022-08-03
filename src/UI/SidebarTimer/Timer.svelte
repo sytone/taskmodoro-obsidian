@@ -71,6 +71,7 @@
 
   :global(.filled-timer-marker  path) {
     stroke-dasharray: none;
+    fill: var(--text-normal);
     stroke: var(--text-normal);
   }
 
