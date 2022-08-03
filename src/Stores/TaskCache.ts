@@ -203,7 +203,7 @@ export class TaskCache {
             description: Parser.getDescription(lines),
             completed: taskData.isTaskCompleted,
             tags: tags ? tags : [],
-            due: due ? window.moment(due).endOf('day') : undefined,
+            due: due ? window.moment(due).endOf('day') : null,
             scheduled: scheduled
                 ? window.moment(scheduled).endOf('day')
                 : undefined,

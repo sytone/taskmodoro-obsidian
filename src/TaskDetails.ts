@@ -10,7 +10,6 @@ import type { Moment} from 'moment';
 export class TaskDetails {
   public plugin: TQPlugin;
   public file: TFile;
-  public tagsCache: string[];
   public taskName = '';
   public description = '';
   public completed = false;
@@ -43,14 +42,13 @@ export class TaskDetails {
     close: () => void = undefined,
   ) {
     this.plugin = plugin;
-    this.tagsCache = Object.keys((plugin.app.metadataCache as any).getTags());
     if (close) {
       this.close = close;
     }
     if (task) {
       const fm = task.frontmatter;
       this.due = formatDate(task.due);
-      this.recurrence = fm.get('recurrence');
+      this.recurrence = task.recurrence;
       this.scheduled = formatDate(task.scheduled);
       this.taskName = task.taskName;
       this.description = task.description;
@@ -71,12 +69,7 @@ export class TaskDetails {
       if (estWorklength) {
         this.estWorktime = moment.duration(estWorklength, 'minutes');
       }
-      
-      const tags: string[] = fm.get('tags');
-
-      if (tags) {
-        this.tags += tags.join(' ');
-      }
+      this.tags = task.tags.join(' ')
 
       const ta: [{ start: string; end: string }] = fm.get('timer_activity');
 
