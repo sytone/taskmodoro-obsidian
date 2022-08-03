@@ -19,10 +19,9 @@
       subtaskName = '';
       subtaskInputEl.innerHTML = '';
       td.subtasks.push(subtask);
+      td=td
       if (mode === TaskDetailsMode.Update) {
         storeSubtask(subtask);
-      } else {
-        td = td;
       }
     }
   };
