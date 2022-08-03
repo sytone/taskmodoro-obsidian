@@ -52,7 +52,6 @@
       td.file.name,
       'parents',
       true,
-      false,
     );
 
     td.plugin.fileInterface.updateFMProp(

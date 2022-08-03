@@ -98,7 +98,8 @@
 
   const openTaskDetails = () => {
     if(!canOpenModal) return
-    let lastTaskNavTask = $taskCache[$tasksNav.last()];
+    const lastTask = $tasksNav.last()
+    let lastTaskNavTask = $taskCache[lastTask!];
     if (lastTaskNavTask) {
       findTaskNavPath(lastTaskNavTask, $tasksNav.length);
     } else {

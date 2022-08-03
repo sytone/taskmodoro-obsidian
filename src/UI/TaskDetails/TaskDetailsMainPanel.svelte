@@ -8,11 +8,24 @@
   import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import Editor from '../Editor.svelte';
   import { allowOpenInternalLinks } from '../../Editor/InternalLink';
+import type { TFile } from 'obsidian';
   
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
   let taskNameDraft = td.taskName;
   let descriptionDraft = td.description;
+
+  $:{
+    updateDrafts(td.file)
+  }
+
+
+  // Update drafts if a task with different file is pushed to the task details modal
+  // This will happen when navigating parents-subtasks tree
+  const updateDrafts = (file: TFile)=>{
+    taskNameDraft = td.taskName
+    descriptionDraft = td.description
+  }
 
   let taskNameEl: HTMLElement;
   let descriptionEl: HTMLElement;
@@ -21,9 +34,11 @@
 
   type isEditModeKey = keyof typeof isEditMode;
   const renderDescMD = () =>
-    renderMD(descriptionEl, descriptionDraft, 'description' as isEditModeKey);
+    renderMD(descriptionEl, descriptionDraft);
   const renderTaskNameMD = () =>
-    renderMD(taskNameEl, taskNameDraft, 'taskName' as isEditModeKey);
+    renderMD(taskNameEl, taskNameDraft);
+  
+  
 
   onMount(async () => {
     renderDescMD();
@@ -39,7 +54,7 @@
     }
   });
 
-  const renderMD = (el: HTMLElement, MD: string, prop: isEditModeKey) => {
+  const renderMD = (el: HTMLElement, MD: string) => {
     if (!el) {
       return;
     }
