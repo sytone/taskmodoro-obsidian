@@ -5,6 +5,7 @@ import { toInteger } from 'lodash';
 import type { Duration } from 'moment';
 import moment from 'moment';
 import type { TFile } from 'obsidian';
+import type { Moment} from 'moment';
 
 export class TaskDetails {
   public plugin: TQPlugin;
@@ -70,6 +71,7 @@ export class TaskDetails {
       if (estWorklength) {
         this.estWorktime = moment.duration(estWorklength, 'minutes');
       }
+      
       const tags: string[] = fm.get('tags');
 
       if (tags) {
@@ -80,16 +82,10 @@ export class TaskDetails {
 
       if (ta) {
         ta.forEach((a) => {
-          let diff = moment(a.end).diff(moment(a.start),'milliseconds');
-          this.overallWorktime.add(diff, 'milliseconds');
+          let diff = moment(a.end).diff(moment(a.start),'minutes');
+          this.overallWorktime.add(diff, 'minutes');
+          this.addToDailyWorktime(a.start,a.end,now,diff)
 
-          if (now === moment(a.start).format('YYYY-MM-DD')) {
-            if (now !== moment(a.end).format('YYYY-MM-DD')) {
-              const end = moment(a.end).subtract(1, 'day').endOf('day');
-              diff = end.diff(moment(a.start),'milliseconds');
-            }
-            this.dailyWorktime.add(diff, 'milliseconds');
-          }
         });
       }
       const subtasks: Task[] = task.subtasks;
@@ -120,4 +116,14 @@ export class TaskDetails {
     }
     return fileName;
   };
+
+  private addToDailyWorktime (start:string, end:string,now: string,diff: number){
+    if (now === moment(start).format('YYYY-MM-DD')) {
+      if (now !== moment(end).format('YYYY-MM-DD')) {
+        let endDate = moment(end).subtract(1, 'day').endOf('day');
+        diff = endDate.diff(moment(start),'minutes');
+      }
+      this.dailyWorktime.add(diff, 'minutes');
+    }
+  }
 }

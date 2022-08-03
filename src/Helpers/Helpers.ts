@@ -11,7 +11,7 @@ export const durationFormat = (dur: Duration): string => {
   const hrs = Math.round(
     dur
       .clone()
-      .subtract(dur.minutes())
+      .subtract(dur.minutes(),'minutes')
       .asHours(),
   )
   const mins = dur.minutes()
