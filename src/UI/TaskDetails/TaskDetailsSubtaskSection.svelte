@@ -66,66 +66,64 @@
   const onSubtaskNameInput = (event: any) => {
     subtaskName = event.target.innerText;
   };
-  let showExpansionBtn = true
-  let expanded = true
+  let showExpansionBtn = true;
+  let expanded = true;
 </script>
-<div class='subtask-section'>
 
+<div class="subtask-section">
   <div class="subtask-section-title-wrapper">
-    <SubtasksExpansionBtn {showExpansionBtn} bind:expanded></SubtasksExpansionBtn>
+    <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
     <span class="subtask-section-title">Subtasks</span>
-</div>
-{#if expanded}
-<div class="subtask-section-body">
-  <div class="subtask-input-wrapper">
-    <div
-    class="subtask-name-input"
-    placeholder="Add a subtask"
-    prefix=""
-    contenteditable="true"
-    on:input={onSubtaskNameInput}
-    bind:this={subtaskInputEl}
-    on:keypress={onEnter}
-    />
   </div>
-  <div class="subtasks-list">
-    {#each td.subtasks as subtask (subtask.taskName)}
-    <TaskTile
-    parentComponent={TaskTileParent.TaskDetailsMainPanel}
-    bind:td={subtask}
-    view={null}
-    />
-    {/each}
-  </div>
-</div>
-{/if}
+  {#if expanded}
+    <div class="subtask-section-body">
+      <div class="subtask-input-wrapper">
+        <div
+          class="subtask-name-input"
+          placeholder="Add a subtask"
+          prefix=""
+          contenteditable="true"
+          on:input={onSubtaskNameInput}
+          bind:this={subtaskInputEl}
+          on:keypress={onEnter}
+        />
+      </div>
+      <div class="subtasks-list">
+        {#each td.subtasks as subtask (subtask.taskName)}
+          <TaskTile
+            parentComponent={TaskTileParent.TaskDetailsMainPanel}
+            bind:td={subtask}
+          />
+        {/each}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
-  .subtask-section{
+  .subtask-section {
     margin-left: 12px;
   }
 
   [contenteditable='true']:empty:before {
     content: attr(prefix);
     font-size: 1.5rem;
-    color: var(--dark-blue-gray);
+    color: var(--placeholder);
   }
-
 
   .subtask-section-title {
     /* margin-left: 16px; */
-    color: var(--mid-blue-gray);
+    color: var(--title);
   }
 
-  .subtask-section-title-wrapper{
-    display:flex;
+  .subtask-section-title-wrapper {
+    display: flex;
     flex-direction: row;
   }
 
   .subtask-name-input {
     border: none;
-    border-bottom: 1px solid var(--dark2-blue-gray);
+    border-bottom: 1px solid var(--input-border);
     margin: 0px 16px -8px 20px;
     padding: 12px 0;
     font-size: 1.25rem;
@@ -136,14 +134,14 @@
     background-color: transparent;
   }
 
-  :global(.subtask-input-wrapper .plus-icon) {
+  /* :global(.subtask-input-wrapper .plus-icon) {
     margin-left: 3px;
     margin-top: 8px;
   }
 
   :global(.subtask-input-wrapper .plus-icon rect) {
-    fill: var(--mid3-blue-gray);
-  }
+    fill: var(--secondary-action-item);
+  } */
 
   .subtasks-list {
     margin-top: 24px;

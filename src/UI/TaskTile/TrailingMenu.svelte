@@ -9,12 +9,10 @@
   export let td: TaskDetails;
   const showPomodoroTaskView = async () => {
     await td.plugin.activatePomodoroTaskView(td);
-    if(td.close){
+    if (td.close) {
       td.close();
     }
   };
-
-
 </script>
 
 {#if showTrailingMenu}
@@ -47,7 +45,12 @@
 
   :global(.timer-task-container .trailing-menu) {
     top: 2px;
-    background: linear-gradient(to right, transparent 0%, #202327 20%, #202327);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--background-primary) 20%,
+      var(--background-primary)
+    );
   }
 
   :global(.main-task-panel .trailing-menu) {
@@ -87,5 +90,4 @@
     margin-left: 16px;
     padding-bottom: 2px;
   }
-
 </style>

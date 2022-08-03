@@ -12,7 +12,13 @@
 </script>
 
 {#if showEditor}
-  <MarkdownEditor {placeholder} id={editContainerId} {onEnter} {onFocusout} bind:md={text} />
+  <MarkdownEditor
+    {placeholder}
+    id={editContainerId}
+    {onEnter}
+    {onFocusout}
+    bind:md={text}
+  />
 {:else}
   <div class="markdown-preview__wrapper">
     <div
@@ -32,19 +38,19 @@
     position: relative;
   }
 
-  .markdown-preview{
+  .markdown-preview {
     min-height: 3rem;
   }
 
   .editor__placeholder {
     position: absolute;
-    top:8px;
-    left:0px;
+    top: 8px;
+    left: 0px;
   }
 
   #task-input__name {
     border: none;
-    border-bottom: 1px solid var(--dark2-blue-gray);
+    border-bottom: 1px solid var(--input-border);
     width: 100%;
     overflow: hidden;
     background-color: transparent;
@@ -62,7 +68,7 @@
   }
 
   .editor__placeholder {
-    color: var(--dark-blue-gray);
+    color: var(--placeholder);
     font-size: 1rem;
     font-weight: normal;
   }

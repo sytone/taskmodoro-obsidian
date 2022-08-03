@@ -145,9 +145,9 @@
   }
 
   .main-task-panel {
-    background-color: var(--background-nav);
+    background-color: var(--background-primary);
     width: 70%;
     padding: 24px 24px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 </style>

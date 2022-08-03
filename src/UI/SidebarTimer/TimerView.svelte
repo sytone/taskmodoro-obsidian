@@ -168,8 +168,14 @@
     margin-top: -3rem;
   }
 
-  :global(.timer-action circle){
-    fill: transparent
+  :global(.timer-action circle, .timer-action rect,.timer-action path){
+    fill: transparent;
+    stroke: var(--text-normal)
   }
-  
+
+
+  :global(.timer-action .circle-play) {
+    width: 48px;
+  }
+
 </style>

@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import { chevronDown } from '../../Graphics';
 
   export let showExpansionBtn: boolean;
@@ -50,10 +49,10 @@
   }
 
   :global(.chevron-down-icon path) {
-    fill: var(--mid3-blue-gray);
+    opacity: 0.7;
+    fill: var(--secondary-action-item);
   }
-  :global(.nested-subtasks-list .chevron-wrapper){
+  :global(.nested-subtasks-list .chevron-wrapper) {
     margin-left: 0px;
   }
-
 </style>

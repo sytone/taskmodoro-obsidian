@@ -1,7 +1,3 @@
-/*
-Settings Page
-*/
-
 .taskmodoro-input-error {
   border-color: var(--text-error) !important;
 }
@@ -17,11 +13,11 @@ Settings Page
 }
 
 .taskmodoro-modal {
-  font-family: 'lato';
+  font-family: inherit;
   min-width: 900px;
   padding: 0;
   margin: 0;
-  border: 1px solid #3D4242 ;
+  border: 1px solid var(--background-secondary-alt) ;
   text-decoration: none;
 }
 
@@ -33,11 +29,13 @@ Settings Page
   --recurrence-prop:#c86092;
   --due-prop: #8562cb;
   --scheduled-prop:#54a8b4;
-  --mid-blue-gray: #909595;
-  --mid2-blue-gray: #686B6F;
-  --mid3-blue-gray: #5b6060;
-  --dark-blue-gray: #4B4F4F;
-  --dark2-blue-gray: #343636;
+  --title: var(--text-muted);
+  --secondary-action-item: var(--text-faint);
+  --check-mark-fill: var(--text-accent);
+  --checkbox-border: var(--text-faint);
+  --input-border: var(--background-modifier-border);
+  --placeholder: var(--text-faint);
+
  
 }
 .taskmodoro-circle {
@@ -47,7 +45,7 @@ Settings Page
   justify-content: center;
   align-content: center;
   border-radius: 100%;
-  border: 2px solid var(--mid-blue-gray);
+  border: 2px solid var(--text-faint);
 }
 
 .taskmodoro-circle:hover {
@@ -61,21 +59,22 @@ Settings Page
   overflow: hidden;
 }
 .taskmodoro-modal>.modal-close-button{
-  top: 24px;
+  top: 20px;
   right: 24px;
   font-size: 44px;
-  color: var(--mid2-blue-gray)
+  color: var(--secondary-action-item)
 }
+
+.taskmodoro .secondary-action-btn{
+  background-color: var(--interactive-normal);
+}
+
 .primary-btn{
   padding: 8px 24px;
 }
 
 .primary{
   background-color: var(--text-accent);
-}
-
-.secondary-action{
-  background-color: #625D5D !important;
 }
 
 .hidden {
@@ -89,7 +88,7 @@ Settings Page
 
 [contenteditable='true']:empty:after {
   content: attr(placeholder);
-  color: var(--dark-blue-gray);
+  color: var(--placeholder);
   font-size: 1rem;
   font-weight: normal;
 }

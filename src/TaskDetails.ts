@@ -79,15 +79,14 @@ export class TaskDetails {
       const ta: [{ start: string; end: string }] = fm.get('timer_activity');
 
       if (ta) {
-        this.overallWorktime = moment.duration();
         ta.forEach((a) => {
-          let diff = moment(a.end).diff(moment(a.start));
+          let diff = moment(a.end).diff(moment(a.start),'milliseconds');
           this.overallWorktime.add(diff, 'milliseconds');
 
           if (now === moment(a.start).format('YYYY-MM-DD')) {
             if (now !== moment(a.end).format('YYYY-MM-DD')) {
               const end = moment(a.end).subtract(1, 'day').endOf('day');
-              diff = end.diff(moment(a.start));
+              diff = end.diff(moment(a.start),'milliseconds');
             }
             this.dailyWorktime.add(diff, 'milliseconds');
           }

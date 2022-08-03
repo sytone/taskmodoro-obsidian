@@ -62,13 +62,17 @@
   .reset:hover,
   .reset:focus {
     cursor: pointer;
-    background-color: #282c30;
+    background-color: var(--interactive-hover);
   }
 
   :global(.reset svg) {
     width: 12px;
-    height: 12px;
-    opacity: 0.7;
+    height: 12px;    /* opacity: 0.7; */
+  }
+  :global(.reset rect)
+  {
+    fill: var(--secondary-action-item);
+
   }
 
 
@@ -82,17 +86,19 @@
     border: none;
     width: 100%;
     padding: 4px 0px;
+    color: var(--text-normal);
+
   }
 
   .prop-input:hover,
   .prop-input:focus {
     cursor: pointer;
-    background-color: #1b1e20;
+    background-color: var(--interactive-hover);
   }
 
   .label {
     font-size: 1rem;
     padding-bottom: 4px;
-    color: var(--mid-blue-gray);
+    color: var(--title);
   }
 </style>

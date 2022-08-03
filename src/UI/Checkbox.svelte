@@ -22,7 +22,8 @@
   }
 </script>
 
-<div class="checkbox-circle {disabled ? 'checkbox-disabled' : ''}"
+<div
+  class="checkbox-circle {disabled ? 'checkbox--disabled' : ''}"
   on:click={toggle}
 >
   {#if checked}
@@ -40,11 +41,12 @@
     justify-content: center;
   }
 
-  .checkbox-disabled {
-    border-color: var(--dark-blue-gray);
+  .checkbox--disabled {
+    opacity: 0.7;
+    /* border-color: var(--dark-blue-gray); */
   }
 
-  .checkbox-disabled:hover {
+  .checkbox--disabled:hover {
     cursor: default;
   }
 
@@ -58,8 +60,8 @@
   }
 
   :global(.check-mark-icon) {
-    stroke: #a92727;
-    fill: var(--mid-blue-gray);
+    fill: var(--check-mark-fill);
+    opacity: 0.8;
   }
 
   :global(.query-tasks-list .check-mark-icon, .timer-task-container
@@ -73,7 +75,7 @@
       .checkbox-circle) {
     width: 20px;
     height: 20px;
-    border: 1.5px solid var(--mid3-blue-gray);
+    border: 1.5px solid var(--checkbox-border);
   }
 
   :global(.main-task-panel .check-mark-icon) {
@@ -85,6 +87,6 @@
   :global(.main-task-panel .checkbox-circle) {
     width: 22px;
     height: 22px;
-    border: 1px solid var(--mid3-blue-gray);
+    border: 1px solid var(--checkbox-border);
   }
 </style>

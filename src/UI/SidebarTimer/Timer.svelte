@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { circledDone } from './../../Graphics.ts';
   import type { Duration } from 'moment';
   import { timerMarker } from '../../Graphics';
   export let sessionLength: Duration;
@@ -50,33 +51,27 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #efe8e8;
+    color: var(--text-normal);
     font-size: 3rem;
-  }
-
-  :global(.timer-action .circle-play) {
-    width: 48px;
   }
 
   :global(.dashed-timer-marker > svg) {
     width: 16px;
     stroke-width: 8;
-    stroke: #efe8e8;
   }
-
-  :global(.dashed-timer-marker > path) {
-    stroke-dasharray: 16;
+  
+  :global(.dashed-timer-marker  path) {
+    stroke-dasharray: 12 12;
+    stroke: var(--text-normal);
   }
 
   :global(.filled-timer-marker > svg) {
     width: 16px;
-    stroke-width: none;
-    stroke: none;
-    fill: #efe8e8;
   }
 
-  :global(.filled-timer-marker > path) {
+  :global(.filled-timer-marker  path) {
     stroke-dasharray: none;
+    stroke: var(--text-normal);
   }
 
   .timer-marker {

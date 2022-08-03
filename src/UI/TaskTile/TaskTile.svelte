@@ -218,8 +218,7 @@
   }
 
   :global(.timer-task-container .task-tile) {
-    background-color: #202327;
-    border: thin solid #343941;
+    background-color: var(--background-primary);
   }
 
   :global(.query-tasks-list .leading) {

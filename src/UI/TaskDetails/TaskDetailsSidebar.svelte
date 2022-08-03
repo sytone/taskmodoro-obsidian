@@ -210,7 +210,7 @@
 <style>
   :global(.TaskDetails-sidebar .tag-input) {
     padding-bottom: 8px;
-    border-bottom: 1px solid #2a2d30;
+    border-bottom: 1px solid var(--input-border);
   }
 
   .create-btn {
@@ -230,7 +230,7 @@
   }
 
   .TaskDetails-sidebar {
-    background-color: #151719;
+    background-color: var(--background-secondary);
     width: 30%;
     padding: 24px 24px;
   }
@@ -246,6 +246,6 @@
   .label {
     font-size: 1rem;
     padding-bottom: 8px;
-    color: var(--mid-blue-gray);
+    color: var(--text-muted);
   }
 </style>

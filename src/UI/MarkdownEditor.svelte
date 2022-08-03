@@ -1,4 +1,3 @@
-<!-- Reproduced from: https://github.com/mgmeyers/obsidian-kanban -->
 <!-- Author: Matthew Meyers -->
 <script lang="ts">
   import {
@@ -16,9 +15,9 @@
 
   export let onEnter: () => void;
   export let onFocusout: () => void;
-  export let placeholder:string;
+  export let placeholder: string;
   export let md = '';
-  export let id =''
+  export let id = '';
   let textAreaEl: HTMLTextAreaElement;
   const shouldAutoPairMarkdown = true;
   const shouldAutoPairBrackets = true;
@@ -106,16 +105,19 @@
     }
   }
 </script>
-<div class="tq__markdown-Editor" id={id}>
+
+<!-- Reproduced from: https://github.com/mgmeyers/obsidian-kanban -->
+
+<div class="taskmodoro__markdown-Editor" {id}>
   <div data-replicated-value={md} class="grow-wrap">
     <textarea
-    bind:value={md}
-    on:keydown={onKeyDown}
-    on:focusout={onFocusout}
-    placeholder={placeholder}
-    bind:this={textAreaEl}
-    rows={1}
-    class="item-input"
+      bind:value={md}
+      on:keydown={onKeyDown}
+      on:focusout={onFocusout}
+      {placeholder}
+      bind:this={textAreaEl}
+      rows={1}
+      class="item-input"
     />
   </div>
 </div>
@@ -143,7 +145,9 @@
   .grow-wrap > textarea,
   .grow-wrap::after {
     /* Identical styling required! */
+    background-color: var(--background-modifier-form-field);
     border: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
     padding: 8px 8px;
     font: inherit;
     line-height: 1.5;
@@ -154,8 +158,8 @@
     white-space: pre-wrap;
   }
 
-  .grow-wrap > textarea::placeholder{
-    color: var(--dark-blue-gray);
+  .grow-wrap > textarea::placeholder {
+    color: var(--placeholder);
     font-size: 1rem;
     font-weight: normal;
   }

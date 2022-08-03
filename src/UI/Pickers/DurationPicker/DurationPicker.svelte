@@ -69,7 +69,7 @@
   };
 </script>
 
-<div class="duration-picker">
+<div class="taskmodoro duration-picker">
   <div class="value-title">{currValueTitle}</div>
   <div class="switchers-container">
     {#if hSwitcherData}
@@ -93,7 +93,7 @@
     </div>
   </div>
   <div class="actions">
-    <button class="mod-cta secondary-action" on:click={close}>Cancel</button>
+    <button class="mod-cta secondary-action-btn" on:click={close}>Cancel</button>
     <button class="mod-cta" on:click={onSet}>Save</button>
   </div>
 </div>
