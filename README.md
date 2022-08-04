@@ -1,6 +1,15 @@
 # taskmodoro
 
 taskmodoro is a fork of [tgrosinger/tq-obsidian)](https://github.com/tgrosinger/tq-obsidian). It’s an [Obsidian](https://obsidian.md) file-based task manager with integrated pomodoro timer. Each task is represented as a Markdown note with a single task line and some metadata in the frontmatter. Tasks are viewed by embedding queries in other notes, such as your Daily Note.
+  
+![task details](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/query_tasks_list_with_timer.png)
+
+![create-task](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/task-details.png)
+
+  
+
+![edit task repeat](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/task-details-subtask.png)
+
 
 An example task note:
 
@@ -36,7 +45,7 @@ demo description
 
 Contributions are very welcome.
 
-## Custom Blocks
+## Query blocks
 
 Tasks query synax with few differences is very similar to [obsidian-tasks](https://github.com/obsidian-tasks-group/obsidian-tasks) plugin although supported feature set is more limited.
 
@@ -68,13 +77,13 @@ Or for a more complicated example:
 
   
 
-### Custom Block Properties
+### Query syntax
 
 | Filters                                                                                | Sort                                        | Group               |
 |----------------------------------------------------------------------------------------|---------------------------------------------|---------------------|
 | completed, not completed                                                               | sort by completed                           | group by completed  |
-| scheduled (before, after, on) &lt;date&gt;has scheduled dateno scheduled date          | sort by scheduled                           | group by scheduled  |
-| due (before, after, on) &lt;date&gt;has due dateno due date                            | sort by due                                 | group by due        |
+| scheduled (before, after, on) &lt;date&gt;has scheduled date, no scheduled date          | sort by scheduled                           | group by scheduled  |
+| due (before, after, on) &lt;date&gt;has due date, no due date                            | sort by due                                 | group by due        |
 | is recurring, is not recurring                                                         | &nbsp;                                      | group by recurring  |
 | &nbsp;                                                                                 | &nbsp;                                      | group by recurrence |
 | description (includes, does not include) &lt;string&gt;                                | sort by description                         | &nbsp;              |
@@ -90,17 +99,6 @@ Or for a more complicated example:
 
 ### Limitations
 Task creation and details modal view is not yet supported on mobile.
-
-
-## Screenshots
-  
-![task details](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/query_tasks_list_with_timer.png)
-
-![create-task](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/task-details.png)
-
-  
-
-![edit task repeat](https://raw.githubusercontent.com/Borouch/taskmodoro-obsidian/main/resources/screenshots/task-details-subtask.png)
 
 ### Acknowledgments
 Current feature set wouldn’t be possible without the initial functionality provided by the creator of [tgrosinger/tq-obsidian](https://github.com/tgrosinger/tq-obsidian) . 
