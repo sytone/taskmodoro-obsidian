@@ -28,7 +28,7 @@ export class RecurrenceAdapter {
     // Return an unsubscribe function
     return () => {
       this.subscriptions = this.subscriptions.filter(({ id }) => id !== newID);
-      console.log(`Removing subscription ${newID}`);
+      // console.log(`Removing subscription ${newID}`);
     };
   };
 

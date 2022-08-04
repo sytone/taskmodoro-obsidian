@@ -29,7 +29,6 @@ export class TimerTaskView extends ItemView {
   }
 
   async onOpen(): Promise<void> {
-    console.log('onOpen task view')
     const content = this.containerEl.children[1]
     content.empty()
     new SidebarTimerTaskView({

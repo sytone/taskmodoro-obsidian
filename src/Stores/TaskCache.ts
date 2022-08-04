@@ -28,9 +28,9 @@ export class TaskCache {
 
         this.tasks = writable({});
 
-        this.tasks.subscribe(() => {
-            console.log('taskCache has been updated');
-        });
+        // this.tasks.subscribe(() => {
+        //     console.log('taskCache has been updated');
+        // });
     }
 
     /**
@@ -83,7 +83,7 @@ export class TaskCache {
     public readonly handleTaskModified = async (file: TFile): Promise<void> => {
         (await this.loadTask(file)).match(
             (newTask) => {
-                console.log('task-loaded:', newTask.taskName);
+                // console.log('task-loaded:', newTask.taskName);
 
                 this.tasks.update((tasks): Record<FilePath, Task> => {
                     tasks[newTask.file.path] = newTask;
