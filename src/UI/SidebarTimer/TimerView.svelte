@@ -94,7 +94,7 @@
 
   const start = (): void => {
     $state = TimerState.ONGOING;
-    startedAt = moment(new Date());
+    startedAt = moment();
     timer = setInterval(() => {
       if (sessionLeft.asSeconds() == 0) {
         done();
@@ -125,7 +125,10 @@
   };
 
   const stop = (): void => {
-    setTimerActivity();
+    // If prev state is PAUSED no need to set. It's already been done.
+    if($state !== TimerState.PAUSED){
+      setTimerActivity();
+    }
 
     clearInterval(timer);
     if ($type === PomodoroSessionType.REST) {
