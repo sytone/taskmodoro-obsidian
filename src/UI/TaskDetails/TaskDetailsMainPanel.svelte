@@ -8,41 +8,40 @@
   import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import Editor from '../Editor.svelte';
   import { allowOpenInternalLinks } from '../../Editor/InternalLink';
-import type { TFile } from 'obsidian';
-  
+  import type { TFile } from 'obsidian';
+
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
   let taskNameDraft = td.taskName;
   let descriptionDraft = td.description;
 
-  $:{
-    updateDrafts(td.file)
+  $: {
+    updateDrafts(td.file);
   }
-
 
   // Update drafts if a task with different file is pushed to the task details modal
   // This will happen when navigating parents-subtasks tree
-  const updateDrafts = (file: TFile)=>{
-    taskNameDraft = td.taskName
-    descriptionDraft = td.description
-  }
+  const updateDrafts = (_file: TFile) => {
+    taskNameDraft = td.taskName;
+    descriptionDraft = td.description;
+  };
 
-  let taskNameEl: HTMLElement;
-  let descriptionEl: HTMLElement;
+  let taskNameDisplayEl: HTMLElement;
+  let descriptionDisplayEl: HTMLElement;
 
   let isEditMode = { description: false, taskName: false };
 
   type isEditModeKey = keyof typeof isEditMode;
-  const renderDescMD = () =>
-    renderMD(descriptionEl, descriptionDraft);
-  const renderTaskNameMD = () =>
-    renderMD(taskNameEl, taskNameDraft);
-  
-  
+  const renderDescMD = () => renderMD(descriptionDisplayEl, descriptionDraft);
+  const renderTaskNameMD = () => renderMD(taskNameDisplayEl, taskNameDraft);
 
-  onMount(async () => {
-    renderDescMD();
-    renderTaskNameMD();
+  onMount(() => {
+    if (mode === TaskDetailsMode.Create) {
+      isEditMode.taskName = true;
+    } else {
+      renderDescMD();
+      renderTaskNameMD();
+    }
   });
 
   afterUpdate(() => {
@@ -105,7 +104,7 @@ import type { TFile } from 'obsidian';
   <TaskDetailsNavigation plugin={td.plugin} />
   <div class="task-container">
     <div class="tq__checkbox-wrapper">
-      <Checkbox bind:td={td} disabled={false} />
+      <Checkbox bind:td disabled={false} />
     </div>
     <div class="task-input__container ">
       <Editor
@@ -116,7 +115,7 @@ import type { TFile } from 'obsidian';
         }}
         placeholder="Task name"
         showEditor={isEditMode.taskName}
-        bind:displayEl={taskNameEl}
+        bind:displayEl={taskNameDisplayEl}
         bind:text={taskNameDraft}
         displayContainerId="task-input__name"
         editContainerId="task-input__name"
@@ -129,7 +128,7 @@ import type { TFile } from 'obsidian';
         }}
         placeholder="Description"
         showEditor={isEditMode.description}
-        bind:displayEl={descriptionEl}
+        bind:displayEl={descriptionDisplayEl}
         bind:text={descriptionDraft}
         displayContainerId="task-input__description"
         editContainerId="task-input__description"

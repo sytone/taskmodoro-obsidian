@@ -10,6 +10,9 @@
 
   let subtaskName: string = '';
   let subtaskInputEl: HTMLElement;
+  let allowFocus = false
+
+
 
   const addSubtask = () => {
     if (subtaskName.match(/[\w\d]/g)) {
@@ -61,6 +64,15 @@
     );
   };
 
+  /**
+   * When modal is first opened in update mode, this elements gets focus. We prevent this behaviour
+  */
+  const preventInitialFocus = ()=>{
+    if(!allowFocus){
+      subtaskInputEl.blur()
+    }
+  }
+
   const onSubtaskNameInput = (event: any) => {
     subtaskName = event.target.innerText;
   };
@@ -81,9 +93,12 @@
           placeholder="Add a subtask"
           prefix=""
           contenteditable="true"
+          on:click={()=>{allowFocus = true}}
+          on:focus={preventInitialFocus}
           on:input={onSubtaskNameInput}
           bind:this={subtaskInputEl}
           on:keypress={onEnter}
+          
         />
       </div>
       <div class="subtasks-list">

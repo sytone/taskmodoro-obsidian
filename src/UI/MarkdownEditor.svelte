@@ -3,7 +3,6 @@
   import {
     autoPairBracketsCommands,
     autoPairMarkdownCommands,
-    commands,
     handleNewLine,
     handleTab,
     unpairBrackets,
@@ -25,9 +24,9 @@
   const tabWidth = 4;
   const shouldUseMarkdownLinks = true;
 
-  onMount(() => {
-    textAreaEl.focus();
-  });
+  onMount(()=>{
+    textAreaEl.focus()
+  })
 
   const allowNewLine = (e: KeyboardEvent): boolean => {
     if (Platform.isMobile) {
