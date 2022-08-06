@@ -105,7 +105,7 @@ import type { TFile } from 'obsidian';
   <TaskDetailsNavigation plugin={td.plugin} />
   <div class="task-container">
     <div class="tq__checkbox-wrapper">
-      <Checkbox bind:checked={td.completed} disabled={false} />
+      <Checkbox bind:td={td} disabled={false} />
     </div>
     <div class="task-input__container ">
       <Editor

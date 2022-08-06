@@ -15,11 +15,10 @@
   import type { Task } from '../../FileInterface';
   import SubtasksExpansionBtn from './SubtasksExpansionBtn.svelte';
 
-  import TaskCompletionSound from '../../../resources/sfx//task-completed.mp3';
   type Moment = moment.Moment;
   import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import { preventModalOpenOnInternalLinksClick } from '../../Editor/InternalLink';
-import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
+
 
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
@@ -58,16 +57,6 @@ import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
       canOpenModal = false;
       td.close;
     });
-  };
-
-  const toggleChecked = () => {
-    if (!td.completed) {
-      playMp3(TaskCompletionSound)
-    }
-    td.completed = !td.completed;
-    if (td.file) {
-      td.plugin.taskCache.toggleChecked(td);
-    }
   };
 
   const headerMouseOver = () => {
@@ -139,9 +128,7 @@ import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
         <SubtasksExpansionBtn {showExpansionBtn} bind:expanded />
 
         <Checkbox
-          context="listTile"
-          on:toggle={toggleChecked}
-          checked={td.completed}
+          bind:td
         />
       </span>
       <div class="header-content">

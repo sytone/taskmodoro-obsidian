@@ -1,23 +1,21 @@
 <script lang="ts">
   import { checkMark } from '../Graphics';
-  import { createEventDispatcher } from 'svelte';
+  import type { TaskDetails } from '../TaskDetails';
 
-  export let checked: Boolean;
+  export let td: TaskDetails;
   export let disabled = false;
-  export let context: 'createTask' | 'listTile' = 'createTask';
-
-  let createTaskStyle = { cbSize: '24px', cmW: '12px', cmSW: '7%' };
-  let style = createTaskStyle;
-  if (context === 'listTile') {
-    let listTileStyle = { cbSize: '20px', cmW: '10px', cmSW: '10%' };
-    style = listTileStyle;
-  }
-  const dispatch = createEventDispatcher();
+  import TaskCompletionSound from '../../resources/sfx/task-completed.mp3';
+  import { playMp3 } from '../Helpers/Helpers';
 
   function toggle() {
     if (!disabled) {
-      dispatch('toggle');
-      checked = !checked;
+      if (!td.completed) {
+        playMp3(TaskCompletionSound);
+      }
+      td.completed = !td.completed;
+      if (td.file) {
+        td.plugin.taskCache.toggleChecked(td);
+      }
     }
   }
 </script>
@@ -26,7 +24,7 @@
   class="checkbox-circle {disabled ? 'checkbox--disabled' : ''}"
   on:click={toggle}
 >
-  {#if checked}
+  {#if td.completed}
     <div class="check-mark-wrapper">
       {@html checkMark}
     </div>
