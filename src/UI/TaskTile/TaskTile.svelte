@@ -19,6 +19,7 @@
   type Moment = moment.Moment;
   import { renderMarkdown } from '../../Editor/RenderMarkdown';
   import { preventModalOpenOnInternalLinksClick } from '../../Editor/InternalLink';
+import { getBase64AsURL } from '../../Helpers/Helpers';
 
   export let parentComponent: TaskListTileParent;
   export let td: TaskDetails;
@@ -61,7 +62,8 @@
 
   const toggleChecked = () => {
     if (!td.completed) {
-      const audio = new Audio(TaskCompletionSound);
+      const sound = getBase64AsURL('audio','mp3',TaskCompletionSound);
+      const audio = new Audio(sound);
       audio.play();
     }
     td.completed = !td.completed;

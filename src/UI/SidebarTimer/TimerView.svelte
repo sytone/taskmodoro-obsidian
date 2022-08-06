@@ -16,6 +16,7 @@
   } from '../../Graphics';
   import Timer from './Timer.svelte';
   import type PomodoroSession from '../../Stores/PomodoroSession';
+import { getBase64AsURL } from '../../Helpers/Helpers';
   const electron = require('electron');
 
   export let workSessionLength: Duration;
@@ -40,12 +41,15 @@
   let markers = Array(markerCnt);
 
   const playPomodoroCompetionSound = () => {
-    const audio = new Audio(PomodoroCompletionSound);
+    const sound = getBase64AsURL('audio','mp3',PomodoroCompletionSound);
+    const audio = new Audio(sound);
     audio.play();
   };
 
+  //TODO: find appropriate different sfx
   const playBreakCompetionSound = () => {
-    const audio = new Audio(PomodoroCompletionSound);
+    const sound = getBase64AsURL('audio','mp3',PomodoroCompletionSound);
+    const audio = new Audio(sound);
     audio.play();
   };
 

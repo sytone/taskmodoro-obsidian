@@ -17,7 +17,7 @@ esbuild
     bundle: true,
     entryPoints: ['./src/main.ts'],
     external: ['obsidian', 'electron', ...builtins],
-    loader: { '.mp3': 'dataurl' },
+    loader: { '.mp3': 'base64' },
     format: 'cjs',
     logLevel: 'info',
     minify: prod ? true : false,

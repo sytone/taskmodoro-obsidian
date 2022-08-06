@@ -32,3 +32,7 @@ export const getTextAbv = (text: string, charCnt: number): string => {
   return text
 
 }
+
+export const getBase64AsURL=(type:string,mime:string, base64:string):string => {
+  return `data:${type}/` + mime + ';base64,' + base64;
+}
