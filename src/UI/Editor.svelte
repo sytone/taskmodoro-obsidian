@@ -56,6 +56,17 @@
     background-color: transparent;
   }
 
+  #subtask-input__name {
+    border: none;
+    border-bottom: 1px solid var(--input-border);
+    font-size: 1.25rem;
+    font-weight: 700;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background-color: transparent;
+  }
+
   :global(#task-input__name p) {
     margin: 0;
   }

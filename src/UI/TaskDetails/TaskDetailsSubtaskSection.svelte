@@ -5,14 +5,24 @@
   import { TaskListTileParent as TaskTileParent } from '../../Enums/component-context';
   import type { TFile } from 'obsidian';
   import SubtasksExpansionBtn from '../TaskTile/SubtasksExpansionBtn.svelte';
+  import Editor from '../Editor.svelte';
+  import { allowOpenInternalLinks } from '../../Editor/InternalLink';
+  import { renderMarkdown } from '../../Editor/RenderMarkdown';
+  import { afterUpdate } from 'svelte';
   export let td: TaskDetails;
   export let mode: TaskDetailsMode;
 
   let subtaskName: string = '';
-  let subtaskInputEl: HTMLElement;
-  let allowFocus = false
+  let subtaskDisplayEl: HTMLElement;
+  let isEditMode = false;
+  let showExpansionBtn = true;
+  let expanded = true;
 
-
+  afterUpdate(() => {
+    if (!isEditMode) {
+      renderMD(subtaskDisplayEl, subtaskName);
+    }
+  });
 
   const addSubtask = () => {
     if (subtaskName.match(/[\w\d]/g)) {
@@ -20,9 +30,8 @@
       subtaskName = subtaskName.replace(/(\n)+/g, '');
       subtask.taskName = subtaskName;
       subtaskName = '';
-      subtaskInputEl.innerHTML = '';
       td.subtasks.push(subtask);
-      td=td
+      td = td;
       if (mode === TaskDetailsMode.Update) {
         storeSubtask(subtask);
       }
@@ -41,13 +50,6 @@
     });
   };
 
-  const onEnter = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      addSubtask();
-    }
-  };
-
   const updateParentChildTaskFm = (subtaskFile: TFile) => {
     td.plugin.fileInterface.updateFMProp(
       subtaskFile,
@@ -64,20 +66,17 @@
     );
   };
 
-  /**
-   * When modal is first opened in update mode, this elements gets focus. We prevent this behaviour
-  */
-  const preventInitialFocus = ()=>{
-    if(!allowFocus){
-      subtaskInputEl.blur()
+  const renderMD = (el: HTMLElement, MD: string) => {
+    if (!el) {
+      return;
     }
-  }
 
-  const onSubtaskNameInput = (event: any) => {
-    subtaskName = event.target.innerText;
+    const path = td.file ? td.file.path : '/';
+    renderMarkdown(td.plugin, path, MD).then((temp) => {
+      el.innerHTML = temp.innerHTML;
+      allowOpenInternalLinks(el, td.plugin, td.close);
+    });
   };
-  let showExpansionBtn = true;
-  let expanded = true;
 </script>
 
 <div class="subtask-section">
@@ -88,17 +87,22 @@
   {#if expanded}
     <div class="subtask-section-body">
       <div class="subtask-input-wrapper">
-        <div
-          class="subtask-name-input"
+        <Editor
+          bind:displayEl={subtaskDisplayEl}
+          bind:text={subtaskName}
+          onClick={() => {
+            isEditMode = true;
+          }}
+          onEnter={() => {
+            isEditMode = false
+            addSubtask();
+          }}
+          onFocusout={() => {
+            isEditMode = false;
+          }}
           placeholder="Add a subtask"
-          prefix=""
-          contenteditable="true"
-          on:click={()=>{allowFocus = true}}
-          on:focus={preventInitialFocus}
-          on:input={onSubtaskNameInput}
-          bind:this={subtaskInputEl}
-          on:keypress={onEnter}
-          
+          showEditor={isEditMode}
+          displayContainerId="subtask-input__name"
         />
       </div>
       <div class="subtasks-list">
@@ -118,14 +122,7 @@
     margin-left: 12px;
   }
 
-  [contenteditable='true']:empty:before {
-    content: attr(prefix);
-    font-size: 1.5rem;
-    color: var(--placeholder);
-  }
-
   .subtask-section-title {
-    /* margin-left: 16px; */
     color: var(--title);
   }
 
@@ -134,36 +131,16 @@
     flex-direction: row;
   }
 
-  .subtask-name-input {
-    border: none;
-    border-bottom: 1px solid var(--input-border);
-    margin: 0px 16px -8px 20px;
-    padding: 12px 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    background-color: transparent;
-  }
-
-  /* :global(.subtask-input-wrapper .plus-icon) {
-    margin-left: 3px;
-    margin-top: 8px;
-  }
-
-  :global(.subtask-input-wrapper .plus-icon rect) {
-    fill: var(--secondary-action-item);
-  } */
-
   .subtasks-list {
     margin-top: 24px;
-    /* margin-left: 36px; */
   }
 
   .subtask-input-wrapper {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    margin-left: 20px;
+    margin-top: 8px;
   }
 </style>
