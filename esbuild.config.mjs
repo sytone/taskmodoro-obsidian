@@ -30,7 +30,7 @@ esbuild
       }),
       inlineWorkerPlugin(),
     ],
-    sourcemap: dev ? 'inline' : false,
+    sourcemap: 'inline',
     target: 'es2016',
     treeShaking: true,
     watch: !prod && !dev,

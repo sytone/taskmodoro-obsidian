@@ -16,23 +16,27 @@
   } from '../../Graphics';
   import Timer from './Timer.svelte';
   import type PomodoroSession from '../../Stores/PomodoroSession';
-import {  playMp3 } from '../../Helpers/Helpers';
-import { onDestroy } from 'svelte';
+  import { playMp3 } from '../../Helpers/Helpers';
+  import { onDestroy } from 'svelte';
 
-//@ts-ignore
-import Worker from 'src/timerWorker'
-  const electron = require('electron');
+  //@ts-ignore
+  import Worker from './../../timer.worker';
+  import { round } from 'lodash';
+  const Notification = require('electron').remote.Notification;
+  const BrowserWindow = require('electron').remote.BrowserWindow;
+  const win = BrowserWindow.getFocusedWindow();
 
-  export let workSessionLength: Duration;
+  export let workSessionDuration: Duration;
   export let plugin: TQPlugin;
   export let file: TFile;
   export let pomodoroSession: PomodoroSession;
   const sessionLeftStore = pomodoroSession.sessionLeft;
-  const sessionLengthStore = pomodoroSession.sessionLength
-  
+  const sessionLengthStore = pomodoroSession.sessionLength;
+
   const restSessionsLenghts = [5, 5, 5, 15];
   let sessionIndex = 0;
-  let sessionLeft = workSessionLength.clone();
+  let sessionLeft = workSessionDuration.clone();
+  let currentRestSessionDuration = moment.duration();
   $: {
     $sessionLeftStore = sessionLeft;
   }
@@ -45,27 +49,22 @@ import Worker from 'src/timerWorker'
   let markers = Array(markerCnt);
 
   const playPomodoroCompetionSound = () => {
-    playMp3(PomodoroCompletionSound)
-
+    playMp3(PomodoroCompletionSound);
   };
 
   //TODO: find appropriate different sfx
   const playBreakCompetionSound = () => {
-    playMp3(PomodoroCompletionSound)
-
+    playMp3(PomodoroCompletionSound);
   };
 
+  // const worker = Worker();
+  // worker.postMessage(['hello world']);
 
-  const worker = Worker();
-  worker.postMessage(['hello world']);
-
-
-  onDestroy(()=>{
-    worker.terminate()
-  })
+  // onDestroy(() => {
+  //   worker.terminate();
+  // });
 
   const showNotification = (title: string, body: string) => {
-    const Notification = (electron as any).remote.Notification;
     const n = new Notification({
       title: title,
       body: body,
@@ -80,7 +79,7 @@ import Worker from 'src/timerWorker'
 
   const setTimerActivity = () => {
     if ($type === PomodoroSessionType.WORK) {
-      let endedAt = moment()
+      let endedAt = moment();
       plugin.fileInterface.setTimerActivity(file, startedAt, endedAt);
     }
   };
@@ -92,10 +91,10 @@ import Worker from 'src/timerWorker'
     playPomodoroCompetionSound();
     setTimerActivity();
     const newSessionLength = restSessionsLenghts[sessionIndex];
-    sessionLeft = moment.duration(newSessionLength, 'minutes');
-    
+    currentRestSessionDuration = moment.duration(newSessionLength, 'minutes');
+    sessionLeft = currentRestSessionDuration.clone();
     sessionIndex = (sessionIndex + 1) % 4;
-    $type=PomodoroSessionType.REST
+    $type = PomodoroSessionType.REST;
   };
 
   const handleRestSessionDone = () => {
@@ -103,31 +102,50 @@ import Worker from 'src/timerWorker'
     const body = "Break has been ended, it's time to get back to work!";
     showNotification(title, body);
     playBreakCompetionSound();
-    sessionLeft = workSessionLength.clone();
-    $type=PomodoroSessionType.WORK
+    sessionLeft = workSessionDuration.clone();
+    $type = PomodoroSessionType.WORK;
   };
 
+  const setTaskbarProgressBar = () => {
+    let progress = 0;
+    if ($type === PomodoroSessionType.WORK) {
+      progress = sessionLeft.asSeconds() / workSessionDuration.asSeconds();
+    } else {
+      progress =
+        sessionLeft.asSeconds() / currentRestSessionDuration.asSeconds();
+    }
+    win.setProgressBar(1 - progress);
+  };
 
   const start = (): void => {
     $state = TimerState.ONGOING;
     startedAt = moment();
     timer = setInterval(() => {
-      console.log('min:',sessionLeft.minutes(),'sec:',sessionLeft.seconds(), 'time:',window.moment().format('H:m:s'))
+      console.log(
+        'min:',
+        sessionLeft.minutes(),
+        'sec:',
+        sessionLeft.seconds(),
+        'time:',
+        window.moment().format('H:m:s'),
+      );
       if (sessionLeft.asSeconds() == 0) {
         done();
       } else {
         sessionLeft = sessionLeft.subtract(1, 'second');
         markers = markers;
+        setTaskbarProgressBar();
       }
     }, 1000);
   };
+
+
 
   const pause = (): void => {
     $state = TimerState.PAUSED;
     setTimerActivity();
     clearInterval(timer);
   };
-
 
   const done = (): void => {
     $state = TimerState.DONE;
@@ -138,12 +156,12 @@ import Worker from 'src/timerWorker'
       handleRestSessionDone();
     }
     markers = markers;
-    $sessionLengthStore = sessionLeft.clone()
+    $sessionLengthStore = sessionLeft.clone();
   };
 
   const stop = (): void => {
     // If prev state is PAUSED no need to set. It's already been done.
-    if($state !== TimerState.PAUSED){
+    if ($state !== TimerState.PAUSED) {
       setTimerActivity();
     }
 
@@ -152,8 +170,8 @@ import Worker from 'src/timerWorker'
       $type = PomodoroSessionType.WORK;
     }
     $state = TimerState.INITIALIZED;
-    sessionLeft = workSessionLength.clone();
-    $sessionLengthStore = sessionLeft.clone()
+    sessionLeft = workSessionDuration.clone();
+    $sessionLengthStore = sessionLeft.clone();
     markers = markers;
   };
 </script>
@@ -188,14 +206,12 @@ import Worker from 'src/timerWorker'
     margin-top: -3rem;
   }
 
-  :global(.timer-action circle, .timer-action rect,.timer-action path){
+  :global(.timer-action circle, .timer-action rect, .timer-action path) {
     fill: transparent;
-    stroke: var(--text-normal)
+    stroke: var(--text-normal);
   }
-
 
   :global(.timer-action .circle-play) {
     width: 48px;
   }
-
 </style>

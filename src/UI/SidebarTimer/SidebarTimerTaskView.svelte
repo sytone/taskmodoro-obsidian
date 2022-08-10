@@ -27,7 +27,7 @@
     file={td.file}
     {plugin}
     {pomodoroSession}
-    workSessionLength={td.pomodoroLenght}
+    workSessionDuration={td.pomodoroLenght}
   />
 </div>
 
