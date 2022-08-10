@@ -1,5 +1,5 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
-import {parseDate} from 'chrono-node';
+import { parseDate } from 'chrono-node';
 
 export class DateParser {
     public static parseDate(

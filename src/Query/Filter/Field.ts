@@ -48,9 +48,8 @@ export abstract class Field {
     ): boolean {
         if (filter) {
             return filter.test(line);
-        } 
-            return false;
-        
+        }
+        return false;
     }
 
     /**
@@ -66,9 +65,8 @@ export abstract class Field {
     ): RegExpMatchArray | null {
         if (filterRegexp) {
             return line.match(filterRegexp);
-        } 
-            return null;
-        
+        }
+        return null;
     }
 
     /**

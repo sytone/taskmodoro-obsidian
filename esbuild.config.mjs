@@ -3,6 +3,7 @@ import esbuild from 'esbuild';
 import builtins from 'builtin-modules';
 import esbuildSvelte from 'esbuild-svelte';
 import sveltePreprocess from 'svelte-preprocess';
+import inlineWorkerPlugin from 'esbuild-plugin-inline-worker';
 
 const banner = ``;
 
@@ -27,6 +28,7 @@ esbuild
         compilerOptions:{ css: true },
         preprocess: sveltePreprocess(),
       }),
+      inlineWorkerPlugin(),
     ],
     sourcemap: dev ? 'inline' : false,
     target: 'es2016',

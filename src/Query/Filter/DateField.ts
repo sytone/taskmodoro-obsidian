@@ -1,9 +1,9 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
+import type { Moment } from 'moment';
 import { DateParser } from '../DateParser';
+import { Task } from '../../FileInterface';
 import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
-import type { Moment } from 'moment';
-import { Task } from '../../FileInterface';
 
 /**
  * DateField is an abstract base class to help implement

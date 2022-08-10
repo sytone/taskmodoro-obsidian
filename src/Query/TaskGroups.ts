@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/prefer-readonly */
-import { GroupHeadings } from './GroupHeadings';
 import type { Grouping } from '../Query';
-import { IntermediateTaskGroups } from './IntermediateTaskGroups';
 import type { Task } from '../Task';
+import { GroupHeadings } from './GroupHeadings';
+import { IntermediateTaskGroups } from './IntermediateTaskGroups';
 import { TaskGroup } from './TaskGroup';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
@@ -13,7 +13,7 @@ import { TaskGroup } from './TaskGroup';
  */
 export class TaskGroups {
     private readonly _groups: TaskGroup[] = new Array<TaskGroup>();
-    private  _totalTaskCount = 0;
+    private _totalTaskCount = 0;
 
     /**
      * Constructor for TaskGroups

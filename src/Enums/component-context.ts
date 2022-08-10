@@ -1,10 +1,10 @@
 export enum TaskListTileParent {
-  TasksList,
-  TimerTaskView,
-  TaskDetailsMainPanel
+    TasksList,
+    TimerTaskView,
+    TaskDetailsMainPanel,
 }
 
 export enum TaskDetailsMode {
-  Create,
-  Update
+    Create,
+    Update,
 }

@@ -1,7 +1,7 @@
-import { Group } from './Group';
 import type { Grouping } from '../Query';
-import { GroupingTreeNode } from './GroupingTreeNode';
 import { Task } from '../FileInterface';
+import { Group } from './Group';
+import { GroupingTreeNode } from './GroupingTreeNode';
 
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
 

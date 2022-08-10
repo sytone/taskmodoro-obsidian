@@ -1,1 +1,1 @@
-export const repeat = 'repeat'
+export const repeat = 'repeat';

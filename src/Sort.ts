@@ -7,11 +7,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 // import { getSettings } from './config/Settings';
 /* eslint-disable @typescript-eslint/prefer-readonly */
+import type moment from 'moment';
 import type * as fileInterface from './FileInterface';
 
 import type { Query, SortingProperty } from './Query';
-
-import type moment from 'moment';
 
 type Comparator = (a: fileInterface.Task, b: fileInterface.Task) => number;
 
@@ -20,7 +19,10 @@ type Comparator = (a: fileInterface.Task, b: fileInterface.Task) => number;
 export class Sort {
     static tagPropertyInstance: number = 1;
 
-    public static by(query: Pick<Query, 'sorting'>, tasks: fileInterface.Task[]): fileInterface.Task[] {
+    public static by(
+        query: Pick<Query, 'sorting'>,
+        tasks: fileInterface.Task[],
+    ): fileInterface.Task[] {
         const defaultComparators: Comparator[] = [
             // Sort.compareByUrgency,
             Sort.compareByCompleted,
@@ -85,14 +87,16 @@ export class Sort {
     //     return b.urgency - a.urgency;
     // }
 
-    private static compareByCompleted(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+    private static compareByCompleted(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ): -1 | 0 | 1 {
         if (a.completed && !b.completed) {
             return 1;
         } else if (!a.completed && b.completed) {
             return -1;
-        } 
-            return 0;
-        
+        }
+        return 0;
     }
 
     // private static compareByPriority(a: fileInterface.Task, b: fileInterface.Task): number {
@@ -103,11 +107,17 @@ export class Sort {
     //     return Sort.compareByDate(a.startDate, b.startDate);
     // }
 
-    private static compareByScheduledDate(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+    private static compareByScheduledDate(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ): -1 | 0 | 1 {
         return Sort.compareByDate(a.scheduled, b.scheduled);
     }
 
-    private static compareByDueDate(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+    private static compareByDueDate(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ): -1 | 0 | 1 {
         return Sort.compareByDate(a.due, b.due);
     }
 
@@ -115,7 +125,10 @@ export class Sort {
     //     return Sort.compareByDate(a.doneDate, b.doneDate);
     // }
 
-    private static compareByTag(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+    private static compareByTag(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ): -1 | 0 | 1 {
         // If no tags then assume they are equal.
         if (a.tags.length === 0 && b.tags.length === 0) {
             return 0;
@@ -151,9 +164,8 @@ export class Sort {
             return -1;
         } else if (a.tags[tagInstanceToSortBy] > b.tags[tagInstanceToSortBy]) {
             return 1;
-        } 
-            return 0;
-        
+        }
+        return 0;
     }
 
     public static compareByDate(
@@ -169,22 +181,22 @@ export class Sort {
                 return 1;
             } else if (a.isBefore(b)) {
                 return -1;
-            } 
-                return 0;
-            
-        } 
+            }
             return 0;
-        
+        }
+        return 0;
     }
 
-    private static compareByPath(a: fileInterface.Task, b: fileInterface.Task): -1 | 0 | 1 {
+    private static compareByPath(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ): -1 | 0 | 1 {
         if (a.file.path < b.file.path) {
             return -1;
         } else if (a.file.path > b.file.path) {
             return 1;
-        } 
-            return 0;
-        
+        }
+        return 0;
     }
 
     /**
@@ -193,7 +205,10 @@ export class Sort {
      * Does not use the MarkdownRenderer, but tries to match regexes instead
      * in order to be simpler, faster, and not async.
      */
-    private static compareByDescription(a: fileInterface.Task, b: fileInterface.Task) {
+    private static compareByDescription(
+        a: fileInterface.Task,
+        b: fileInterface.Task,
+    ) {
         return Sort.cleanDescription(a.description).localeCompare(
             Sort.cleanDescription(b.description),
         );

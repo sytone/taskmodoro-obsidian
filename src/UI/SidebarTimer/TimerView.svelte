@@ -16,7 +16,11 @@
   } from '../../Graphics';
   import Timer from './Timer.svelte';
   import type PomodoroSession from '../../Stores/PomodoroSession';
-import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
+import {  playMp3 } from '../../Helpers/Helpers';
+import { onDestroy } from 'svelte';
+
+//@ts-ignore
+import Worker from 'src/timerWorker'
   const electron = require('electron');
 
   export let workSessionLength: Duration;
@@ -50,6 +54,15 @@ import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
     playMp3(PomodoroCompletionSound)
 
   };
+
+
+  const worker = Worker();
+  worker.postMessage(['hello world']);
+
+
+  onDestroy(()=>{
+    worker.terminate()
+  })
 
   const showNotification = (title: string, body: string) => {
     const Notification = (electron as any).remote.Notification;
@@ -94,10 +107,12 @@ import { getBase64AsURL, playMp3 } from '../../Helpers/Helpers';
     $type=PomodoroSessionType.WORK
   };
 
+
   const start = (): void => {
     $state = TimerState.ONGOING;
     startedAt = moment();
     timer = setInterval(() => {
+      console.log('min:',sessionLeft.minutes(),'sec:',sessionLeft.seconds(), 'time:',window.moment().format('H:m:s'))
       if (sessionLeft.asSeconds() == 0) {
         done();
       } else {

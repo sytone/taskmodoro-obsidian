@@ -1,9 +1,9 @@
 export const enum DurationPickerType {
-  PomodoroLength,
-  Worktime,
+    PomodoroLength,
+    Worktime,
 }
 export const enum SwitcherType {
-  PomoLengthMin,
-  WorktimeHrs,
-  WorktimeMin
+    PomoLengthMin,
+    WorktimeHrs,
+    WorktimeMin,
 }

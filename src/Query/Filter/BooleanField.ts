@@ -1,11 +1,11 @@
 // Reproduced from: https://github.com/obsidian-tasks-group/obsidian-tasks
+import type { PostfixExpression } from 'boon-js';
+import { parse as boonParse } from 'boon-js';
+import { Task } from '../../FileInterface';
+import { parseFilter } from '../FilterParser';
 import { Field } from './Field';
 import type { Filter } from './Filter';
 import { FilterOrErrorMessage } from './Filter';
-import type { PostfixExpression } from 'boon-js';
-import { Task } from '../../FileInterface';
-import { parse as boonParse } from 'boon-js';
-import { parseFilter } from '../FilterParser';
 
 /**
  * BooleanField is a 'container' field type that parses a high-level filtering query of

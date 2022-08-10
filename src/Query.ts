@@ -44,7 +44,9 @@ export type GroupingProperty =
     // | 'start'
     | 'completed'
     | 'tags';
-export interface Grouping { property: GroupingProperty }
+export interface Grouping {
+    property: GroupingProperty;
+}
 
 export class Query implements IQuery {
     public source: string;
@@ -205,7 +207,9 @@ export class Query implements IQuery {
             this._sorting.push({
                 property: fieldMatch[1] as SortingProperty,
                 reverse: !!fieldMatch[2],
-                propertyInstance: Number.isNaN(+fieldMatch[3]) ? 1 : +fieldMatch[3],
+                propertyInstance: Number.isNaN(+fieldMatch[3])
+                    ? 1
+                    : +fieldMatch[3],
             });
         } else {
             this._error = 'do not understand query sorting';

@@ -83,7 +83,6 @@ export class Group {
             return [task.recurrence];
         }
         return ['None'];
-
     }
 
     private static groupByRecurring(task: Task): string[] {
@@ -91,7 +90,6 @@ export class Group {
             return ['Recurring'];
         }
         return ['Not Recurring'];
-
     }
 
     // private static groupByStartDate(task: Task): string[] {
@@ -174,9 +172,9 @@ export class Group {
 
     private static groupByCompleted(task: Task): string[] {
         if (task.completed) {
-            return ['Completed']
+            return ['Completed'];
         } else {
-            return ['Not completed']
+            return ['Not completed'];
         }
     }
 
