@@ -106,3 +106,8 @@ Current feature set wouldn’t be possible without the initial functionality pro
 And some features reproduced from  [obsidian-tasks-group/obsidian-tasks](https://github.com/obsidian-tasks-group/obsidian-tasks) , [mgmeyers/obsidian-kanban](https://github.com/mgmeyers/obsidian-kanban) plugins. 
 
 Big thanks to creators and contributors for their efforts!
+
+### Support
+If you find this plugin useful consider supporting me in the following way:
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/Borouch)
